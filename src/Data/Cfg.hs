@@ -1,0 +1,2 @@
+module Data.Cfg where
+

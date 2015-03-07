@@ -1,0 +1,48 @@
+Name:                   context-free-grammar
+Version:                0.0.1
+Author:                 Eric Nedervold<nedervoldsoftware@gmail.com>
+Maintainer:             Eric Nedervold<nedervoldsoftware@gmail.com>
+License:                BSD3
+License-File:           LICENSE
+Copyright:		(c) 2015 Eric Nedervold
+Stability:              alpha
+Homepage:               http://github.com/nedervold/context-free-grammar
+Bug-Reports:            http://github.com/nedervold/context-free-grammar/issues
+Synopsis:               Basic algorithms on context-free grammars
+Description:            Basic algorithms on context-free grammars
+Category:               Data
+Cabal-Version:          >= 1.10
+Build-Type:             Simple
+
+Library
+  Default-Language:     Haskell2010
+  HS-Source-Dirs:       src
+  GHC-Options:          -Wall -Werror
+  Exposed-Modules:      Data.Cfg
+  -- Other-Modules:        Data.Cfg.Internal
+  Build-Depends:        base >= 4 && < 5
+
+-- Executable context-free-grammar-exe
+--   Default-Language:     Haskell2010
+--   GHC-Options:          -Wall -Werror
+-- --  Other-Modules:
+--   Hs-Source-Dirs:       src
+--   Main-Is:              Main.hs
+--   Build-Depends:        base
+
+Test-Suite test
+  Type:                 exitcode-stdio-1.0
+  Default-Language:     Haskell2010
+  Hs-Source-Dirs:       tests
+  Ghc-Options:          -Wall -Werror
+  Main-Is:              Test.hs
+  Other-Modules:        Data.CfgTests
+  Build-Depends:        base
+                      , HUnit
+                      , test-framework
+                      , test-framework-hunit
+
+Source-Repository head
+  Type:                 git
+  Location:             git://github.com/nedervold/context-free-grammar.git
+
