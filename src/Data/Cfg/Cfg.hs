@@ -55,22 +55,26 @@ instance (Cfg cfg t nt) => CPretty (cfg t nt) (V t nt -> Doc) where
 	ts = do
 	    prettyV <- ask
 	    return (text "Terminals:"
-		       <+> sep (punctuate comma
+		       <+> fsep (punctuate comma
 				   $ map (prettyV . T)
 					 (S.toList $ terminals cfg)))
 	nts = do
 	    prettyV <- ask
 	    return (text "Nonterminals:"
-		       <+> sep (punctuate comma
+		       <+> fsep (punctuate comma
 				   $ map (prettyV . NT)
 					 (S.toList $ nonterminals cfg)))
 
 	prods = do
 	    prettyV <- ask
-	    return $ vcat $ map (prettyProd prettyV) $ productions cfg
+	    return $ (text "Productions:"
+			 $$ nest 4
+				 (vcat (map (prettyProd prettyV)
+					    (zip [1..] $ productions cfg))))
 	    where
-	    prettyProd pv (hd, rhs)
-		= hsep [pv (NT hd), text "::=", rhs' <> text "."]
+	    prettyProd pv (n, (hd, rhs))
+		= hsep [parens (int n),
+			pv (NT hd), text "::=", rhs' <> text "."]
 		where
 		rhs' = hsep $ map pv rhs
 
