@@ -9,6 +9,8 @@ module Data.Cfg(
     Cfg'(..),
     -- * Auxiliary data types
     V(..),
+    isNT,
+    isT,
     Vs,
     Production,
     -- * Query
@@ -69,6 +71,16 @@ instance Cfg Cfg' t nt where
 data V t nt = T t	-- ^ a terminal
     | NT nt		-- ^ a nonterminal
     deriving (Eq, Ord)
+
+-- | Returns 'True' iff the vocabularly symbols is a terminal.
+isT :: V t nt -> Bool
+isT (T _) = True
+isT _ = False
+
+-- | Returns 'True' iff the vocabularly symbols is a nonterminal.
+isNT :: V t nt -> Bool
+isNT (NT _) = True
+isNT _ = False
 
 instance Functor (V t) where
     fmap _f (T t) = T t
