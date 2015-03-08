@@ -32,7 +32,7 @@ fixedPoint :: Eq a => (a -> a) -> a -> a
 fixedPoint f = go
     where
     go s = if s == s'
-	       then s
-	       else go s'
-	where
-	s' = f s
+               then s
+               else go s'
+        where
+        s' = f s
