@@ -21,6 +21,9 @@ Library
   Exposed-Modules:      Data.Cfg
   -- Other-Modules:        Data.Cfg.Internal
   Build-Depends:        base >= 4 && < 5
+                      , bifunctors >= 4.2 && < 4.3
+                      , containers >= 0.5 && < 0.6
+                      , mtl >= 2.1 && < 2.2
 
 -- Executable context-free-grammar-exe
 --   Default-Language:     Haskell2010
