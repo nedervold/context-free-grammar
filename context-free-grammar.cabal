@@ -17,7 +17,7 @@ Build-Type:             Simple
 Library
   Default-Language:     Haskell2010
   HS-Source-Dirs:       src
-  GHC-Options:          -Wall -Werror
+  GHC-Options:          -Wall
   Exposed-Modules:      Data.Cfg
   -- Other-Modules:        Data.Cfg.Internal
   Build-Depends:        base >= 4 && < 5
@@ -27,7 +27,7 @@ Library
 
 -- Executable context-free-grammar-exe
 --   Default-Language:     Haskell2010
---   GHC-Options:          -Wall -Werror
+--   GHC-Options:          -Wall
 -- --  Other-Modules:
 --   Hs-Source-Dirs:       src
 --   Main-Is:              Main.hs
@@ -37,7 +37,7 @@ Test-Suite test
   Type:                 exitcode-stdio-1.0
   Default-Language:     Haskell2010
   Hs-Source-Dirs:       tests
-  Ghc-Options:          -Wall -Werror
+  Ghc-Options:          -Wall
   Main-Is:              Test.hs
   Other-Modules:        Data.CfgTests
   Build-Depends:        base
