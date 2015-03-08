@@ -8,7 +8,7 @@ import qualified Data.Set as S
 
 -- | Returns the nonterminals in the grammar that can produce the
 -- empty string.
-nullables :: forall cfg t nt . (Cfg cfg t nt, Ord nt, Ord t)
+nullables :: forall cfg t nt . (Cfg cfg t nt, Ord nt)
 	  => cfg t nt -> S.Set nt
 nullables cfg = fixedPoint go S.empty
     where
@@ -32,7 +32,7 @@ fixedPoint :: Eq a => (a -> a) -> a -> a
 fixedPoint f = go
     where
     go s = if s == s'
-               then s
-               else go s'
-        where
-        s' = f s
+	       then s
+	       else go s'
+	where
+	s' = f s

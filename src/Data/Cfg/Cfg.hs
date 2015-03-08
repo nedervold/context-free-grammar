@@ -31,12 +31,11 @@ import qualified Data.Set as S
 -- | Represents a context-free grammar with its nonterminal and
 -- terminal types.
 class Cfg cfg t nt where
-    nonterminals :: Ord nt => cfg t nt -> S.Set nt
+    nonterminals :: cfg t nt -> S.Set nt
 	-- ^ the nonterminals of the grammar
-    terminals :: Ord t => cfg t nt -> S.Set t
+    terminals :: cfg t nt -> S.Set t
 	-- ^ the terminals of the grammar
-    productionRules :: (Ord nt, Ord t)
-			   => cfg t nt -> nt -> S.Set (Vs t nt)
+    productionRules :: cfg t nt -> nt -> S.Set (Vs t nt)
 	-- ^ the productions of the grammar
     startSymbol :: cfg t nt -> nt
 	-- ^ the start symbol of the grammar; must be an element of
@@ -103,7 +102,7 @@ type Vs t nt = [V t nt]
 type Production t nt = (nt, Vs t nt)
 
 -- | Returns the productions of the grammar.
-productions :: (Cfg cfg t nt, Ord nt, Ord t) => cfg t nt -> [Production t nt]
+productions :: (Cfg cfg t nt) => cfg t nt -> [Production t nt]
 productions cfg = do
     nt <- S.toList $ nonterminals cfg
     vs <- S.toList $ productionRules cfg nt
@@ -113,7 +112,7 @@ productions cfg = do
 
 -- | Returns 'True' iff the two inhabitants of 'Cfg' are equal.
 eqCfg :: forall cfg cfg' t nt
-      . (Cfg cfg t nt, Cfg cfg' t nt, Ord nt, Ord t)
+      . (Cfg cfg t nt, Cfg cfg' t nt, Eq nt, Eq t)
       => cfg t nt -> cfg' t nt -> Bool
 eqCfg cfg cfg' = to4Tuple cfg == to4Tuple cfg'
 
@@ -125,7 +124,7 @@ compareCfg cfg cfg' = compare (to4Tuple cfg) (to4Tuple cfg')
 
 -- | Converts the 'Cfg' to a 4-tuple that inhabits both 'Eq' and 'Ord'
 -- if 't' and 'nt' do.
-to4Tuple :: forall cfg t nt . (Cfg cfg t nt, Ord nt, Ord t)
+to4Tuple :: forall cfg t nt . (Cfg cfg t nt)
 	 => cfg t nt -> (nt, S.Set nt, S.Set t, [Production t nt])
 
     -- We move the start symbol first to optimize the operations
