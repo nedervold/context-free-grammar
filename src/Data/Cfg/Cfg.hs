@@ -7,24 +7,28 @@ module Data.Cfg.Cfg(
     Cfg(..),
     -- * Canonical instance of 'Cfg'
     Cfg'(..),
-    -- * Auxiliary data types
+    -- * Vocabulary
     V(..),
     isNT,
     isT,
     Vs,
-    Production,
-    -- * Query
-    productions,
     vocabulary,
     usedVocabulary,
     undeclaredVocabulary,
     isFullyDeclared,
+    -- * Productions
+    Production,
+    productions {- ,
     -- * Utility functions
     eqCfg,
-    compareCfg) where
+    compareCfg -}) where
 
+import Control.Monad(liftM4)
+import Control.Monad.Reader(ask)
 import Data.Bifunctor(Bifunctor(..))
+import Data.Cfg.CPretty
 import qualified Data.Set as S
+import Text.PrettyPrint
 
 ------------------------------------------------------------
 
@@ -40,6 +44,35 @@ class Cfg cfg t nt where
     startSymbol :: cfg t nt -> nt
 	-- ^ the start symbol of the grammar; must be an element of
 	-- 'nonterminals' 'cfg'
+
+instance (Cfg cfg t nt) => CPretty (cfg t nt) (V t nt -> Doc) where
+    cpretty cfg = liftM4 vcat' ss ts nts prods
+	where
+	vcat' a b c d = vcat [a, b, c, d]
+	ss = do
+	    prettyV <- ask
+	    return (text "Start symbol:" <+> prettyV (NT $ startSymbol cfg))
+	ts = do
+	    prettyV <- ask
+	    return (text "Terminals:"
+		       <+> sep (punctuate comma
+				   $ map (prettyV . T)
+					 (S.toList $ terminals cfg)))
+	nts = do
+	    prettyV <- ask
+	    return (text "Nonterminals:"
+		       <+> sep (punctuate comma
+				   $ map (prettyV . NT)
+					 (S.toList $ nonterminals cfg)))
+
+	prods = do
+	    prettyV <- ask
+	    return $ vcat $ map (prettyProd prettyV) $ productions cfg
+	    where
+	    prettyProd pv (hd, rhs)
+		= hsep [pv (NT hd), text "::=", rhs' <> text "."]
+		where
+		rhs' = hsep $ map pv rhs
 
 ------------------------------------------------------------
 
@@ -108,7 +141,7 @@ productions cfg = do
     vs <- S.toList $ productionRules cfg nt
     return (nt, vs)
 
-------------------------------------------------------------
+{------------------------------------------------------------
 
 -- | Returns 'True' iff the two inhabitants of 'Cfg' are equal.
 eqCfg :: forall cfg cfg' t nt
@@ -136,7 +169,7 @@ to4Tuple cfg = (
     terminals cfg,
     productions cfg)
 
-------------------------------------------------------------
+------------------------------------------------------------}
 
 -- | Returns all vocabulary used in the productions plus the start
 -- symbol.
@@ -150,7 +183,7 @@ usedVocabulary cfg
 -- | Returns all vocabulary used in the productions plus the start
 -- symbol but not declared in 'nonterminals' or 'terminals'.
 undeclaredVocabulary :: (Cfg cfg t nt, Ord nt, Ord t)
-		     => cfg t nt -> S.Set (V t nt)
+                     => cfg t nt -> S.Set (V t nt)
 undeclaredVocabulary cfg = usedVocabulary cfg S.\\ vocabulary cfg
 
 ------------------------------------------------------------

@@ -1,3 +1,4 @@
+-- | Context-free grammars.
 module Data.Cfg(
     module Data.Cfg.Cfg,
     module Data.Cfg.Nullable,
