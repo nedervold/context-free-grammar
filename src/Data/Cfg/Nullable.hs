@@ -2,7 +2,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module Data.Cfg.Nullable(nullables) where
 
-import Data.Cfg
+import Data.Cfg.Cfg
 import Control.Monad(guard)
 import qualified Data.Set as S
 

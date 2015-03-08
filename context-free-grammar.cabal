@@ -19,6 +19,7 @@ Library
   HS-Source-Dirs:       src
   GHC-Options:          -Wall
   Exposed-Modules:      Data.Cfg
+                      , Data.Cfg.Cfg
                       , Data.Cfg.Nullable
                       , Data.Cfg.RuleApplication
   -- Other-Modules:        Data.Cfg.Internal

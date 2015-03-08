@@ -9,7 +9,7 @@ module Data.Cfg.RuleApplication(
 import Control.Applicative((<|>))
 import Control.Monad(msum)
 import qualified Control.Monad.WeightedSearch as W
-import Data.Cfg
+import Data.Cfg.Cfg
 import qualified Data.Set as S
 
 -- | Given a grammar and a string of symbols, returns the strings
