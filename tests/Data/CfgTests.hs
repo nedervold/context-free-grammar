@@ -1,10 +1,12 @@
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Data.CfgTests (sampleCfg, tests) where
 
 import Control.Monad(forM)
 import Data.Char(toLower, toUpper)
-import Data.Cfg(Cfg'(..), V(..), cpretty)
+import Data.Cfg(Cfg(..), Cfg'(..), V(..), cpretty, productions)
 import qualified Data.Map as M
 import qualified Data.Set as S
 import Test.Framework(Test)
@@ -12,6 +14,8 @@ import Test.Framework.Providers.HUnit(testCase)
 import Test.HUnit(assertEqual)
 import Test.QuickCheck
 import Text.PrettyPrint
+
+import Data.Cfg.Gram
 
 instance Arbitrary (Cfg' Int Int) where
     arbitrary = do
@@ -60,6 +64,13 @@ sampleCfg = do
     mapM_ (print . pretty) (take 3 cfgs)
 
 tests :: Test
-tests = testCase "dummy test" $ assertEqual "true is true"
-                                                True
-                                                True
+tests = testCase "gram sanity test" $ do
+    assertEqual "startSymbol works" "foo" (startSymbol cfg')
+    assertEqual "terminals works" 5 (S.size $ terminals cfg')
+    assertEqual "nonterminals works" 2 (S.size $ nonterminals cfg')
+    assertEqual "productions count works" 3 (length $ productions cfg')
+    where
+    cfg' = gramToCfg' gram'
+    gram' = [gram|foo ::= A B C D bar.
+                  foo ::= .
+                  bar ::= E A B. |]
