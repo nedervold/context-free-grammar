@@ -6,17 +6,18 @@ install:
   - travis_retry sudo apt-get update
   - travis_retry sudo apt-get install cabal-install-1.18 ghc-$GHCVER happy-1.19.3
   - export PATH=/opt/happy/1.19.3/bin:/opt/ghc/$GHCVER/bin:$PATH
+  - travis_retry cabal-1.18 update
+  - travis_retry cabal-1.18 install --only-dependencies --enable-tests -v2
 
 script:
-  - cabal configure --enable-tests
-  - cabal build
-  - cabal test
-  - cabal check
-  - cabal sdist
-  - export SRC_TGZ=$(cabal info . | awk '{print $2 ".tar.gz";exit}') ;
+  - cabal-1.18 build -v2
+  - cabal-1.18 test
+  - cabal-1.18 check
+  - cabal-1.18 sdist
+  - export SRC_TGZ=$(cabal-1.18 info . | awk '{print $2 ".tar.gz";exit}') ;
     cd dist/;
     if [ -f "$SRC_TGZ" ]; then
-       cabal install --enable-tests "$SRC_TGZ";
+       cabal-1.18 install --enable-tests "$SRC_TGZ";
     else
        echo "expected '$SRC_TGZ' not found";
        exit 1;
