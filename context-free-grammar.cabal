@@ -4,7 +4,7 @@ Author:                 Eric Nedervold<nedervoldsoftware@gmail.com>
 Maintainer:             Eric Nedervold<nedervoldsoftware@gmail.com>
 License:                BSD3
 License-File:           LICENSE
-Copyright:		(c) 2015 Eric Nedervold
+Copyright:              (c) 2015 Eric Nedervold
 Stability:              alpha
 Homepage:               http://github.com/nedervold/context-free-grammar
 Bug-Reports:            http://github.com/nedervold/context-free-grammar/issues
@@ -29,7 +29,7 @@ Library
                       , containers >= 0.5 && < 0.6
                       , mtl >= 2.1 && < 2.2
                       , pretty >= 1.1 && < 1.2
-		         -- not sure which I'll use
+                         -- not sure which I'll use
                       , control-monad-omega >= 0.3 && < 0.4
                       , weighted-search >= 0.1 && < 0.2
 
@@ -54,6 +54,7 @@ Test-Suite test
                       , BNFC-meta >= 0.4 && < 0.5
                       , containers >= 0.5 && < 0.6
                       , context-free-grammar
+                      , haskell-src-exts == 1.15.0.1
                       , HUnit
                       , pretty >= 1.1 && < 1.2
                       , QuickCheck >= 2.6 && < 2.7
