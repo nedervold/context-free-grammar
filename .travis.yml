@@ -1,6 +1,10 @@
 language: haskell
 ghc: 7.8
 
+install:
+  - travis_retry sudo apt-get install happy-1.19.3
+  - export PATH=/opt/happy/1.19.3/bin:$PATH
+
 script:
   - cabal configure --enable-tests
   - cabal build
