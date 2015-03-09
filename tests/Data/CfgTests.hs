@@ -6,16 +6,13 @@ module Data.CfgTests (sampleCfg, tests) where
 
 import Control.Monad(forM)
 import Data.Char(toLower, toUpper)
-import Data.Cfg(Cfg(..), Cfg'(..), V(..), cpretty, productions)
+import Data.Cfg(Cfg'(..), V(..), cpretty)
+import qualified Data.Cfg.GramTests
 import qualified Data.Map as M
 import qualified Data.Set as S
-import Test.Framework(Test)
-import Test.Framework.Providers.HUnit(testCase)
-import Test.HUnit(assertEqual)
+import Test.Framework(Test, testGroup)
 import Test.QuickCheck
 import Text.PrettyPrint
-
-import Data.Cfg.Gram
 
 instance Arbitrary (Cfg' Int Int) where
     arbitrary = do
@@ -40,20 +37,23 @@ instance Arbitrary (Cfg' Int Int) where
 	    }
 
 ctxt :: V Int Int -> Doc
-ctxt (NT n) = text $ map toLower $ base26 n
-ctxt (T n) = text $ map toUpper $ base26 n
-
-base26 :: Int -> String
-base26 n
-    | n < 26	= [digitToChar n]
-    | otherwise = if msds == 0
-		      then [digitToChar lsd]
-		      else base26 msds ++ [digitToChar lsd]
+ctxt v = text $ map f $ base26 n
     where
-    (msds, lsd) = n `divMod` 26
+    (f, n) = case v of
+		 NT n' -> (toLower, n')
+		 T n' -> (toUpper, n')
 
-    digitToChar :: Int -> Char
-    digitToChar digit = toEnum (fromEnum 'a' + digit)
+    base26 :: Int -> String
+    base26 n'
+	| n' < 26	= [digitToChar n']
+	| otherwise = if msds == 0
+			  then [digitToChar lsd]
+			  else base26 msds ++ [digitToChar lsd]
+	where
+	(msds, lsd) = n' `divMod` 26
+
+	digitToChar :: Int -> Char
+	digitToChar digit = toEnum (fromEnum 'a' + digit)
 
 pretty :: Cfg' Int Int -> Doc
 pretty cfg = cpretty cfg ctxt
@@ -64,13 +64,6 @@ sampleCfg = do
     mapM_ (print . pretty) (take 3 cfgs)
 
 tests :: Test
-tests = testCase "gram sanity test" $ do
-    assertEqual "startSymbol works" "foo" (startSymbol cfg')
-    assertEqual "terminals works" 5 (S.size $ terminals cfg')
-    assertEqual "nonterminals works" 2 (S.size $ nonterminals cfg')
-    assertEqual "productions count works" 3 (length $ productions cfg')
-    where
-    cfg' = gramToCfg' gram'
-    gram' = [gram|foo ::= A B C D bar.
-                  foo ::= .
-                  bar ::= E A B. |]
+tests = testGroup "Cfg tests" [
+    Data.Cfg.GramTests.tests
+    ]

@@ -16,7 +16,7 @@ bnfc [lbnf|
     terminator V "" ;
 
     Gram. Gram ::= [Prod] ;
-    Prod. Prod ::= LOWER "::=" [Alt] "." ; 
+    Prod. Prod ::= LOWER "::=" [Alt] "." ;
     Alt. Alt ::= [V] ;
     NT. V ::= LOWER ;
     T. V ::= UPPER ;
@@ -35,17 +35,17 @@ gramToCfg' (Gram ps) = Cfg' {
     }
     where
     Prod (LOWER ss) _ : _ = ps
-    
+
     prodRules :: String -> S.Set (Cfg.Vs String String)
     prodRules nt
-        = S.fromList
+	= S.fromList
 	      $ concat [ map convertAlt alts | Prod (LOWER nt') alts <- ps,
-	      	       	     		       nt == nt' ]
-        where
-        convertAlt :: Alt -> [Cfg.V String String]
+					       nt == nt' ]
+	where
+	convertAlt :: Alt -> [Cfg.V String String]
 	convertAlt (Alt vs) = map convertV vs
 
-        convertV :: V -> Cfg.V String String
+	convertV :: V -> Cfg.V String String
 	convertV = undefined
 
     vocab :: [V]
@@ -54,5 +54,5 @@ gramToCfg' (Gram ps) = Cfg' {
 	prodVocab :: Prod -> [V]
 	prodVocab (Prod hd as) = NT hd : concatMap altVocab as
 
-	altVocab :: Alt -> [V]
-	altVocab (Alt vs) = vs
+        altVocab :: Alt -> [V]
+        altVocab (Alt vs) = vs
