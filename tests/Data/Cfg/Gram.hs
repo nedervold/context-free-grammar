@@ -46,7 +46,8 @@ gramToCfg' (Gram ps) = Cfg' {
 	convertAlt (Alt vs) = map convertV vs
 
 	convertV :: V -> Cfg.V String String
-	convertV = undefined
+	convertV (NT (LOWER s)) = Cfg.NT s
+	convertV (T (UPPER s)) = Cfg.T s
 
     vocab :: [V]
     vocab = concatMap prodVocab ps

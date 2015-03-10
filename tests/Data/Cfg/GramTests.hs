@@ -21,4 +21,17 @@ test = testCase "gram quasiquoter sanity test" $ do
     cfg' = gramToCfg' gram'
     gram' = [gram|foo ::= A B C D bar.
 		  foo ::= .
-	          bar ::= E A B. |]
+		  bar ::= E A B. |]
+
+{- Test code for yieldCfg.
+import Data.Cfg.RuleApplication
+
+py :: Int -> IO ()
+py n = mapM_ print $ take n y
+    where
+    y = yieldCfg cfg
+    cfg = gramToCfg' gram'
+    gram' = [gram|digits ::= digit | digit digits .
+	          digit ::= O | I . |]
+
+-}
