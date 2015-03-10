@@ -67,7 +67,7 @@ instance (Cfg cfg t nt) => CPretty (cfg t nt) (V t nt -> Doc) where
 
 	prods = do
 	    prettyV <- ask
-	    return $ (text "Productions:"
+	    return (text "Productions:"
 			 $$ nest 4
 				 (vcat (map (prettyProd prettyV)
 					    (zip [1..] $ productions cfg))))

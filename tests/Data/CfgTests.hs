@@ -1,6 +1,4 @@
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Data.CfgTests (sampleCfg, tests) where
 
@@ -26,10 +24,10 @@ instance Arbitrary (Cfg' Int Int) where
 	pairs <- forM nts $ \nt -> do
 	    altCnt <- choose (1, 5)
 	    rhss <- vectorOf altCnt genVs
-	    return $ (nt, S.fromList rhss)
+	    return (nt, S.fromList rhss)
 
 	let map' = M.fromList pairs
-	return $ Cfg' {
+	return Cfg' {
 	    nonterminals' = S.fromList nts,
 	    terminals' = S.fromList ts,
 	    productionRules' = (map' M.!),
