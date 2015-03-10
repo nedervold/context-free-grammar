@@ -4,7 +4,9 @@ module Data.CfgTests (sampleCfg, tests) where
 
 import Control.Monad(forM)
 import Data.Char(toLower, toUpper)
-import Data.Cfg(Cfg'(..), V(..), cpretty)
+import Data.Cfg.Cfg(V(..))
+import Data.Cfg.CPretty(cpretty)
+import Data.Cfg.FreeCfg
 import qualified Data.Cfg.GramTests
 import qualified Data.Map as M
 import qualified Data.Set as S
@@ -12,7 +14,7 @@ import Test.Framework(Test, testGroup)
 import Test.QuickCheck
 import Text.PrettyPrint
 
-instance Arbitrary (Cfg' Int Int) where
+instance Arbitrary (FreeCfg Int Int) where
     arbitrary = do
 	tCnt <- choose (1, 25)
 	let ts = [0..tCnt-1]
@@ -27,7 +29,7 @@ instance Arbitrary (Cfg' Int Int) where
 	    return (nt, S.fromList rhss)
 
 	let map' = M.fromList pairs
-	return Cfg' {
+	return FreeCfg {
 	    nonterminals' = S.fromList nts,
 	    terminals' = S.fromList ts,
 	    productionRules' = (map' M.!),
@@ -53,12 +55,12 @@ ctxt v = text $ map f $ base26 n
 	digitToChar :: Int -> Char
 	digitToChar digit = toEnum (fromEnum 'a' + digit)
 
-pretty :: Cfg' Int Int -> Doc
+pretty :: FreeCfg Int Int -> Doc
 pretty cfg = cpretty cfg ctxt
 
 sampleCfg :: IO ()
 sampleCfg = do
-    cfgs <- sample' (arbitrary :: Gen (Cfg' Int Int))
+    cfgs <- sample' (arbitrary :: Gen (FreeCfg Int Int))
     mapM_ (print . pretty) (take 3 cfgs)
 
 tests :: Test

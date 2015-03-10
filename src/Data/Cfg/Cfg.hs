@@ -5,8 +5,6 @@
 module Data.Cfg.Cfg(
     -- * Class
     Cfg(..),
-    -- * Canonical instance of 'Cfg'
-    Cfg'(..),
     -- * Vocabulary
     V(..),
     isNT,
@@ -79,27 +77,6 @@ instance (Cfg cfg t nt) => CPretty (cfg t nt) (V t nt -> Doc) where
 		rhs' = hsep $ map pv rhs
 
 ------------------------------------------------------------
-
--- | Represents a context-free grammar with its nonterminal and
--- terminal types.  The canonical instance of 'Cfg': a record that
--- collects up implementations of each class method.
-data Cfg' t nt = Cfg' {
-    nonterminals' :: S.Set nt,
-	-- ^ the nonterminals of the grammar
-    terminals' :: S.Set t,
-	-- ^ the terminals of the grammar
-    productionRules' :: nt -> S.Set (Vs t nt),
-	-- ^ the productions of the grammar
-    startSymbol' :: nt
-	-- ^ the start symbol of the grammar; must be an element of
-	-- 'nonterminals' 'cfg'
-    }
-
-instance Cfg Cfg' t nt where
-    nonterminals = nonterminals'
-    terminals = terminals'
-    productionRules = productionRules'
-    startSymbol = startSymbol'
 
 ------------------------------------------------------------
 

@@ -21,6 +21,7 @@ Library
   Exposed-Modules:      Data.Cfg
                       , Data.Cfg.Cfg
                       , Data.Cfg.CPretty
+                      , Data.Cfg.FreeCfg
                       , Data.Cfg.Nullable
                       , Data.Cfg.RuleApplication
   -- Other-Modules:        Data.Cfg.Internal

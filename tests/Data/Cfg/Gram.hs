@@ -1,10 +1,11 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -w #-}
-module Data.Cfg.Gram(gram, gramToCfg') where
+module Data.Cfg.Gram(gram, gramToFreeCfg) where
 
 import Data.Cfg.Cfg hiding(V(..))
 import qualified Data.Cfg.Cfg as Cfg
+import Data.Cfg.FreeCfg
 import qualified Data.Set as S
 import Language.Haskell.TH.Quote
 import Language.LBNF
@@ -26,8 +27,8 @@ bnfc [lbnf|
 
     |]
 
-gramToCfg' :: Gram -> Cfg' String String
-gramToCfg' (Gram ps) = Cfg' {
+gramToFreeCfg :: Gram -> FreeCfg String String
+gramToFreeCfg (Gram ps) = FreeCfg {
     nonterminals' = S.fromList [ nt | NT (LOWER nt) <- vocab ],
     terminals' = S.fromList [ t | T (UPPER t) <- vocab ],
     productionRules' = prodRules,

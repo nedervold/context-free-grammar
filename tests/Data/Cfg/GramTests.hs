@@ -18,7 +18,7 @@ test = testCase "gram quasiquoter sanity test" $ do
     assertEqual "nonterminals works" 2 (S.size $ nonterminals cfg')
     assertEqual "productions count works" 3 (length $ productions cfg')
     where
-    cfg' = gramToCfg' gram'
+    cfg' = gramToFreeCfg gram'
     gram' = [gram|foo ::= A B C D bar.
 		  foo ::= .
 		  bar ::= E A B. |]
