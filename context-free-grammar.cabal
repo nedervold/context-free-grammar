@@ -27,12 +27,10 @@ Library
   Build-Depends:        base >= 4 && < 5
                       , bifunctors >= 4.2 && < 4.3
                       , containers >= 0.5 && < 0.6
+                      , control-monad-omega >= 0.3 && < 0.4
                       , dlist >= 0.7 && < 0.8
                       , mtl >= 2.1 && < 2.2
                       , pretty >= 1.1 && < 1.2
-                         -- not sure which I'll use
-                      , control-monad-omega >= 0.3 && < 0.4
-                      , weighted-search >= 0.1 && < 0.2
 
 -- Executable context-free-grammar-exe
 --   Default-Language:     Haskell2010
