@@ -2,8 +2,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module Data.Cfg.Nullable(nullables) where
 
-import Data.Cfg.Cfg
 import Control.Monad(guard)
+import Data.Cfg.Cfg
+import Data.Cfg.FixedPoint(fixedPoint)
 import qualified Data.Set as S
 
 -- | Returns the nonterminals in the grammar that can produce the
@@ -24,15 +25,5 @@ nullables cfg = fixedPoint go S.empty
 	    nt <- S.toList $ nonterminals cfg
 	    let rhss = S.toList $ productionRules cfg nt
 	    guard $ any (all isKnownNullable) rhss
-	    return nt
+            return nt
 
--- | Given a function and an initial value, find the fixed point of
--- the function.
-fixedPoint :: Eq a => (a -> a) -> a -> a
-fixedPoint f = go
-    where
-    go s = if s == s'
-               then s
-               else go s'
-        where
-        s' = f s

@@ -26,7 +26,7 @@ Library
                       , Data.Cfg.LookaheadSet
                       , Data.Cfg.Nullable
                       , Data.Cfg.RuleApplication
-  -- Other-Modules:        Data.Cfg.Internal
+  Other-Modules:        Data.Cfg.FixedPoint
   Build-Depends:        base >= 4 && < 5
                       , containers >= 0.5 && < 0.6
                       , control-monad-omega >= 0.3 && < 0.4
