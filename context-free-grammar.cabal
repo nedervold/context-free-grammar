@@ -63,9 +63,11 @@ Test-Suite test
                       , HUnit
                       , pretty >= 1.1 && < 1.2
                       , QuickCheck >= 2.6 && < 2.7
+                      , quickcheck-properties == 0.1
                       , template-haskell
                       , test-framework
                       , test-framework-hunit
+                      , test-framework-quickcheck2 >= 0.3 && < 0.4
 
 Source-Repository head
   Type:                 git
