@@ -26,7 +26,6 @@ Library
                       , Data.Cfg.RuleApplication
   -- Other-Modules:        Data.Cfg.Internal
   Build-Depends:        base >= 4 && < 5
-                      , bifunctors >= 4.2 && < 4.3
                       , containers >= 0.5 && < 0.6
                       , control-monad-omega >= 0.3 && < 0.4
                       , dlist >= 0.7 && < 0.8

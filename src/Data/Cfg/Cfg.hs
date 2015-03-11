@@ -7,9 +7,11 @@ module Data.Cfg.Cfg(
     Cfg(..),
     -- * Vocabulary
     V(..),
+    Vs,
     isNT,
     isT,
-    Vs,
+    bimapV,
+    bimapVs,
     vocabulary,
     usedVocabulary,
     undeclaredVocabulary,
@@ -23,7 +25,6 @@ module Data.Cfg.Cfg(
 
 import Control.Monad(liftM4)
 import Control.Monad.Reader(ask)
-import Data.Bifunctor(Bifunctor(..))
 import Data.Cfg.CPretty
 import qualified Data.Set as S
 import Text.PrettyPrint
@@ -99,9 +100,10 @@ instance Functor (V t) where
     fmap _f (T t) = T t
     fmap f (NT nt) = NT $ f nt
 
-instance Bifunctor V where
-    bimap f _g (T t) = T $ f t
-    bimap _f g (NT nt) = NT $ g nt
+-- | Maps over the terminal and nonterminal symbols in a 'V'.
+bimapV :: (t -> t') -> (nt -> nt') -> V t nt -> V t' nt'
+bimapV f _g (T t) = T $ f t
+bimapV _f g (NT nt) = NT $ g nt
 
 -- | Returns the vocabulary symbols of the grammar: elements of
 -- 'terminals' and 'nonterminals'.
@@ -111,6 +113,10 @@ vocabulary cfg = S.map T (terminals cfg)
 
 -- | Synonym for lists of vocabulary symbols.
 type Vs t nt = [V t nt]
+
+-- | Maps over the terminal and nonterminal symbols in a list of 'V's.
+bimapVs :: (t -> t') -> (nt -> nt') -> Vs t nt -> Vs t' nt'
+bimapVs f g = map (bimapV f g)
 
 -- | Productions over vocabulary symbols
 type Production t nt = (nt, Vs t nt)
