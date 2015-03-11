@@ -13,6 +13,7 @@ Description:            Basic algorithms on context-free grammars
 Category:               Data
 Cabal-Version:          >= 1.10
 Build-Type:             Simple
+Extra-Source-Files:     Makefile
 
 Library
   Default-Language:     Haskell2010

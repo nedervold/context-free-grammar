@@ -1,4 +1,5 @@
-.PHONY : clean configure maintainer-clean dist dist-test docs lint
+.PHONY : all clean configure dist dist-test docs docs-open lint \
+	maintainer-clean test
 
 GEN_CODE = dist/build/generate-code/generate-code
 
