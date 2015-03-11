@@ -30,6 +30,7 @@ instance Cfg FreeCfg t nt where
     productionRules = productionRules'
     startSymbol = startSymbol'
 
+-- | Converts any 'Cfg' into a 'FreeCfg'.
 toFreeCfg :: Cfg cfg t nt => cfg t nt -> FreeCfg t nt
 toFreeCfg cfg = FreeCfg {
     nonterminals' = nonterminals cfg,

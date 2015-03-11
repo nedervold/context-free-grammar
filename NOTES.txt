@@ -1,1 +1,17 @@
 Notes for context-free-grammar.
+
+I'd like to write Functor and Bifunctor instances of FreeCfg, but it
+requires that t and nt live in Ord, but you can't mention either.  Do
+I do the discouraged thing and put context on the type declaration?
+Nope, that doesn't work either.
+
+I note that Set is not a member of Functor for probably the same
+reasons.
+
+So maybe I don't need bifunctors because these aren't members of
+Bifunctor.  If I wrote them as lists instead, they would be.  But I
+don't think that's worth it.
+
+And now that I'm trying to implement productionRules, I see that
+Bifunctor is problematic when you've got type arguments in both
+positive and negative positions.  So scrap it all.
