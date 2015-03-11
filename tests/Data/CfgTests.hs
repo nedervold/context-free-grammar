@@ -9,6 +9,7 @@ import Data.Cfg.CPretty(cpretty)
 import Data.Cfg.FreeCfg
 import qualified Data.Cfg.GramTests
 import qualified Data.Cfg.LookaheadSetTests
+import qualified Data.Cfg.TestGrammars() -- TODO Remove this
 import qualified Data.Map as M
 import qualified Data.Set as S
 import Test.Framework(Test, testGroup)
