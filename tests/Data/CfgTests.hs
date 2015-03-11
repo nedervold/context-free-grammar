@@ -8,6 +8,7 @@ import Data.Cfg.Cfg(V(..))
 import Data.Cfg.CPretty(cpretty)
 import Data.Cfg.FreeCfg
 import qualified Data.Cfg.GramTests
+import qualified Data.Cfg.LookaheadSetTests
 import qualified Data.Map as M
 import qualified Data.Set as S
 import Test.Framework(Test, testGroup)
@@ -65,5 +66,6 @@ sampleCfg = do
 
 tests :: Test
 tests = testGroup "Cfg tests" [
-    Data.Cfg.GramTests.tests
+    Data.Cfg.GramTests.tests,
+    Data.Cfg.LookaheadSetTests.tests
     ]
