@@ -20,3 +20,13 @@ positive and negative positions.  So scrap it all.
 
 Should the arguments of cpretty be flipped?  I'm usually currying on
 the context.
+
+----
+
+Add tests for Monoid properties for LookaheadSets.
+
+----
+
+Odd error (run the tests); is the first prod not getting into the Gram?
+
+Also need to source well the two grammars.

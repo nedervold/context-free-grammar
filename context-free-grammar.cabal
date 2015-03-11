@@ -22,6 +22,7 @@ Library
                       , Data.Cfg.Augment
                       , Data.Cfg.Cfg
                       , Data.Cfg.CPretty
+                      , Data.Cfg.FirstSet
                       , Data.Cfg.FreeCfg
                       , Data.Cfg.LookaheadSet
                       , Data.Cfg.Nullable

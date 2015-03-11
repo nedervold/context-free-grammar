@@ -1,7 +1,12 @@
 -- | Sets of lookahead symbols.
 module Data.Cfg.LookaheadSet (
     LookaheadSet,
-    toSet
+    mkLookaheadSet,
+    toSet,
+    -- * Set operations
+    empty,
+    singleton,
+    unions
     ) where
 
 import Data.Cfg.Augment(AugT(..))
@@ -22,5 +27,25 @@ instance Ord t => Monoid (LookaheadSet t) where
     mappend l@(LookaheadSet s) (LookaheadSet s')
 	= if EOF `S.member` s
 	      then LookaheadSet $ S.delete EOF s `S.union` s'
-              else l
+	      else l
 
+-- | Creates a 'LookaheadSet'
+mkLookaheadSet :: (Ord t)
+	       => Bool	-- ^ true iff it has 'EOF'
+	       -> [t]	-- ^ terminal symbols
+	       -> LookaheadSet t
+mkLookaheadSet hasEOF = LookaheadSet . S.fromList . f . map AugT
+    where
+    f = if hasEOF then (EOF:) else id
+
+-- | The empty lookahead set.
+empty :: LookaheadSet t
+empty = LookaheadSet S.empty
+
+-- | Creates a singleton lookahead set.
+singleton :: AugT t -> LookaheadSet t
+singleton = LookaheadSet . S.singleton
+
+-- | Returns the union of all the lookahead sets.
+unions :: Ord t => [LookaheadSet t] -> LookaheadSet t
+unions = LookaheadSet . S.unions . map toSet
