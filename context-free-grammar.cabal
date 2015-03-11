@@ -19,6 +19,7 @@ Library
   HS-Source-Dirs:       src
   GHC-Options:          -Wall
   Exposed-Modules:      Data.Cfg
+                      , Data.Cfg.Augment
                       , Data.Cfg.Cfg
                       , Data.Cfg.CPretty
                       , Data.Cfg.FreeCfg
