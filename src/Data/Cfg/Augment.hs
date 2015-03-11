@@ -6,6 +6,9 @@ module Data.Cfg.Augment (
     -- * Augmenting symbols
     AugNT(..),
     AugT(..),
+    -- * Type synonyms
+    AugV,
+    AugFreeCfg
     ) where
 
 import Data.Cfg.Cfg(Cfg(..), V(..), Vs)
@@ -19,6 +22,12 @@ data AugNT nt = StartSymbol | AugNT nt
 -- | Terminal symbols augmented with a special end-of-file symbol
 data AugT t = EOF | AugT t
     deriving (Eq, Ord, Show)
+
+-- | A convenience synonym for augmented vocabulary
+type AugV t nt = V (AugT t) (AugNT nt)
+
+-- | A convenience symbol for an augmented grammar
+type AugFreeCfg t nt = FreeCfg (AugT t) (AugNT nt)
 
 -- | Returns the /augmented/ grammar: a grammar for the same language
 -- but using explicit start and end-of-file symbols.

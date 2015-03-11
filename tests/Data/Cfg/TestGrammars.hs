@@ -1,12 +1,34 @@
+-- | Sample grammars for tests
 {-# LANGUAGE QuasiQuotes #-}
 module Data.Cfg.TestGrammars (
-    g0, micro
+    -- * Grammars for testing
+    g0,
+    micro,
+    -- * Convenience functions for the REPL
+    pretty'
     ) where
 
 import Data.Cfg.Augment
+import Data.Cfg.Cfg(V(..))
+import Data.Cfg.CPretty
 import Data.Cfg.FreeCfg
 import Data.Cfg.Gram
+import Text.PrettyPrint
 
+pretty' :: AugFreeCfg String String -> Doc
+pretty' cfg = cpretty cfg ctxt
+    where
+    ctxt :: AugV String String -> Doc
+    ctxt v = text $ case v of
+		 NT nt -> case nt of
+		     StartSymbol -> "$start"
+		     AugNT s -> s
+		 T t -> case t of
+		     EOF -> "$EOF"
+		     AugT s -> s
+
+-- | A test grammar.  Found in Crafting a compiler, by Charles
+-- N. Fischer and Richard J. LeBlanc, Jr., (c) 1998, pg. 95.
 g0 :: FreeCfg (AugT String) (AugNT String)
 g0 = augmentCfg $ gramToFreeCfg [gram|
     e ::= prefix LPAREN e RPAREN.
@@ -17,6 +39,7 @@ g0 = augmentCfg $ gramToFreeCfg [gram|
     tail ::= .
    |]
 
+-- | A test grammar.  Found in Fischer and LeBlanc, pg. 111.
 micro :: FreeCfg (AugT String) (AugNT String)
 micro = augmentCfg $ gramToFreeCfg [gram|
     program ::= BEGIN statement_list END.

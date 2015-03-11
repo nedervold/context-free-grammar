@@ -15,3 +15,8 @@ don't think that's worth it.
 And now that I'm trying to implement productionRules, I see that
 Bifunctor is problematic when you've got type arguments in both
 positive and negative positions.  So scrap it all.
+
+----
+
+Should the arguments of cpretty be flipped?  I'm usually currying on
+the context.

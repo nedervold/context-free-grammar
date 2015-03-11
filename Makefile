@@ -82,4 +82,5 @@ $(GEN_CODE) : configure
 ################################
 
 lint :
-	hlint src tests
+	hlint -i 'Use import/export shortcut' src tests
+	# The import/export shortcut plays poorly with Haddock
