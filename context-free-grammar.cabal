@@ -50,6 +50,7 @@ Test-Suite test
   Ghc-Options:          -Wall
   Main-Is:              Test.hs
   Other-Modules:        Data.CfgTests
+                      , Data.Cfg.FirstSetTests
                       , Data.Cfg.Gram
                       , Data.Cfg.GramTests
                       , Data.Cfg.LookaheadSetTests
