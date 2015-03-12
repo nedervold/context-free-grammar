@@ -8,6 +8,7 @@ module Data.Cfg.Augment (
     AugT(..),
     -- * Type synonyms
     AugV,
+    AugVs,
     AugFreeCfg
     ) where
 
@@ -23,8 +24,11 @@ data AugNT nt = StartSymbol | AugNT nt
 data AugT t = EOF | AugT t
     deriving (Eq, Ord, Show)
 
--- | A convenience synonym for augmented vocabulary
+-- | A convenience synonym for an augmented vocabulary symbol
 type AugV t nt = V (AugT t) (AugNT nt)
+
+-- | A convenience synonym for augmented vocabulary symbols
+type AugVs t nt = Vs (AugT t) (AugNT nt)
 
 -- | A convenience symbol for an augmented grammar
 type AugFreeCfg t nt = FreeCfg (AugT t) (AugNT nt)

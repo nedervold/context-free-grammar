@@ -8,6 +8,7 @@ import Data.Cfg.Cfg(V(..))
 import Data.Cfg.CPretty(cpretty)
 import Data.Cfg.FreeCfg
 import qualified Data.Cfg.FirstSetTests
+import qualified Data.Cfg.FollowSetTests
 import qualified Data.Cfg.GramTests
 import qualified Data.Cfg.LookaheadSetTests
 import qualified Data.Cfg.TestGrammars() -- TODO Remove this
@@ -69,6 +70,7 @@ sampleCfg = do
 tests :: Test
 tests = testGroup "Cfg tests" [
     Data.Cfg.FirstSetTests.tests,
+    Data.Cfg.FollowSetTests.tests,
     Data.Cfg.GramTests.tests,
     Data.Cfg.LookaheadSetTests.tests
     ]

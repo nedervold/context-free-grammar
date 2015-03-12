@@ -1,7 +1,7 @@
 -- | First sets of a context-free grammar.
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-module Data.Cfg.FirstSet(firstSet, firstSetMap) where
+module Data.Cfg.FirstSet(firstSet, firstSetMap, firstsOfVs) where
 
 import Data.Cfg.Augment
 import Data.Cfg.Cfg
@@ -13,6 +13,8 @@ import Data.Maybe(fromMaybe)
 import Data.Monoid(Monoid(..))
 import qualified Data.Set as S
 
+-- | Returns the first set of the nonterminal for the grammar as a
+-- map.
 firstSetMap :: forall cfg t nt
 	    . (Cfg cfg (AugT t) (AugNT nt), Ord nt, Ord t, Show nt)
 	    => cfg (AugT t) (AugNT nt) -> M.Map (AugNT nt) (LookaheadSet t)
@@ -41,3 +43,15 @@ firstsV :: Ord nt
 					     -> LookaheadSet t
 firstsV _ (T t) = LA.singleton t
 firstsV fs (NT nt) = fromMaybe LA.empty (M.lookup nt fs)
+
+    -- TODO I need a consistent story here of what I define and
+    -- export.	FollowSet needs this one below, but you can see the
+    -- code duplication with firstsV.  Resolve.
+
+-- | Given a firsts function, find the first set of a list of symbols.
+firstsOfVs :: Ord t
+	   => (AugNT nt -> LookaheadSet t) -> AugVs t nt -> LookaheadSet t
+firstsOfVs firsts vs = mconcat $ map firstsV' vs
+    where
+    firstsV' (T t) = LA.singleton t
+    firstsV' (NT nt) = firsts nt

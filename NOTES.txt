@@ -1,5 +1,17 @@
 Notes for context-free-grammar.
 
+----
+
+Fix the Makefile to follow the pattern of .travis.yml to get the
+tarball name.
+
+----
+
+Should the arguments of cpretty be flipped?  I'm usually currying on
+the context.
+
+----
+
 I'd like to write Functor and Bifunctor instances of FreeCfg, but it
 requires that t and nt live in Ord, but you can't mention either.  Do
 I do the discouraged thing and put context on the type declaration?
@@ -18,15 +30,3 @@ positive and negative positions.  So scrap it all.
 
 ----
 
-Should the arguments of cpretty be flipped?  I'm usually currying on
-the context.
-
-----
-
-Add tests for Monoid properties for LookaheadSets.
-
-----
-
-Odd error (run the tests); is the first prod not getting into the Gram?
-
-Also need to source well the two grammars.

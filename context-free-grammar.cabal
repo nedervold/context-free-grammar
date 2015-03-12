@@ -24,6 +24,7 @@ Library
                       , Data.Cfg.Cfg
                       , Data.Cfg.CPretty
                       , Data.Cfg.FirstSet
+                      , Data.Cfg.FollowSet
                       , Data.Cfg.FreeCfg
                       , Data.Cfg.LookaheadSet
                       , Data.Cfg.Nullable
@@ -52,6 +53,7 @@ Test-Suite test
   Main-Is:              Test.hs
   Other-Modules:        Data.CfgTests
                       , Data.Cfg.FirstSetTests
+                      , Data.Cfg.FollowSetTests
                       , Data.Cfg.Gram
                       , Data.Cfg.GramTests
                       , Data.Cfg.LookaheadSetTests
