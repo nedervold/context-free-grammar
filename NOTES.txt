@@ -12,6 +12,11 @@ the context.
 
 ----
 
+I need to reexport (<>) from wherever it lives in LookaheadSet so I
+can reuse.  Remove Data.Monoid imports when possible.
+
+----
+
 I'd like to write Functor and Bifunctor instances of FreeCfg, but it
 requires that t and nt live in Ord, but you can't mention either.  Do
 I do the discouraged thing and put context on the type declaration?

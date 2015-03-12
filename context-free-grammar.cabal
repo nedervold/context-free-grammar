@@ -28,6 +28,7 @@ Library
                       , Data.Cfg.FreeCfg
                       , Data.Cfg.LookaheadSet
                       , Data.Cfg.Nullable
+                      , Data.Cfg.PredictSet
                       , Data.Cfg.RuleApplication
   Other-Modules:        Data.Cfg.FixedPoint
   Build-Depends:        base >= 4 && < 5

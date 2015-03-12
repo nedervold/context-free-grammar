@@ -9,10 +9,11 @@ module Data.Cfg.Augment (
     -- * Type synonyms
     AugV,
     AugVs,
+    AugProduction,
     AugFreeCfg
     ) where
 
-import Data.Cfg.Cfg(Cfg(..), V(..), Vs)
+import Data.Cfg.Cfg(Cfg(..), Production, V(..), Vs)
 import Data.Cfg.FreeCfg(FreeCfg(..))
 import qualified Data.Set as S
 
@@ -29,6 +30,9 @@ type AugV t nt = V (AugT t) (AugNT nt)
 
 -- | A convenience synonym for augmented vocabulary symbols
 type AugVs t nt = Vs (AugT t) (AugNT nt)
+
+-- | A convenience synonym for augmented productions
+type AugProduction t nt = Production (AugT t) (AugNT nt)
 
 -- | A convenience symbol for an augmented grammar
 type AugFreeCfg t nt = FreeCfg (AugT t) (AugNT nt)

@@ -51,7 +51,8 @@ followSitesMap cfg = M.fromList . collectOnFirst $ do
 firstsOfFollowSite :: forall t nt . (Ord t, Ord nt)
 		   => (AugNT nt -> LookaheadSet t)
 		   -> M.Map (AugNT nt) (LookaheadSet t)
-		   -> (FollowSite t nt -> LookaheadSet t)
+		   -> FollowSite t nt
+		   -> LookaheadSet t
 firstsOfFollowSite firsts knownFollows followSite
     = firstsOfNTTail `mappend` firstsOfProdHead
     where
@@ -93,7 +94,7 @@ followSetMap cfg fs = fixedPoint go initMap
 -- avoid recalculations, hold a copy of @followSet cfg@.
 followSet :: forall cfg t nt
 	  . (Cfg cfg (AugT t) (AugNT nt), Ord nt, Ord t, Show nt)
-	  => cfg (AugT t) (AugNT nt)	      -- ^ the grammar
+	  => cfg (AugT t) (AugNT nt)          -- ^ the grammar
           -> (AugNT nt -> LookaheadSet t)     -- ^ 'firstSet' for the grammar
           -> AugNT nt                         -- ^ the nonterminal
           -> LookaheadSet t
