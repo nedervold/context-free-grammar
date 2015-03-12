@@ -46,30 +46,27 @@ followSitesMap cfg = M.fromList . collectOnFirst $ do
 	as = nub $ map fst pairs
 	bsFor a = [ b | (a', b) <- pairs, a == a' ]
 
--- | Functions that take a 'firstSet' value and a (possibly partial)
--- 'followSetMap' value and calculate a result.	 We use the fact that
--- @FF t nt@ is a monad.
-type FF t nt res = (AugNT nt -> LookaheadSet t)
-		 -> M.Map (AugNT nt) (LookaheadSet t)
-		 -> res
-
 -- | Given what we know of firsts and follows, find the first set of a
 -- follow site.
 firstsOfFollowSite :: forall t nt . (Ord t, Ord nt)
-		   => FF t nt (FollowSite t nt -> LookaheadSet t)
-firstsOfFollowSite firsts follows followSite
+		   => (AugNT nt -> LookaheadSet t)
+		   -> M.Map (AugNT nt) (LookaheadSet t)
+		   -> (FollowSite t nt -> LookaheadSet t)
+firstsOfFollowSite firsts knownFollows followSite
     = firstsOfNTTail `mappend` firstsOfProdHead
     where
     firstsOfNTTail, firstsOfProdHead  :: LookaheadSet t
     firstsOfNTTail = firstsOfVs firsts (ntTail followSite)
-    firstsOfProdHead = follows M.! prodHead followSite
+    firstsOfProdHead = knownFollows M.! prodHead followSite
 
--- | Returns the follow set of the nonterminal for the grammar as a
+-- | Returns the follow sets for the grammar as a
 -- map.
 followSetMap :: forall cfg t nt
 	     . (Cfg cfg (AugT t) (AugNT nt), Ord nt, Ord t, Show nt)
 	     => cfg (AugT t) (AugNT nt)
+		     -- ^ the grammar
 	     -> (AugNT nt -> LookaheadSet t)
+		     -- ^ 'firstSet' for the grammar
 	     -> M.Map (AugNT nt) (LookaheadSet t)
 followSetMap cfg fs = fixedPoint go initMap
     where
@@ -96,8 +93,8 @@ followSetMap cfg fs = fixedPoint go initMap
 -- avoid recalculations, hold a copy of @followSet cfg@.
 followSet :: forall cfg t nt
 	  . (Cfg cfg (AugT t) (AugNT nt), Ord nt, Ord t, Show nt)
-          => cfg (AugT t) (AugNT nt)
-          -> (AugNT nt -> LookaheadSet t)
-          -> AugNT nt
+	  => cfg (AugT t) (AugNT nt)	      -- ^ the grammar
+          -> (AugNT nt -> LookaheadSet t)     -- ^ 'firstSet' for the grammar
+          -> AugNT nt                         -- ^ the nonterminal
           -> LookaheadSet t
 followSet cfg fs nt = followSetMap cfg fs M.! nt
