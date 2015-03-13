@@ -8,9 +8,10 @@ module Data.Cfg.FollowSet (
 import Control.Monad(guard)
 import Data.Cfg.Augment
 import Data.Cfg.Cfg
+import Data.Cfg.Collect(collectOnFirst)
 import Data.Cfg.FirstSet(firstsOfVs)
 import Data.Cfg.FixedPoint(fixedPoint)
-import Data.List(nub, tails)
+import Data.List(tails)
 import Data.Cfg.LookaheadSet hiding(unions)
 import qualified Data.Cfg.LookaheadSet as LA
 import qualified Data.Map as M
@@ -38,13 +39,6 @@ followSitesMap cfg = M.fromList . collectOnFirst $ do
     rhs <- rhss
     NT nt : tl <- tails rhs
     return (nt, FollowSite { ntTail = tl, prodHead = prodHd })
-
-    where
-    collectOnFirst :: Eq a => [(a, b)] -> [(a, [b])]
-    collectOnFirst pairs = [(a, bsFor a) | a <- as]
-	where
-	as = nub $ map fst pairs
-	bsFor a = [ b | (a', b) <- pairs, a == a' ]
 
 -- | Given what we know of firsts and follows, find the first set of a
 -- follow site.

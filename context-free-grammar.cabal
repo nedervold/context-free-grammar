@@ -30,7 +30,8 @@ Library
                       , Data.Cfg.Nullable
                       , Data.Cfg.PredictSet
                       , Data.Cfg.RuleApplication
-  Other-Modules:        Data.Cfg.FixedPoint
+  Other-Modules:        Data.Cfg.Collect
+                      , Data.Cfg.FixedPoint
   Build-Depends:        base >= 4 && < 5
                       , containers >= 0.5 && < 0.6
                       , control-monad-omega >= 0.3 && < 0.4
