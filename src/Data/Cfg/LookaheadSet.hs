@@ -2,6 +2,7 @@
 module Data.Cfg.LookaheadSet (
     LookaheadSet,
     mkLookaheadSet,
+    fromList,
     toSet,
     -- * Set operations
     empty,
@@ -37,6 +38,10 @@ mkLookaheadSet :: (Ord t)
 mkLookaheadSet hasEOF = LookaheadSet . S.fromList . f . map AugT
     where
     f = if hasEOF then (EOF:) else id
+
+-- | Creates a 'LookaheadSet' from a list of augmented terminals.
+fromList :: Ord t => [AugT t] -> LookaheadSet t
+fromList = LookaheadSet . S.fromList
 
 -- | The empty lookahead set.
 empty :: LookaheadSet t
