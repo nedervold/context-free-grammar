@@ -11,7 +11,7 @@ import Test.Framework.Providers.HUnit(testCase)
 import Test.HUnit(assertEqual)
 
 tests :: Test
-tests = testGroup "FirstSet" [
+tests = testGroup "Data.Cfg.FirstSet" [
     g0FirstSetTest,
     microFirstSetTest
     ]

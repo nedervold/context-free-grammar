@@ -68,7 +68,7 @@ sampleCfg = do
     mapM_ (print . pretty) (take 3 cfgs)
 
 tests :: Test
-tests = testGroup "Cfg tests" [
+tests = testGroup "Data.Cfg" [
     Data.Cfg.FirstSetTests.tests,
     Data.Cfg.FollowSetTests.tests,
     Data.Cfg.GramTests.tests,

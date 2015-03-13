@@ -12,7 +12,7 @@ import Test.Framework.Providers.HUnit(testCase)
 import Test.HUnit(assertEqual)
 
 tests :: Test
-tests = testGroup "FollowSet" [
+tests = testGroup "Data.Cfg.FollowSet" [
     g0FollowSetTest,
     microFollowSetTest
     ]

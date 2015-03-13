@@ -9,7 +9,7 @@ import Test.Framework.Providers.HUnit(testCase)
 import Test.HUnit(assertEqual)
 
 tests :: Test
-tests = testGroup "gram quasiquoter tests" [ test ]
+tests = testGroup "Data.Cfg.Gram" [ test ]
 
 test :: Test
 test = testCase "gram quasiquoter sanity test" $ do

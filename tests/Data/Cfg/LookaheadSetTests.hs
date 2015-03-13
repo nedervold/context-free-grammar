@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleInstances #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 module Data.Cfg.LookaheadSetTests (
     tests
     ) where
@@ -14,7 +15,7 @@ instance Arbitrary (LookaheadSet Int) where
     arbitrary = liftM2 mkLookaheadSet arbitrary $ listOf arbitrary
 
 tests :: Test
-tests = testGroup "lookahead sets" [
+tests = testGroup "Data.Cfg.Lookahead" [
     testProperty "monoid laws for lookahead sets"
 	$ eq $ prop_Monoid (T :: T (LookaheadSet Int))
     ]
