@@ -4,12 +4,13 @@ module Data.CfgTests (sampleCfg, tests) where
 
 import Control.Monad(forM)
 import Data.Char(toLower, toUpper)
+import qualified Data.Cfg.BnfTests
 import Data.Cfg.Cfg(V(..))
 import Data.Cfg.CPretty(cpretty)
 import Data.Cfg.FreeCfg
 import qualified Data.Cfg.FirstSetTests
 import qualified Data.Cfg.FollowSetTests
-import qualified Data.Cfg.GramTests
+-- import qualified Data.Cfg.GramTests
 import qualified Data.Cfg.LookaheadSetTests
 import qualified Data.Cfg.TestGrammars() -- TODO Remove this
 import qualified Data.Map as M
@@ -69,8 +70,8 @@ sampleCfg = do
 
 tests :: Test
 tests = testGroup "Data.Cfg" [
+    Data.Cfg.BnfTests.tests,
     Data.Cfg.FirstSetTests.tests,
     Data.Cfg.FollowSetTests.tests,
-    Data.Cfg.GramTests.tests,
     Data.Cfg.LookaheadSetTests.tests
     ]

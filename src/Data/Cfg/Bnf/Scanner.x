@@ -18,6 +18,7 @@ tokens :-
        \-\-.*           ;
        \:\:\=           { Token YIELDS }
        \|               { Token OR }
+       \.               { Token FULL_STOP }
        $lower $lowerTail*               { Token LOWER_IDENTIFIER }
        $upper $upperTail*               { Token UPPER_IDENTIFIER }
        .                { Token ERROR }

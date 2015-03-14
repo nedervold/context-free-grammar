@@ -55,7 +55,7 @@ microFirstSetTest = testCase "micro first-set test" $ mapM_ f tab
 	    ("expr_tail", mkLookaheadSet True $ words "COMMA"),
 	    ("primary", mkLookaheadSet False $ words "ID INT_LITERAL LPAREN"),
 	    ("primary_tail", mkLookaheadSet True $ words "PLUS MINUS"),
-	    ("add_op", mkLookaheadSet False $ words "PLUS MINUS") ]
+            ("add_op", mkLookaheadSet False $ words "PLUS MINUS") ]
 
     fs :: AugNT String -> LookaheadSet String
     fs = firstSet micro

@@ -9,10 +9,10 @@ module Data.Cfg.TestGrammars (
     ) where
 
 import Data.Cfg.Augment
+import Data.Cfg.Bnf
 import Data.Cfg.Cfg(V(..))
 import Data.Cfg.CPretty
 import Data.Cfg.FreeCfg
-import Data.Cfg.Gram
 import Text.PrettyPrint
 
 pretty' :: AugFreeCfg String String -> Doc
@@ -30,7 +30,7 @@ pretty' cfg = cpretty cfg ctxt
 -- | A test grammar.  Found in Crafting a compiler, by Charles
 -- N. Fischer and Richard J. LeBlanc, Jr., (c) 1998, pg. 95.
 g0 :: FreeCfg (AugT String) (AugNT String)
-g0 = augmentCfg $ gramToFreeCfg [gram|
+g0 = augmentCfg [bnf|
     e ::= prefix LPAREN e RPAREN.
     e ::= V tail.
     prefix ::= F.
@@ -41,7 +41,7 @@ g0 = augmentCfg $ gramToFreeCfg [gram|
 
 -- | A test grammar.  Found in Fischer and LeBlanc, pg. 111.
 micro :: FreeCfg (AugT String) (AugNT String)
-micro = augmentCfg $ gramToFreeCfg [gram|
+micro = augmentCfg [bnf|
     program ::= BEGIN statement_list END.
     statement_list ::= statement statement_tail.
     statement_tail ::= statement statement_tail.
@@ -64,4 +64,3 @@ micro = augmentCfg $ gramToFreeCfg [gram|
     add_op ::= PLUS.
     add_op ::= MINUS.
     |]
-
