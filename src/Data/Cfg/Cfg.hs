@@ -1,4 +1,5 @@
 -- | Context-free grammars.
+{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -26,6 +27,7 @@ module Data.Cfg.Cfg(
 import Control.Monad(liftM4)
 import Control.Monad.Reader(ask)
 import Data.Cfg.CPretty
+import Data.Data(Data, Typeable)
 import qualified Data.Set as S
 import Text.PrettyPrint
 
@@ -84,7 +86,7 @@ instance (Cfg cfg t nt) => CPretty (cfg t nt) (V t nt -> Doc) where
 -- | Vocabulary symbols of the grammar.
 data V t nt = T t	-- ^ a terminal
     | NT nt		-- ^ a nonterminal
-    deriving (Eq, Ord, Show)
+    deriving (Eq, Ord, Show, Data, Typeable)
 
 -- | Returns 'True' iff the vocabularly symbols is a terminal.
 isT :: V t nt -> Bool
