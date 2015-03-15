@@ -15,7 +15,6 @@ import Data.List(tails)
 import Data.Cfg.LookaheadSet hiding(unions)
 import qualified Data.Cfg.LookaheadSet as LA
 import qualified Data.Map as M
-import Data.Monoid(Monoid(..))
 import qualified Data.Set as S
 
 -- | Represents the environment following a nonterminal symbol.	 A
@@ -48,7 +47,7 @@ firstsOfFollowSite :: forall t nt . (Ord t, Ord nt)
 		   -> FollowSite t nt
 		   -> LookaheadSet t
 firstsOfFollowSite firsts knownFollows followSite
-    = firstsOfNTTail `mappend` firstsOfProdHead
+    = firstsOfNTTail <> firstsOfProdHead
     where
     firstsOfNTTail, firstsOfProdHead  :: LookaheadSet t
     firstsOfNTTail = firstsOfVs firsts (ntTail followSite)

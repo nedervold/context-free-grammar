@@ -16,7 +16,6 @@ import Data.Cfg.Collect
 import Data.Cfg.FirstSet(firstsOfVs)
 import Data.Cfg.LookaheadSet
 import qualified Data.Map as M
-import Data.Monoid(Monoid(..))
 import qualified Data.Set as S
 
 -- | Returns the predict set of a production.
@@ -26,7 +25,7 @@ predictSet :: (Ord t)
 	   -> AugProduction t nt	      -- ^ the production
 	   -> LookaheadSet t
 predictSet firstSet' followSet' (hd, vs)
-    = firstsOfVs firstSet' vs `mappend` followSet' hd
+    = firstsOfVs firstSet' vs <> followSet' hd
 
 -- | A lookahead set with the productions it predicts
 type Prediction t nt = (LookaheadSet t, S.Set (AugProduction t nt))

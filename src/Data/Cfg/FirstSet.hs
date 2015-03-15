@@ -10,7 +10,7 @@ import Data.Cfg.LookaheadSet hiding(unions)
 import qualified Data.Cfg.LookaheadSet as LA
 import qualified Data.Map as M
 import Data.Maybe(fromMaybe)
-import Data.Monoid(Monoid(..))
+import Data.Monoid(Monoid(mconcat))
 import qualified Data.Set as S
 
 -- | Returns the first set of the nonterminal for the grammar as a

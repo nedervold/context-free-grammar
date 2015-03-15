@@ -4,6 +4,7 @@ module Data.Cfg.LookaheadSet (
     mkLookaheadSet,
     fromList,
     toSet,
+    (<>),	-- reexport
     -- * Set operations
     empty,
     singleton,
@@ -11,7 +12,7 @@ module Data.Cfg.LookaheadSet (
     ) where
 
 import Data.Cfg.Augment(AugT(..))
-import Data.Monoid(Monoid(..))
+import Data.Monoid(Monoid(..), (<>))
 import qualified Data.Set as S
 
 -- | Set of lookahead symbols providing different 'Monoid' semantics
@@ -25,7 +26,7 @@ newtype LookaheadSet t = LookaheadSet {
 
 instance Ord t => Monoid (LookaheadSet t) where
     mempty = LookaheadSet $ S.singleton EOF
-    mappend l@(LookaheadSet s) (LookaheadSet s')
+    l@(LookaheadSet s) `mappend` LookaheadSet s'
 	= if EOF `S.member` s
 	      then LookaheadSet $ S.delete EOF s `S.union` s'
 	      else l
