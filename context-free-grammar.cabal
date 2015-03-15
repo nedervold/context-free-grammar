@@ -68,6 +68,8 @@ Test-Suite test
                       , Data.Cfg.FirstSetTests
                       , Data.Cfg.FollowSetTests
                       , Data.Cfg.LookaheadSetTests
+                      , Data.Cfg.ProductiveTests
+                      , Data.Cfg.ReachableTests
                       , Data.Cfg.TestGrammars
   Build-Depends:        base
                       , containers >= 0.5 && < 0.6
