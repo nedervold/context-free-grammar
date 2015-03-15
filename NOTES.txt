@@ -2,18 +2,10 @@ Notes for context-free-grammar.
 
 ----
 
-Fix the Makefile to follow the pattern of .travis.yml to get the
-tarball name.
-
-----
-
 Should the arguments of cpretty be flipped?  I'm usually currying on
-the context.
-
-----
-
-I need to reexport (<>) from wherever it lives in LookaheadSet so I
-can reuse.  Remove Data.Monoid imports when possible.
+the context.  Answer is no, because we want to use it as a Monad.
+Context comes last because it's the constant in the MonadReader.
+Can't change that.
 
 ----
 

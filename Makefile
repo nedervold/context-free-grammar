@@ -45,21 +45,17 @@ dist : all
 	-cabal check
 	cabal sdist
 
-dist-test : dist
-	for TARBALL in $(wildcard dist/context-free-grammar-*.tar.gz) ; \
-	    do \
-		cp $$TARBALL /tmp ; \
-		cd /tmp ; \
-		gunzip context-free-grammar-*.tar.gz ; \
-		tar -xf context-free-grammar-*.tar; \
-		rm context-free-grammar-*.tar ; \
-		cd context-free-grammar-* ; \
-		make test ; \
-		rm -rf /tmp/context-free-grammar-* ; \
-	done
+TEMPDIR := $(shell mktemp -d /tmp/temp.XXXX)
 
-    # TODO dist-test should run in a different directory so if a test
-    # fails, the new one doesn't collide with the detritus of the old
+dist-test : dist
+	$(eval DIR := $(shell (cabal info . | awk '{print $$2 ; exit}')))
+	$(eval TARBALL := $(DIR).tar)
+	$(eval TGZBALL := $(TARBALL).gz)
+	echo $(TEMPDIR)
+	cp dist/$(TGZBALL) $(TEMPDIR)
+	cd $(TEMPDIR) && gunzip $(TGZBALL) && tar -xf $(TARBALL)
+	cd $(TEMPDIR)/$(DIR) && make test
+	rm -rf $(TEMPDIR)
 
 ################################
 # documentation
