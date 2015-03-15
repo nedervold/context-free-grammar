@@ -6,7 +6,7 @@ import qualified Data.Map as M
 import Data.Cfg.Bnf.Scanner(scan)
 import Data.Cfg.Bnf.Syntax
 import Data.Cfg.Bnf.Token
-import Data.Cfg(Production, V(..), Vs)
+import Data.Cfg.Cfg(Production, V(..), Vs)
 }
 
 %name parseTokens grammar

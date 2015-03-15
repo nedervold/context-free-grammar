@@ -4,7 +4,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 module Data.Cfg.Bnf.Syntax(Grammar(..)) where
 
-import Data.Cfg(Cfg(..), Production, V(..), Vs)
+import Data.Cfg.Cfg(Cfg(..), Production, V(..), Vs)
 import Data.Data(Data, Typeable)
 import qualified Data.Set as S
 
