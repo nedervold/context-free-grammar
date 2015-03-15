@@ -9,6 +9,7 @@ module Data.Cfg(
     module Data.Cfg.LookaheadSet,
     module Data.Cfg.Nullable,
     module Data.Cfg.PredictSet,
+    module Data.Cfg.Productive,
     module Data.Cfg.Reachable,
     module Data.Cfg.RuleApplication
     ) where
@@ -22,5 +23,6 @@ import Data.Cfg.FreeCfg
 import Data.Cfg.LookaheadSet
 import Data.Cfg.Nullable
 import Data.Cfg.PredictSet
+import Data.Cfg.Productive
 import Data.Cfg.Reachable
 import Data.Cfg.RuleApplication

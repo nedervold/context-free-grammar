@@ -30,6 +30,7 @@ Library
                       , Data.Cfg.LookaheadSet
                       , Data.Cfg.Nullable
                       , Data.Cfg.PredictSet
+                      , Data.Cfg.Productive
                       , Data.Cfg.Reachable
                       , Data.Cfg.RuleApplication
   Other-Modules:        Data.Cfg.Bnf.Parser

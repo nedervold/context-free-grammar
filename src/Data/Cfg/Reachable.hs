@@ -49,7 +49,7 @@ removeUnreachables cfg = FreeCfg {
 
     pr :: nt -> S.Set (Vs t nt)
     pr nt = if nt `S.member` res
-       	        then productionRules cfg nt
-		else S.empty
+                then productionRules cfg nt
+                else S.empty
 
-    
+
