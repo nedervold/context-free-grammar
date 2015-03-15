@@ -10,9 +10,9 @@ import Data.Cfg.CPretty(cpretty)
 import Data.Cfg.FreeCfg
 import qualified Data.Cfg.FirstSetTests
 import qualified Data.Cfg.FollowSetTests
--- import qualified Data.Cfg.GramTests
 import qualified Data.Cfg.LookaheadSetTests
-import qualified Data.Cfg.TestGrammars() -- TODO Remove this
+import qualified Data.Cfg.ProductiveTests
+import qualified Data.Cfg.ReachableTests
 import qualified Data.Map as M
 import qualified Data.Set as S
 import Test.Framework(Test, testGroup)
@@ -73,5 +73,7 @@ tests = testGroup "Data.Cfg" [
     Data.Cfg.BnfTests.tests,
     Data.Cfg.FirstSetTests.tests,
     Data.Cfg.FollowSetTests.tests,
-    Data.Cfg.LookaheadSetTests.tests
+    Data.Cfg.LookaheadSetTests.tests,
+    Data.Cfg.ProductiveTests.tests,
+    Data.Cfg.ReachableTests.tests
     ]

@@ -1,7 +1,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Data.Cfg.BnfTests(tests) where
 
-import Data.Cfg.Bnf hiding (productions)
+import Data.Cfg.Bnf
 import Data.Cfg.Cfg
 import Data.Cfg.FreeCfg
 import qualified Data.Set as S

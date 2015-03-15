@@ -19,9 +19,9 @@ module Data.Cfg.Cfg(
     isFullyDeclared,
     -- * Productions
     Production,
-    productions {- ,
+    productions,
     -- * Utility functions
-    eqCfg,
+    eqCfg {- ,
     compareCfg -}) where
 
 import Control.Monad(liftM4)
@@ -130,19 +130,21 @@ productions cfg = do
     vs <- S.toList $ productionRules cfg nt
     return (nt, vs)
 
-{------------------------------------------------------------
-
 -- | Returns 'True' iff the two inhabitants of 'Cfg' are equal.
 eqCfg :: forall cfg cfg' t nt
       . (Cfg cfg t nt, Cfg cfg' t nt, Eq nt, Eq t)
       => cfg t nt -> cfg' t nt -> Bool
 eqCfg cfg cfg' = to4Tuple cfg == to4Tuple cfg'
 
+{------------------------------------------------------------
+
 -- | Compares the two inhabitants of 'Cfg'.
 compareCfg :: forall cfg cfg' t nt
 	   . (Cfg cfg t nt, Cfg cfg' t nt, Ord nt, Ord t)
 	   => cfg t nt -> cfg' t nt -> Ordering
 compareCfg cfg cfg' = compare (to4Tuple cfg) (to4Tuple cfg')
+
+------------------------------------------------------------}
 
 -- | Converts the 'Cfg' to a 4-tuple that inhabits both 'Eq' and 'Ord'
 -- if 't' and 'nt' do.
@@ -157,8 +159,6 @@ to4Tuple cfg = (
     nonterminals cfg,
     terminals cfg,
     productions cfg)
-
-------------------------------------------------------------}
 
 -- | Returns all vocabulary used in the productions plus the start
 -- symbol.

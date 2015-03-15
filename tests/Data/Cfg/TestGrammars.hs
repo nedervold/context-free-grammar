@@ -1,19 +1,35 @@
 -- | Sample grammars for tests
 {-# LANGUAGE QuasiQuotes #-}
 module Data.Cfg.TestGrammars (
-    -- * Grammars for testing
+    -- * Assertion for equality in 'Cfg'
+    assertEqCfg,
+    -- * Grammars for sanity checks
     g0,
     micro,
+    wiki,
     -- * Convenience functions for the REPL
     pretty'
     ) where
 
 import Data.Cfg.Augment
 import Data.Cfg.Bnf
-import Data.Cfg.Cfg(V(..))
+import Data.Cfg.Cfg(Cfg(..), V(..), eqCfg)
 import Data.Cfg.CPretty
 import Data.Cfg.FreeCfg
 import Text.PrettyPrint
+import Test.HUnit(assertBool)
+
+-- | An assertion for testing equality of 'Cfg'.
+assertEqCfg :: (Cfg cfg t nt, CPretty (cfg t nt) ctxt,
+		Cfg cfg' t nt, CPretty (cfg' t nt) ctxt',
+		Eq t, Eq nt)
+		=> ctxt -> ctxt' -> String -> cfg t nt -> cfg' t nt -> IO ()
+assertEqCfg ctxt ctxt' msg expected actual =
+    assertBool msg' (eqCfg expected actual)
+    where
+    msg' = show $ vcat [text msg, expected', actual']
+    expected' = text "Expected:" <+> cpretty expected ctxt
+    actual' = text "Actual:" <+> cpretty actual ctxt'
 
 pretty' :: AugFreeCfg String String -> Doc
 pretty' cfg = cpretty cfg ctxt
@@ -63,4 +79,15 @@ micro = augmentCfg [bnf|
     primary ::= INT_LITERAL.
     add_op ::= PLUS.
     add_op ::= MINUS.
+    |]
+
+-- | A test grammar.  Found at
+-- http://en.wikipedia.org/wiki/Useless_rules; retrieved 2015-03-14.
+wiki :: Grammar String String
+wiki = [bnf|
+    s ::= b B | c C | e E.
+    b ::= b B | B.
+    c ::= c C | C.
+    d ::= b D | c D | D.
+    e ::= e E.
     |]

@@ -13,16 +13,18 @@ import qualified Data.Set as S
 -- appearing the productions.  The start symbol is defined to be the
 -- head of the first of the productions.
 newtype Grammar t nt = Grammar {
-    productions :: [Production t nt] -- ^ the productions of the 'Grammar'
+    grammarProductions :: [Production t nt]
+	-- ^ the productions of the 'Grammar'
     }
     deriving (Data, Typeable)
 
 instance (Ord nt, Ord t) => Cfg Grammar t nt where
-    terminals = S.fromList . concatMap terminalsProd . productions
-    nonterminals = S.fromList . concatMap nonterminalsProd . productions
-    productionRules g nt = S.fromList [ rhs | (nt', rhs) <- productions g,
-					      nt == nt' ]
-    startSymbol = fst . head . productions
+    terminals = S.fromList . concatMap terminalsProd . grammarProductions
+    nonterminals = S.fromList . concatMap nonterminalsProd . grammarProductions
+    productionRules g nt
+	= S.fromList [ rhs | (nt', rhs) <- grammarProductions g,
+			     nt == nt' ]
+    startSymbol = fst . head . grammarProductions
 
 nonterminalsVs :: Vs t nt -> [nt]
 nonterminalsVs vs = [ nt | NT nt <- vs ]
