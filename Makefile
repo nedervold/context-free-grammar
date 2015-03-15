@@ -1,8 +1,6 @@
 .PHONY : all clean configure dist dist-test docs docs-open lint \
 	maintainer-clean test
 
-GEN_CODE = dist/build/generate-code/generate-code
-
 all : configure
 	cabal build
 
@@ -66,13 +64,6 @@ docs : configure
 
 docs-open : docs
 	open dist/doc/html/context-free-grammar/index.html
-
-################################
-# generate-code
-################################
-
-$(GEN_CODE) : configure
-	cabal build generate-code
 
 ################################
 # de-linting
