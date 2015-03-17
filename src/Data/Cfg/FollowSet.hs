@@ -56,7 +56,7 @@ firstsOfFollowSite firsts knownFollows followSite
 -- | Returns the follow sets for the grammar as a
 -- map.
 followSetMap :: forall cfg t nt
-	     . (Cfg cfg (AugT t) (AugNT nt), Ord nt, Ord t, Show nt)
+	     . (Cfg cfg (AugT t) (AugNT nt), Ord nt, Ord t)
 	     => cfg (AugT t) (AugNT nt)
 		     -- ^ the grammar
 	     -> (AugNT nt -> LookaheadSet t)
@@ -86,7 +86,7 @@ followSetMap cfg fs = fixedPoint go initMap
 -- | Returns the follow set of the nonterminal for the grammar. To
 -- avoid recalculations, hold a copy of @followSet cfg@.
 followSet :: forall cfg t nt
-	  . (Cfg cfg (AugT t) (AugNT nt), Ord nt, Ord t, Show nt)
+	  . (Cfg cfg (AugT t) (AugNT nt), Ord nt, Ord t)
 	  => cfg (AugT t) (AugNT nt)          -- ^ the grammar
           -> (AugNT nt -> LookaheadSet t)     -- ^ 'firstSet' for the grammar
           -> AugNT nt                         -- ^ the nonterminal

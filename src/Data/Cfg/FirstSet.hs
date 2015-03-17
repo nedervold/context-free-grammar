@@ -16,7 +16,7 @@ import qualified Data.Set as S
 -- | Returns the first set of the nonterminal for the grammar as a
 -- map.
 firstSetMap :: forall cfg t nt
-	    . (Cfg cfg (AugT t) (AugNT nt), Ord nt, Ord t, Show nt)
+	    . (Cfg cfg (AugT t) (AugNT nt), Ord nt, Ord t)
 	    => cfg (AugT t) (AugNT nt) -> M.Map (AugNT nt) (LookaheadSet t)
 firstSetMap cfg = fixedPoint go M.empty
     where
@@ -34,7 +34,7 @@ firstSetMap cfg = fixedPoint go M.empty
 -- | Returns the first set of the nonterminal for the grammar.	To
 -- avoid recalculations, hold a copy of @firstSet cfg@.
 firstSet :: forall cfg t nt
-	 . (Cfg cfg (AugT t) (AugNT nt), Ord nt, Ord t, Show nt)
+	 . (Cfg cfg (AugT t) (AugNT nt), Ord nt, Ord t)
 	 => cfg (AugT t) (AugNT nt) -> AugNT nt -> LookaheadSet t
 firstSet cfg nt = firstSetMap cfg M.! nt
 
