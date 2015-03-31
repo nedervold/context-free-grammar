@@ -1,0 +1,5 @@
+0.1.0 ():
+    - Restructured API so default is to keep partial analysis results;
+      old way was too error-prone.
+0.0.1 (2015-03-14):
+    - Initial version.
