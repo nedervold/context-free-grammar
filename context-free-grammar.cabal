@@ -45,16 +45,13 @@ Library
   HS-Source-Dirs:       src
   GHC-Options:          -Wall
   Exposed-Modules:      Data.Cfg
+                      , Data.Cfg.Analysis
                       , Data.Cfg.Augment
                       , Data.Cfg.Bnf
                       , Data.Cfg.Cfg
                       , Data.Cfg.CPretty
-                      , Data.Cfg.FirstSet
-                      , Data.Cfg.FollowSet
                       , Data.Cfg.FreeCfg
                       , Data.Cfg.LookaheadSet
-                      , Data.Cfg.Nullable
-                      , Data.Cfg.PredictSet
                       , Data.Cfg.Productive
                       , Data.Cfg.Reachable
                       , Data.Cfg.RuleApplication
@@ -65,6 +62,10 @@ Library
                       , Data.Cfg.Bnf.Token
                       , Data.Cfg.Collect
                       , Data.Cfg.FixedPoint
+                      , Data.Cfg.Internal.FirstSet
+                      , Data.Cfg.Internal.FollowSet
+                      , Data.Cfg.Internal.Nullable
+                      , Data.Cfg.Internal.PredictSet
   Build-Depends:        base >= 4 && < 5
                       , array >= 0.5 && < 0.6
                       , containers >= 0.5 && < 0.6

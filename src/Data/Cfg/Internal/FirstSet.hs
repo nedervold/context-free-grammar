@@ -1,14 +1,14 @@
 -- | First sets of a context-free grammar.
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-module Data.Cfg.FirstSet(firstSet, firstSetMap, firstsOfVs) where
+module Data.Cfg.Internal.FirstSet(firstSetMap, firstsOfVs) where
 
 import Data.Cfg.Augment
 import Data.Cfg.Cfg
 import Data.Cfg.FixedPoint(fixedPoint)
 import Data.Cfg.LookaheadSet hiding(unions)
 import qualified Data.Cfg.LookaheadSet as LA
-import qualified Data.Map as M
+import qualified Data.Map.Strict as M
 import Data.Maybe(fromMaybe)
 import Data.Monoid(Monoid(mconcat))
 import qualified Data.Set as S
@@ -30,13 +30,6 @@ firstSetMap cfg = fixedPoint go M.empty
 	where
 	firstAlts :: [Vs (AugT t) (AugNT nt)] -> LookaheadSet t
 	firstAlts = LA.unions . map (mconcat . map (firstsV knownFirsts))
-
--- | Returns the first set of the nonterminal for the grammar.	To
--- avoid recalculations, hold a copy of @firstSet cfg@.
-firstSet :: forall cfg t nt
-	 . (Cfg cfg (AugT t) (AugNT nt), Ord nt, Ord t)
-	 => cfg (AugT t) (AugNT nt) -> AugNT nt -> LookaheadSet t
-firstSet cfg nt = firstSetMap cfg M.! nt
 
 firstsV :: Ord nt
 	=> M.Map (AugNT nt) (LookaheadSet t) -> V (AugT t) (AugNT nt)

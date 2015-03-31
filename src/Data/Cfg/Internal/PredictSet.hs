@@ -1,11 +1,10 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 -- | Predict sets of a context-free grammar.
-module Data.Cfg.PredictSet (
+module Data.Cfg.Internal.PredictSet (
     Prediction,
     Predictions,
     predictSet,
-    ll1Info,
     ll1InfoMap,
     isLL1
     ) where
@@ -13,9 +12,9 @@ module Data.Cfg.PredictSet (
 import Data.Cfg.Augment
 import Data.Cfg.Cfg(Cfg(..))
 import Data.Cfg.Collect
-import Data.Cfg.FirstSet(firstsOfVs)
+import Data.Cfg.Internal.FirstSet(firstsOfVs)
 import Data.Cfg.LookaheadSet
-import qualified Data.Map as M
+import qualified Data.Map.Strict as M
 import qualified Data.Set as S
 
 -- | Returns the predict set of a production.
@@ -33,14 +32,6 @@ type Prediction t nt = (LookaheadSet t, S.Set (AugProduction t nt))
 -- | A set of 'Prediction's.  The 'LookaheadSet's of the 'Prediction's
 -- will be pairwise disjoint.
 type Predictions t nt = S.Set (Prediction t nt)
-
--- | Returns the production 'Predictions' for a nonterminal symbol.
-ll1Info :: (Cfg cfg (AugT t) (AugNT nt), Ord nt, Ord t)
-	=> cfg (AugT t) (AugNT nt)
-	-> (AugProduction t nt -> LookaheadSet t)
-	-> AugNT nt
-	-> Predictions t nt
-ll1Info cfg predictSet' nt = ll1InfoMap cfg predictSet' M.! nt
 
 -- | Returns the production 'Predictions' for the grammar as a map.
 ll1InfoMap :: forall cfg t nt

@@ -7,15 +7,20 @@ module Data.Cfg.TestGrammars (
     g0,
     micro,
     wiki,
+    -- * Analysis of grammars for sanity checks
+    g0Analysis,
+    microAnalysis,
+    wikiAnalysis,
     -- * Convenience functions for the REPL
     pretty'
     ) where
 
+import Data.Cfg.Analysis
 import Data.Cfg.Augment
 import Data.Cfg.Bnf
 import Data.Cfg.Cfg(Cfg(..), V(..), eqCfg)
 import Data.Cfg.CPretty
-import Data.Cfg.FreeCfg
+-- import Data.Cfg.FreeCfg
 import Text.PrettyPrint
 import Test.HUnit(assertBool)
 
@@ -45,8 +50,8 @@ pretty' cfg = cpretty cfg ctxt
 
 -- | A test grammar.  Found in Crafting a compiler, by Charles
 -- N. Fischer and Richard J. LeBlanc, Jr., (c) 1998, pg. 95.
-g0 :: FreeCfg (AugT String) (AugNT String)
-g0 = augmentCfg [bnf|
+g0 :: Grammar String String
+g0 = [bnf|
     e ::= prefix LPAREN e RPAREN.
     e ::= V tail.
     prefix ::= F.
@@ -56,8 +61,8 @@ g0 = augmentCfg [bnf|
    |]
 
 -- | A test grammar.  Found in Fischer and LeBlanc, pg. 111.
-micro :: FreeCfg (AugT String) (AugNT String)
-micro = augmentCfg [bnf|
+micro :: Grammar String String
+micro = [bnf|
     program ::= BEGIN statement_list END.
     statement_list ::= statement statement_tail.
     statement_tail ::= statement statement_tail.
@@ -91,3 +96,12 @@ wiki = [bnf|
     d ::= b D | c D | D.
     e ::= e E.
     |]
+
+g0Analysis :: Analysis String String
+g0Analysis = mkAnalysis g0
+
+microAnalysis :: Analysis String String
+microAnalysis = mkAnalysis micro
+
+wikiAnalysis :: Analysis String String
+wikiAnalysis = mkAnalysis wiki

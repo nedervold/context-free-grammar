@@ -2,8 +2,8 @@ module Data.Cfg.FirstSetTests (
     tests
     ) where
 
+import Data.Cfg.Analysis
 import Data.Cfg.Augment
-import Data.Cfg.FirstSet
 import Data.Cfg.LookaheadSet
 import Data.Cfg.TestGrammars
 import Test.Framework(Test, testGroup)
@@ -30,7 +30,7 @@ g0FirstSetTest = testCase "g0 first-set test" $ mapM_ f tab
 	   ("tail", mkLookaheadSet True ["PLUS"])]
 
     fs :: AugNT String -> LookaheadSet String
-    fs = firstSet g0
+    fs = firstSet g0Analysis
 
 microFirstSetTest :: Test
 microFirstSetTest = testCase "micro first-set test" $ mapM_ f tab
@@ -58,5 +58,5 @@ microFirstSetTest = testCase "micro first-set test" $ mapM_ f tab
             ("add_op", mkLookaheadSet False $ words "PLUS MINUS") ]
 
     fs :: AugNT String -> LookaheadSet String
-    fs = firstSet micro
+    fs = firstSet microAnalysis
 

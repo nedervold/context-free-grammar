@@ -1,6 +1,6 @@
 -- | Nullable nonterminals
 {-# LANGUAGE ScopedTypeVariables #-}
-module Data.Cfg.Nullable(nullables) where
+module Data.Cfg.Internal.Nullable(nullables) where
 
 import Control.Monad(guard)
 import Data.Cfg.Cfg

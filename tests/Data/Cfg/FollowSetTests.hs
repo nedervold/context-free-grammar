@@ -2,9 +2,8 @@ module Data.Cfg.FollowSetTests (
     tests
     ) where
 
+import Data.Cfg.Analysis
 import Data.Cfg.Augment
-import Data.Cfg.FirstSet
-import Data.Cfg.FollowSet
 import Data.Cfg.LookaheadSet
 import Data.Cfg.TestGrammars
 import Test.Framework(Test, testGroup)
@@ -30,11 +29,8 @@ g0FollowSetTest = testCase "g0 follow-set test" $ mapM_ f tab
 	   ("prefix", mkLookaheadSet False ["LPAREN"]),
 	   ("tail", mkLookaheadSet True ["RPAREN"])]
 
-    fs :: AugNT String -> LookaheadSet String
-    fs = firstSet g0
-
     fols :: AugNT String -> LookaheadSet String
-    fols = followSet g0 fs
+    fols = followSet g0Analysis
 
 microFollowSetTest :: Test
 microFollowSetTest = testCase "micro follow-set test" $ mapM_ f tab
@@ -59,9 +55,6 @@ microFollowSetTest = testCase "micro follow-set test" $ mapM_ f tab
 	    ("primary_tail", mkLookaheadSet False $ words "COMMA SEMI RPAREN"),
 	    ("add_op", mkLookaheadSet False $ words "ID INT_LITERAL LPAREN") ]
 
-    fs :: AugNT String -> LookaheadSet String
-    fs = firstSet micro
-
     fols :: AugNT String -> LookaheadSet String
-    fols = followSet micro fs
+    fols = followSet microAnalysis
 
