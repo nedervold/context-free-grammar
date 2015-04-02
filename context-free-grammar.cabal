@@ -39,7 +39,7 @@ Category:               Language
 Cabal-Version:          >= 1.10
 Build-Type:             Simple
 Extra-Source-Files:     Makefile
-                      , VERSION
+                      , changelog
 Library
   Default-Language:     Haskell2010
   HS-Source-Dirs:       src
