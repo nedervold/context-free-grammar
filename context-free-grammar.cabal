@@ -67,12 +67,12 @@ Library
                       , Data.Cfg.Internal.Nullable
                       , Data.Cfg.Internal.PredictSet
   Build-Depends:        base >= 4 && < 5
-                      , array >= 0.5 && < 0.6
-                      , containers >= 0.5 && < 0.6
-                      , control-monad-omega >= 0.3 && < 0.4
-                      , dlist >= 0.7 && < 0.8
-                      , mtl >= 2.1 && < 2.2
-                      , pretty >= 1.1 && < 1.2
+                      , array >= 0.5
+                      , containers >= 0.5
+                      , control-monad-omega >= 0.3
+                      , dlist >= 0.7
+                      , mtl >= 2.1
+                      , pretty >= 1.1
                       , template-haskell
 
 Test-Suite test
@@ -90,16 +90,16 @@ Test-Suite test
                       , Data.Cfg.ReachableTests
                       , Data.Cfg.TestGrammars
   Build-Depends:        base
-                      , containers >= 0.5 && < 0.6
+                      , containers >= 0.5
                       , context-free-grammar
                       , HUnit
-                      , pretty >= 1.1 && < 1.2
-                      , QuickCheck >= 2.6 && < 2.7
-                      , quickcheck-properties == 0.1
+                      , pretty >= 1.1
+                      , QuickCheck >= 2.6
+                      , quickcheck-properties >= 0.1
                       , template-haskell
                       , test-framework
                       , test-framework-hunit
-                      , test-framework-quickcheck2 >= 0.3 && < 0.4
+                      , test-framework-quickcheck2 >= 0.3
 
 Source-Repository head
   Type:                 git
