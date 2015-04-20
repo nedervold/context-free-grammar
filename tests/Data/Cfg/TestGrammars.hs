@@ -1,5 +1,9 @@
 -- | Sample grammars for tests
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
+
 module Data.Cfg.TestGrammars (
     -- * Assertion for equality in 'Cfg'
     assertEqCfg,
@@ -9,6 +13,7 @@ module Data.Cfg.TestGrammars (
     wiki,
     -- * Analysis of grammars for sanity checks
     g0Analysis,
+    leftRecAnalysis,
     microAnalysis,
     wikiAnalysis,
     -- * Convenience functions for the REPL
@@ -18,11 +23,19 @@ module Data.Cfg.TestGrammars (
 import Data.Cfg.Analysis
 import Data.Cfg.Augment
 import Data.Cfg.Bnf
-import Data.Cfg.Cfg(Cfg(..), V(..), eqCfg)
+import Data.Cfg.Cfg(Cfg(..), V(..), cprettyCfg, eqCfg)
 import Data.Cfg.CPretty
--- import Data.Cfg.FreeCfg
+import Data.Cfg.FreeCfg(FreeCfg)
 import Text.PrettyPrint
 import Test.HUnit(assertBool)
+
+instance CPretty (FreeCfg String String) (V String String -> Doc)
+    where
+    cpretty = cprettyCfg
+
+instance CPretty (FreeCfg Int Int) (V Int Int -> Doc)
+    where
+    cpretty = cprettyCfg
 
 -- | An assertion for testing equality of 'Cfg'.
 assertEqCfg :: (Cfg cfg t nt, CPretty (cfg t nt) ctxt,
@@ -37,7 +50,7 @@ assertEqCfg ctxt ctxt' msg expected actual =
     actual' = text "Actual:" <+> cpretty actual ctxt'
 
 pretty' :: AugFreeCfg String String -> Doc
-pretty' cfg = cpretty cfg ctxt
+pretty' cfg = cprettyCfg cfg ctxt
     where
     ctxt :: AugV String String -> Doc
     ctxt v = text $ case v of
@@ -97,6 +110,16 @@ wiki = [bnf|
     e ::= e E.
     |]
 
+-- | A test grammar.  Found at
+-- http://web.cs.wpi.edu/~kal/PLT/PLT4.1.2.html; retrieved 2015-04-19.
+leftRec :: Grammar String String
+leftRec = [bnf|
+    a ::= b X Y | X.
+    b ::= c d .
+    c ::= a | C.
+    d ::= D.
+    |]
+
 g0Analysis :: Analysis String String
 g0Analysis = mkAnalysis g0
 
@@ -105,3 +128,6 @@ microAnalysis = mkAnalysis micro
 
 wikiAnalysis :: Analysis String String
 wikiAnalysis = mkAnalysis wiki
+
+leftRecAnalysis :: Analysis String String
+leftRecAnalysis = mkAnalysis leftRec

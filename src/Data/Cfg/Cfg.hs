@@ -1,11 +1,13 @@
 -- | Context-free grammars.
 {-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 module Data.Cfg.Cfg(
     -- * Class
     Cfg(..),
+    -- * Pretty-printing
+    cprettyCfg,
     -- * Vocabulary
     V(..),
     Vs,
@@ -25,8 +27,7 @@ module Data.Cfg.Cfg(
     compareCfg -}) where
 
 import Control.Monad(liftM4)
-import Control.Monad.Reader(ask)
-import Data.Cfg.CPretty
+import Control.Monad.Reader(MonadReader, ask)
 import Data.Data(Data, Typeable)
 import qualified Data.Set as S
 import Text.PrettyPrint
@@ -46,40 +47,43 @@ class Cfg cfg t nt where
 	-- ^ the start symbol of the grammar; must be an element of
 	-- 'nonterminals' 'cfg'
 
-instance (Cfg cfg t nt) => CPretty (cfg t nt) (V t nt -> Doc) where
-    cpretty cfg = liftM4 vcat' ss ts nts prods
+-- | Pretty-prints a member of 'Cfg'.  Use this to instantiate
+-- 'CPretty' for specific types.  (If we write an instance of 'CPretty'
+-- for all members of 'Cfg', we get overlapping instances when we try
+-- to write instances for anything else.)
+cprettyCfg :: (Cfg cfg t nt, MonadReader (V t nt -> Doc) m)
+	   => cfg t nt -> m Doc
+cprettyCfg cfg = liftM4 vcat' ss ts nts prods
+    where
+    vcat' a b c d = vcat [a, b, c, d]
+    ss = do
+	prettyV <- ask
+	return (text "Start symbol:" <+> prettyV (NT $ startSymbol cfg))
+    ts = do
+	prettyV <- ask
+	return (text "Terminals:"
+		   <+> fsep (punctuate comma
+			       $ map (prettyV . T)
+				     (S.toList $ terminals cfg)))
+    nts = do
+	prettyV <- ask
+	return (text "Nonterminals:"
+		   <+> fsep (punctuate comma
+			       $ map (prettyV . NT)
+				     (S.toList $ nonterminals cfg)))
+
+    prods = do
+	prettyV <- ask
+	return (text "Productions:"
+		     $$ nest 4
+			     (vcat (map (prettyProd prettyV)
+					(zip [1..] $ productions cfg))))
 	where
-	vcat' a b c d = vcat [a, b, c, d]
-	ss = do
-	    prettyV <- ask
-	    return (text "Start symbol:" <+> prettyV (NT $ startSymbol cfg))
-	ts = do
-	    prettyV <- ask
-	    return (text "Terminals:"
-		       <+> fsep (punctuate comma
-				   $ map (prettyV . T)
-					 (S.toList $ terminals cfg)))
-	nts = do
-	    prettyV <- ask
-	    return (text "Nonterminals:"
-		       <+> fsep (punctuate comma
-				   $ map (prettyV . NT)
-					 (S.toList $ nonterminals cfg)))
-
-	prods = do
-	    prettyV <- ask
-	    return (text "Productions:"
-			 $$ nest 4
-				 (vcat (map (prettyProd prettyV)
-					    (zip [1..] $ productions cfg))))
+	prettyProd pv (n, (hd, rhs))
+	    = hsep [parens (int n),
+		    pv (NT hd), text "::=", rhs' <> text "."]
 	    where
-	    prettyProd pv (n, (hd, rhs))
-		= hsep [parens (int n),
-			pv (NT hd), text "::=", rhs' <> text "."]
-		where
-		rhs' = hsep $ map pv rhs
-
-------------------------------------------------------------
+	    rhs' = hsep $ map pv rhs
 
 ------------------------------------------------------------
 

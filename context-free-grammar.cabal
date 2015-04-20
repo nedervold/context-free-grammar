@@ -1,5 +1,5 @@
 Name:                   context-free-grammar
-Version:                0.1.0
+Version:                0.2.0
 Author:                 Eric Nedervold<nedervoldsoftware@gmail.com>
 Maintainer:             Eric Nedervold<nedervoldsoftware@gmail.com>
 License:                BSD3
@@ -51,6 +51,8 @@ Library
                       , Data.Cfg.Cfg
                       , Data.Cfg.CPretty
                       , Data.Cfg.FreeCfg
+                      , Data.Cfg.Item
+                      , Data.Cfg.LeftRecursion
                       , Data.Cfg.LookaheadSet
                       , Data.Cfg.Productive
                       , Data.Cfg.Reachable
@@ -66,11 +68,14 @@ Library
                       , Data.Cfg.Internal.FollowSet
                       , Data.Cfg.Internal.Nullable
                       , Data.Cfg.Internal.PredictSet
+                      , Data.Graph.Inductive.ULGraph
+                      , Data.Graph.Inductive.ULGraph.Query.DFS
   Build-Depends:        base >= 4 && < 5
                       , array >= 0.5
                       , containers >= 0.5
                       , control-monad-omega >= 0.3
                       , dlist >= 0.7
+                      , fgl >= 5.5
                       , mtl >= 2.1
                       , pretty >= 1.1
                       , template-haskell
@@ -85,6 +90,7 @@ Test-Suite test
                       , Data.Cfg.BnfTests
                       , Data.Cfg.FirstSetTests
                       , Data.Cfg.FollowSetTests
+                      , Data.Cfg.LeftRecursionTests
                       , Data.Cfg.LookaheadSetTests
                       , Data.Cfg.ProductiveTests
                       , Data.Cfg.ReachableTests
