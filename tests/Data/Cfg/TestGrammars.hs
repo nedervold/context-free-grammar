@@ -8,7 +8,9 @@ module Data.Cfg.TestGrammars (
     -- * Assertion for equality in 'Cfg'
     assertEqCfg,
     -- * Grammars for sanity checks
+    epsProds,
     g0,
+    leftRec,
     micro,
     wiki,
     -- * Analysis of grammars for sanity checks
@@ -118,6 +120,12 @@ leftRec = [bnf|
     b ::= c d .
     c ::= a | C.
     d ::= D.
+    |]
+
+epsProds :: Grammar String String
+epsProds = [bnf|
+    b ::= a Z a .
+    a ::= A | .
     |]
 
 g0Analysis :: Analysis String String

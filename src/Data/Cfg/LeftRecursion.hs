@@ -1,10 +1,9 @@
+-- | Functionality for detecting and removing left-recursion.
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 module Data.Cfg.LeftRecursion(
     SCComp(..),
     isLeftRecursive,
-    leftRecReport,
-    leftRecScc,
     reportLeftRec) where
 
 import Data.Cfg.Analysis
@@ -38,6 +37,8 @@ isLeftRecursive an = case S.toList $ leftRecScc an of
 			 SelfLoop _ _ : _ -> True
 			 _ -> False
 
+-- | Produces a pretty-printed report giving the left-recursion of the
+-- 'Analysis''s grammar.
 reportLeftRec :: forall nt t
 	      . (Ord nt, Ord t)
 	      => (AugV t nt -> Doc)
@@ -73,9 +74,13 @@ leftRecReport prettyV = vcat .	map f . S.toList
 				   prettyNT dst]
 	arrow = text "->"
 
+-- | Strongly-connected components divided up by type.
 data SCComp gr n e = SCComp (ULGraph gr n e)
+        -- ^ a strongly-connected subgraph
     | SelfLoop n (S.Set e)
+        -- ^ a component with a single component that links to itself
     | Singleton n
+        -- ^ a component with a single component
     deriving (Eq)
 
 instance (Eq e, Eq (gr n e), Ord n) => Ord (SCComp gr n e) where

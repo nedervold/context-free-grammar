@@ -50,6 +50,7 @@ Library
                       , Data.Cfg.Bnf
                       , Data.Cfg.Cfg
                       , Data.Cfg.CPretty
+                      , Data.Cfg.EpsilonProductions
                       , Data.Cfg.FreeCfg
                       , Data.Cfg.Item
                       , Data.Cfg.LeftRecursion
@@ -88,6 +89,7 @@ Test-Suite test
   Main-Is:              Test.hs
   Other-Modules:        Data.CfgTests
                       , Data.Cfg.BnfTests
+                      , Data.Cfg.EpsilonProductionsTests
                       , Data.Cfg.FirstSetTests
                       , Data.Cfg.FollowSetTests
                       , Data.Cfg.LeftRecursionTests

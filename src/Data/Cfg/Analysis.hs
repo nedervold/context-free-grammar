@@ -4,7 +4,8 @@ module Data.Cfg.Analysis (
     Analysis(..),
     mkAnalysis,
     Prediction,
-    Predictions
+    Predictions,
+    isEpsilonFree
     ) where
 
 import Data.Cfg.Augment
@@ -69,3 +70,10 @@ mkAnalysis cfg = Analysis {
     predict = I.predictSet fs fols
     ll1InfoMap = I.ll1InfoMap cfg' predict
     isLL1' = I.isLL1 ll1InfoMap
+
+-- | A slight misnomer: returns true if the analysis's grammar is
+-- epsilon-free /except/ possibly at the 'StartSymbol'.
+isEpsilonFree :: Ord nt => Analysis t nt -> Bool
+isEpsilonFree an = S.null ns
+    where
+    ns = StartSymbol `S.delete` nullables an

@@ -8,6 +8,7 @@ import qualified Data.Cfg.BnfTests
 import Data.Cfg.Cfg(V(..))
 import Data.Cfg.CPretty(cpretty)
 import Data.Cfg.FreeCfg
+import qualified Data.Cfg.EpsilonProductionsTests
 import qualified Data.Cfg.FirstSetTests
 import qualified Data.Cfg.FollowSetTests
 import qualified Data.Cfg.LeftRecursionTests
@@ -73,6 +74,7 @@ tests :: Test
 tests = testGroup "Data.Cfg" [
     Data.Cfg.BnfTests.tests,
     Data.Cfg.FirstSetTests.tests,
+    Data.Cfg.EpsilonProductionsTests.tests,
     Data.Cfg.FollowSetTests.tests,
     Data.Cfg.LeftRecursionTests.tests,
     Data.Cfg.LookaheadSetTests.tests,
