@@ -3,7 +3,7 @@ module Data.Cfg.LeftRecursionTests (
     ) where
 
 import Data.Cfg.LeftRecursion(isLeftRecursive)
-import Data.Cfg.TestGrammars(g0Analysis, leftRecAnalysis)
+import Data.Cfg.TestGrammars(g0, leftRec)
 import Test.Framework(Test, testGroup)
 import Test.Framework.Providers.HUnit(testCase)
 import Test.HUnit(assertBool)
@@ -16,6 +16,6 @@ tests = testGroup "Data.Cfg.LeftRecursion" [
 leftRecursionDetectionTest :: Test
 leftRecursionDetectionTest = testCase "left-recursion detection" $ do
     assertBool "leftRec grammar's recursion is detected"
-	$ isLeftRecursive leftRecAnalysis
+	$ isLeftRecursive leftRec
     assertBool "g0 grammar's lack of recursion is detected"
-	$ (not . isLeftRecursive) g0Analysis
+	$ (not . isLeftRecursive) g0

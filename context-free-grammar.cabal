@@ -9,7 +9,7 @@ Stability:              alpha
 Homepage:               http://github.com/nedervold/context-free-grammar
 Bug-Reports:            http://github.com/nedervold/context-free-grammar/issues
 Synopsis:               Basic algorithms on context-free grammars
-Description:            
+Description:
 
     Basic algorithms on context-free grammars:
     .
@@ -55,6 +55,7 @@ Library
                       , Data.Cfg.Item
                       , Data.Cfg.LeftRecursion
                       , Data.Cfg.LookaheadSet
+                      , Data.Cfg.Nullable
                       , Data.Cfg.Productive
                       , Data.Cfg.Reachable
                       , Data.Cfg.RuleApplication
@@ -67,7 +68,6 @@ Library
                       , Data.Cfg.FixedPoint
                       , Data.Cfg.Internal.FirstSet
                       , Data.Cfg.Internal.FollowSet
-                      , Data.Cfg.Internal.Nullable
                       , Data.Cfg.Internal.PredictSet
                       , Data.Graph.Inductive.ULGraph
                       , Data.Graph.Inductive.ULGraph.Query.DFS

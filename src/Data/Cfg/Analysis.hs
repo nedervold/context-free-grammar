@@ -4,8 +4,7 @@ module Data.Cfg.Analysis (
     Analysis(..),
     mkAnalysis,
     Prediction,
-    Predictions,
-    isEpsilonFree
+    Predictions
     ) where
 
 import Data.Cfg.Augment
@@ -13,12 +12,10 @@ import qualified Data.Cfg.Cfg as Cfg
 import Data.Cfg.FreeCfg
 import qualified Data.Cfg.Internal.FirstSet as I
 import qualified Data.Cfg.Internal.FollowSet as I
-import qualified Data.Cfg.Internal.Nullable as I
 import qualified Data.Cfg.Internal.PredictSet as I
 import Data.Cfg.Internal.PredictSet(Prediction, Predictions)
 import Data.Cfg.LookaheadSet
 import qualified Data.Map.Strict as M
-import qualified Data.Set as S
 
 -- | Analysis of a context-free grammar
 data Analysis t nt = Analysis {
@@ -26,9 +23,6 @@ data Analysis t nt = Analysis {
 	-- ^ (a 'FreeCfg' equivalent to) the source grammar
     augmentedCfg :: FreeCfg (AugT t) (AugNT nt),
 	-- ^ the augmented grammar
-    nullables :: S.Set (AugNT nt),
-	-- ^ the nonterminals in the grammar that can produce the
-	-- empty string
     firstSet :: AugNT nt -> LookaheadSet t,
 	-- ^ the first set of the nonterminal for the grammar
     firstsOfVs :: AugVs t nt -> LookaheadSet t,
@@ -51,7 +45,6 @@ mkAnalysis :: forall cfg t nt
 mkAnalysis cfg = Analysis {
     baseCfg = bcfg,
     augmentedCfg = cfg',
-    nullables = ns,
     firstSet = fs,
     firstsOfVs = I.firstsOfVs fs,
     followSet = fols,
@@ -62,7 +55,6 @@ mkAnalysis cfg = Analysis {
     where
     bcfg = toFreeCfg cfg
     cfg' = augmentCfg bcfg
-    ns = I.nullables cfg'
     fsm = I.firstSetMap cfg'
     fs nt = fsm M.! nt
     folm = I.followSetMap cfg' fs
@@ -71,9 +63,3 @@ mkAnalysis cfg = Analysis {
     ll1InfoMap = I.ll1InfoMap cfg' predict
     isLL1' = I.isLL1 ll1InfoMap
 
--- | A slight misnomer: returns true if the analysis's grammar is
--- epsilon-free /except/ possibly at the 'StartSymbol'.
-isEpsilonFree :: Ord nt => Analysis t nt -> Bool
-isEpsilonFree an = S.null ns
-    where
-    ns = StartSymbol `S.delete` nullables an

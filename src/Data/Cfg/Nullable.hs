@@ -1,6 +1,6 @@
 -- | Nullable nonterminals
 {-# LANGUAGE ScopedTypeVariables #-}
-module Data.Cfg.Internal.Nullable(nullables) where
+module Data.Cfg.Nullable(nullables) where
 
 import Control.Monad(guard)
 import Data.Cfg.Cfg
@@ -24,6 +24,6 @@ nullables cfg = fixedPoint go S.empty
 	calculatedNullables = S.fromList $ do
 	    nt <- S.toList $ nonterminals cfg
 	    let rhss = S.toList $ productionRules cfg nt
-	    guard $ any (all isKnownNullable) rhss
+            guard $ any (all isKnownNullable) rhss
             return nt
 
