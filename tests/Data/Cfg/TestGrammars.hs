@@ -8,12 +8,14 @@ module Data.Cfg.TestGrammars (
     -- * Assertion for equality in 'Cfg'
     assertEqCfg,
     -- * Grammars for sanity checks
+    commaList,
     epsProds,
     g0,
     leftRec,
     micro,
     wiki,
     -- * Analysis of grammars for sanity checks
+    commaListAnalysis,
     g0Analysis,
     leftRecAnalysis,
     microAnalysis,
@@ -122,10 +124,19 @@ leftRec = [bnf|
     d ::= D.
     |]
 
+-- | A test grammar.  Found at
+-- http://eli.thegreenplace.net/2010/02/08/removing-epsilon-productions-from-context-free-grammars;
+-- retrieved 2015-04-19.
 epsProds :: Grammar String String
 epsProds = [bnf|
     b ::= a Z a .
     a ::= A | .
+    |]
+
+commaList :: Grammar String String
+commaList = [bnf|
+    comma_list ::= comma_list COMMA ELMT
+	       | ELMT .
     |]
 
 g0Analysis :: Analysis String String
@@ -139,3 +150,6 @@ wikiAnalysis = mkAnalysis wiki
 
 leftRecAnalysis :: Analysis String String
 leftRecAnalysis = mkAnalysis leftRec
+
+commaListAnalysis :: Analysis String String
+commaListAnalysis = mkAnalysis commaList

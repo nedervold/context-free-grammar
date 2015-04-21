@@ -2,20 +2,104 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 module Data.Cfg.LeftRecursion(
+    LR(..),
     SCComp(..),
     isLeftRecursive,
+    removeLeftRecursion,
     reportLeftRec) where
 
 import Data.Cfg.Cfg
 import Data.Cfg.CPretty
+import Data.Cfg.FreeCfg
 import Data.Cfg.Item
 import Data.Cfg.Nullable
+import Data.Either(partitionEithers)
 import Data.Graph.Inductive.PatriciaTree
 import Data.Graph.Inductive.ULGraph hiding (empty)
 import Data.Graph.Inductive.ULGraph.Query.DFS
+import Data.List(partition, tails)
 import Data.Ord(comparing)
 import qualified Data.Set as S
 import Text.PrettyPrint
+
+data LR nt = LR nt
+	   | LRTail nt
+    deriving (Eq, Ord, Show)
+
+removeLeftRecursion :: forall cfg t nt
+		    . (Cfg cfg t nt, Ord nt, Ord t)
+		    => cfg t nt -> FreeCfg t (LR nt)
+removeLeftRecursion cfg = (toCfg . removeLR . map wrap . fromCfg) cfg
+    where
+    sccs :: [SCComp Gr nt (Item t nt)]
+    sccs = S.toList $ leftRecScc cfg
+
+    fromCfg = productions
+
+    wrap :: Production t nt -> Production t (LR nt)
+    wrap (nt, vs) = (LR nt, bimapVs id LR vs)
+
+    removeLR :: [Production t (LR nt)] -> [Production t (LR nt)]
+    removeLR prods = foldl f prods sccs
+	where
+	f :: [Production t (LR nt)]
+	  -> SCComp Gr nt (Item t nt)
+	  -> [Production t (LR nt)]
+	f ps comp = case comp of
+	    Singleton _ -> ps
+	    SelfLoop nt _ -> removeDirectLeftRecursion nt ps
+	    SCComp gr -> removeIndirectLeftRecursion (nodes gr) ps
+
+    toCfg :: [Production t (LR nt)] -> FreeCfg t (LR nt)
+    toCfg prods = FreeCfg {
+	nonterminals' = S.map LR (nonterminals cfg)
+			    `S.union` (S.fromList $ map fst prods),
+	terminals' = terminals cfg,
+	productionRules' = prodRules',
+	startSymbol' = LR $ startSymbol cfg
+	}
+	where
+	prodRules' nt = S.fromList [ rhs | (nt', rhs) <- prods,
+					   nt' == nt ]
+
+removeDirectLeftRecursion :: forall t nt
+			  . Eq nt
+			  => nt
+			  -> [Production t (LR nt)]
+			  -> [Production t (LR nt)]
+removeDirectLeftRecursion nt ps = rest ++ fixed
+    where
+    ntHeaded :: Production t (LR nt) -> Bool
+    ntHeaded (nt', _) = nt' == LR nt
+
+    (ntHeads, rest) = partition ntHeaded ps
+
+    mkRhs :: Production t (LR nt) -> Either (Vs t (LR nt)) (Vs t (LR nt))
+    mkRhs (_, NT (LR nt') : vs)
+	| nt == nt'  = Left (vs ++ [NT $ LRTail nt])
+    mkRhs (_, vs) = Right (vs ++ [NT $ LRTail nt])
+
+    ntRhss, ntTailRhss :: [Vs t (LR nt)]
+    (ntTailRhss, ntRhss) = partitionEithers $ map mkRhs ntHeads
+
+    fixed = map mkNTProd ntRhss ++ baseProd : map mkNTTailProd ntTailRhss
+	where
+	mkNTProd rhs = (LR nt, rhs)
+	mkNTTailProd rhs = (LRTail nt, rhs)
+	baseProd = (LRTail nt, [])
+
+removeIndirectLeftRecursion :: forall nt t
+			    . S.Set nt
+			    -> [Production t (LR nt)]
+			    -> [Production t (LR nt)]
+removeIndirectLeftRecursion nts prods = foldl f prods nts'
+    where
+    nts' :: [[nt]]
+    nts' = tails $ S.toList nts
+
+    f :: [Production t (LR nt)] -> [nt] -> [Production t (LR nt)]
+    f prods [] = prods
+    f prods (n : ns) = error "removeIndirectLeftRecursion.f"
 
 items :: forall t nt . (nt -> Bool) -> Production t nt -> [Item t nt]
 items isNullable prod = go $ mkInitialItem prod
@@ -102,7 +186,7 @@ leftRecScc :: forall cfg nt t
 	   . (Cfg cfg t nt, Ord nt, Ord t)
 	   => cfg t nt
 	   -> S.Set (SCComp Gr nt (Item t nt))
-leftRecScc an = S.fromList $ map categorizeScc scc'
+leftRecScc cfg = S.fromList $ map categorizeScc scc'
     where
     categorizeScc :: [nt] -> SCComp Gr nt (Item t nt)
     categorizeScc [] = error "leftRecScc.categorizeScc [] : impossible"
@@ -118,17 +202,17 @@ leftRecScc an = S.fromList $ map categorizeScc scc'
     scc' = scc gr
 
     gr :: ULGraph Gr nt (Item t nt)
-    gr = makeLeftRecGraph an
+    gr = makeLeftRecGraph cfg
 
     hasSelfLoop :: nt -> Bool
     hasSelfLoop n = n `elem` suc gr n
 
 makeLeftRecGraph :: (Cfg cfg t nt, Ord nt)
-		 => cfg t nt -> ULGraph Gr nt (Item t nt)
+                 => cfg t nt -> ULGraph Gr nt (Item t nt)
 makeLeftRecGraph = mkULGraph [] . makeEdges
 
 makeEdges :: forall cfg t nt
-	  . (Cfg cfg t nt, Ord nt)
+          . (Cfg cfg t nt, Ord nt)
           => cfg t nt -> [E t nt]
 makeEdges cfg = map itemEdge allItems
     where
