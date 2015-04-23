@@ -6,6 +6,7 @@ module Data.Cfg.ReachableTests (
 import Data.Cfg.Bnf(bnf)
 import Data.Cfg.Cfg(Cfg(..), V(..))
 import Data.Cfg.FreeCfg(FreeCfg(..), toFreeCfg)
+import Data.Cfg.FreeCfgInstances()
 import Data.Cfg.Reachable
 import Data.Cfg.TestGrammars(assertEqCfg, wiki)
 import qualified Data.Set as S

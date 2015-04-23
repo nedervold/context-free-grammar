@@ -92,6 +92,7 @@ Test-Suite test
                       , Data.Cfg.EpsilonProductionsTests
                       , Data.Cfg.FirstSetTests
                       , Data.Cfg.FollowSetTests
+                      , Data.Cfg.FreeCfgInstances
                       , Data.Cfg.LeftRecursionTests
                       , Data.Cfg.LookaheadSetTests
                       , Data.Cfg.ProductiveTests

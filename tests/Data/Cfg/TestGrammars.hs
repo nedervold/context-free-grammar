@@ -33,14 +33,6 @@ import Data.Cfg.FreeCfg(FreeCfg)
 import Text.PrettyPrint
 import Test.HUnit(assertBool)
 
-instance CPretty (FreeCfg String String) (V String String -> Doc)
-    where
-    cpretty = cprettyCfg
-
-instance CPretty (FreeCfg Int Int) (V Int Int -> Doc)
-    where
-    cpretty = cprettyCfg
-
 -- | An assertion for testing equality of 'Cfg'.
 assertEqCfg :: (Cfg cfg t nt, CPretty (cfg t nt) ctxt,
 		Cfg cfg' t nt, CPretty (cfg' t nt) ctxt',
