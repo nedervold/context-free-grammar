@@ -12,12 +12,14 @@ import Data.Cfg.TestGrammars(assertEqCfg, wiki)
 import qualified Data.Set as S
 import Test.Framework(Test, testGroup)
 import Test.Framework.Providers.HUnit(testCase)
+import Test.Framework.Providers.QuickCheck2(testProperty)
 import Test.HUnit(assertEqual)
 import Text.PrettyPrint
 
 tests :: Test
 tests = testGroup "Data.Cfg.Reachable" [
-    wikiTest
+    wikiTest,
+    removeUnreachablesProp
     ]
 
 wikiTest :: Test
@@ -42,5 +44,11 @@ wikiTest = testCase "wiki reachability test" $ do
 
     expected :: FreeCfg String String
     expected = (toFreeCfg reach){
-            terminals' = terminals wiki
-        }
+	    terminals' = terminals wiki
+	}
+
+removeUnreachablesProp :: Test
+removeUnreachablesProp = testProperty "removeUnreachables does" f
+    where
+    f :: FreeCfg Int Int -> Bool
+    f = S.null . unreachables . removeUnreachables

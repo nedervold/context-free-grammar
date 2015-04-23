@@ -9,16 +9,19 @@ import Data.Cfg.FreeCfg(FreeCfg(..), toFreeCfg)
 import Data.Cfg.FreeCfgInstances()
 import Data.Cfg.Productive
 import Data.Cfg.TestGrammars(assertEqCfg, wiki)
-import Data.Maybe(fromJust)
+import Data.Maybe(fromJust, isJust)
 import qualified Data.Set as S
 import Test.Framework(Test, testGroup)
 import Test.Framework.Providers.HUnit(testCase)
+import Test.Framework.Providers.QuickCheck2(testProperty)
 import Test.HUnit(assertEqual)
+import Test.QuickCheck((==>), Property)
 import Text.PrettyPrint
 
 tests :: Test
 tests = testGroup "Data.Cfg.Productive" [
-    wikiTest
+    wikiTest,
+    removeUnproductivesProp
     ]
 
 wikiTest :: Test
@@ -46,11 +49,19 @@ wikiTest = testCase "wiki productivity test" $ do
 	s ::= b B | c C.
 	b ::= b B | B.
 	c ::= c C | C.
-        d ::= b D | c D | D.
-        |]
+	d ::= b D | c D | D.
+	|]
 
     unprods' :: Grammar String String
     unprods' = [bnf|
-        s ::= e E.
-        e ::= e E.
-        |]
+	s ::= e E.
+	e ::= e E.
+	|]
+
+removeUnproductivesProp :: Test
+removeUnproductivesProp = testProperty "removeUnproductives does" f
+    where
+    f :: FreeCfg Int Int -> Property
+    f cfg = isJust mCfg ==> S.null $ unproductives $ fromJust mCfg
+        where
+        mCfg = removeUnproductives cfg

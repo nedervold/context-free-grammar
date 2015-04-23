@@ -52,7 +52,6 @@ instance CPretty (FreeCfg String (EP String)) (V String (EP String) -> Doc)
 epsilonProductionsTest :: Test
 epsilonProductionsTest = testCase "removal of eps-productions" $ do
     let prods' = bimapProductions id EP $ productions cfg
-    print (cprettyProductions prods' ctxt)
     assertEqCfg ctxt ctxt
 	"removed epsilon-productions correctly"
 	expected actual
