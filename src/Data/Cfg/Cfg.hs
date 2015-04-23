@@ -15,6 +15,8 @@ module Data.Cfg.Cfg(
     isT,
     bimapV,
     bimapVs,
+    bimapProduction,
+    bimapProductions,
     vocabulary,
     usedVocabulary,
     undeclaredVocabulary,
@@ -126,6 +128,17 @@ bimapVs f g = map (bimapV f g)
 
 -- | Productions over vocabulary symbols
 type Production t nt = (nt, Vs t nt)
+
+-- | Maps over the terminal and nonterminal symbols in a 'Production'
+bimapProduction :: (t -> t') -> (nt -> nt')
+		-> Production t nt -> Production t' nt'
+bimapProduction f g (nt, rhs) = (g nt, bimapVs f g rhs)
+
+-- | Maps over the terminal and nonterminal symbols in a list of
+-- 'Production's.
+bimapProductions :: (t -> t') -> (nt -> nt')
+		-> [Production t nt] -> [Production t' nt']
+bimapProductions f g = map $ bimapProduction f g
 
 -- | Returns the productions of the grammar.
 productions :: (Cfg cfg t nt) => cfg t nt -> [Production t nt]
