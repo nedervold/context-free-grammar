@@ -29,7 +29,6 @@ import Data.Cfg.Augment
 import Data.Cfg.Bnf
 import Data.Cfg.Cfg(Cfg(..), V(..), cprettyCfg, eqCfg)
 import Data.Cfg.CPretty
-import Data.Cfg.FreeCfg(FreeCfg)
 import Text.PrettyPrint
 import Test.HUnit(assertBool)
 

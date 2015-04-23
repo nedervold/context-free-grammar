@@ -1,5 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 module Data.Cfg.FreeCfgInstances() where
 
 import Control.Monad(forM)
@@ -58,8 +59,8 @@ instance Show (FreeCfg Int Int) where
 	    base26 n'
 		| n' < 26	= [digitToChar n']
 		| otherwise = if msds == 0
-		                  then [digitToChar lsd]
-                                  else base26 msds ++ [digitToChar lsd]
+				  then [digitToChar lsd]
+				  else base26 msds ++ [digitToChar lsd]
                 where
                 (msds, lsd) = n' `divMod` 26
 

@@ -12,8 +12,12 @@ import Data.Cfg.FreeCfg
 import Data.Cfg.Nullable
 import qualified Data.Set as S
 
-data EP nt = EP nt	-- ^ non-nullable
-    | EPStart nt	-- ^ nullable
+-- | Nonterminal wrapper to introduce a symbol for the non-nullable
+-- start nonterminal when removing epsilons.
+data EP nt = EP nt	-- ^ non-nullable versions of the symbol
+    | EPStart nt
+	-- ^ nullable version of the symbol (only the start symbol can
+	-- be nullable)
     deriving (Eq, Ord, Show)
 
 -- | A slight misnomer: returns true if the analysis's grammar is

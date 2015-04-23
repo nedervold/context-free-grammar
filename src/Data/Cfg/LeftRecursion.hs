@@ -22,10 +22,13 @@ import Data.Ord(comparing)
 import qualified Data.Set as S
 import Text.PrettyPrint
 
-data LR nt = LR nt
-	   | LRTail nt
+-- | Nonterminal wrapper to introduce symbols for tails of directly
+-- recursive productions.
+data LR nt = LR nt	-- ^ wrapped original symbols
+	   | LRTail nt	-- ^ tail symbols
     deriving (Eq, Ord, Show)
 
+-- | Removes left recursion from the grammar.
 removeLeftRecursion :: forall cfg t nt
 		    . (Cfg cfg t nt, Ord nt, Ord t)
 		    => cfg t nt -> FreeCfg t (LR nt)

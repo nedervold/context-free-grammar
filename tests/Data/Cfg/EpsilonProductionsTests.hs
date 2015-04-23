@@ -2,6 +2,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TypeSynonymInstances #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 module Data.Cfg.EpsilonProductionsTests (
     tests
     ) where
@@ -51,7 +52,6 @@ instance CPretty (FreeCfg String (EP String)) (V String (EP String) -> Doc)
 
 epsilonProductionsTest :: Test
 epsilonProductionsTest = testCase "removal of eps-productions" $ do
-    let prods' = bimapProductions id EP $ productions cfg
     assertEqCfg ctxt ctxt
 	"removed epsilon-productions correctly"
 	expected actual
