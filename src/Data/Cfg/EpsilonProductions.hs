@@ -1,6 +1,7 @@
 -- | Functionality for detecting and removing epsilon-productions.
 {-# LANGUAGE ScopedTypeVariables #-}
 module Data.Cfg.EpsilonProductions (
+    EP(..),
     isEpsilonFree,
     removeEpsilonProductions
     ) where
@@ -10,6 +11,10 @@ import Data.Cfg.Cfg
 import Data.Cfg.FreeCfg
 import Data.Cfg.Nullable
 import qualified Data.Set as S
+
+data EP nt = EP nt	-- ^ non-nullable
+    | EPStart nt	-- ^ nullable
+    deriving (Eq, Ord, Show)
 
 -- | A slight misnomer: returns true if the analysis's grammar is
 -- epsilon-free /except/ possibly at the start symbol.
@@ -23,29 +28,43 @@ isEpsilonFree cfg = S.null ns
 removeEpsilonProductions :: forall t nt
 			 . (Ord nt, Ord t)
 			 => FreeCfg t nt
-			 -> FreeCfg t nt
+			 -> FreeCfg t (EP nt)
 removeEpsilonProductions cfg = FreeCfg {
-    nonterminals' = nonterminals cfg,
+    nonterminals' = if startIsNullable
+	then EPStart oldStart `S.insert` S.map EP (nonterminals cfg)
+	else S.map EP (nonterminals cfg),
     terminals' = terminals cfg,
-    productionRules' = prods',
-    startSymbol' = startSymbol cfg
+    productionRules' = rules',
+    startSymbol' = if startIsNullable then EPStart oldStart else EP oldStart
     }
     where
-    prods' :: nt -> S.Set (Vs t nt)
-    prods' nt' = S.fromList
-		     $ filter (\ vs -> isStart || not (null vs))
-			 $ concatMap expandRhs
-			     $ S.toList
-				 $ productionRules cfg nt'
-	where
-	isStart = nt' == startSymbol cfg
+    ns :: S.Set nt
+    ns = nullables cfg
 
-	expandRhs :: Vs t nt -> [Vs t nt]
+    oldStart :: nt
+    oldStart = startSymbol cfg
+
+    startIsNullable :: Bool
+    startIsNullable = oldStart `S.member` ns
+
+    rules' (EPStart nt) = S.fromList [[NT (EP nt)], []]
+    rules' (EP nt) = nonnullableRhss nt
+
+    nonnullableRhss :: nt -> S.Set (Vs t (EP nt))
+    nonnullableRhss nt = S.fromList
+			     $ filter (not . null)
+				 $ concatMap expandRhs
+				     $ S.toList
+					 $ productionRules cfg nt
+	where
+	expandRhs :: Vs t nt -> [Vs t (EP nt)]
 	expandRhs [] = return []
-	expandRhs (v@(T _) : vs) = liftM (v:) $ expandRhs vs
-	expandRhs (v@(NT nt) : vs) = if nt `S.member` nullables cfg
-				 then vExpandedVs `mplus` expandedVs
-                                 else vExpandedVs
+	expandRhs (v : vs) = case v of
+	    T t -> liftM (T t:) rest
+	    NT nt' -> liftM (NT (EP nt'):) rest
+                          `mplus` (if nt' `S.member` ns
+                                       then rest
+                                       else mzero)
             where
-            vExpandedVs = liftM (v:) expandedVs
-            expandedVs = expandRhs vs
+            rest :: [Vs t (EP nt)]
+            rest = expandRhs vs

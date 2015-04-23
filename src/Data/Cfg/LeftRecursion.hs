@@ -53,7 +53,7 @@ removeLeftRecursion cfg = (toCfg . removeLR . map wrap . fromCfg) cfg
     toCfg :: [Production t (LR nt)] -> FreeCfg t (LR nt)
     toCfg prods = FreeCfg {
 	nonterminals' = S.map LR (nonterminals cfg)
-			    `S.union` (S.fromList $ map fst prods),
+			    `S.union` S.fromList (map fst prods),
 	terminals' = terminals cfg,
 	productionRules' = prodRules',
 	startSymbol' = LR $ startSymbol cfg
@@ -98,8 +98,8 @@ removeIndirectLeftRecursion nts prods = foldl f prods nts'
     nts' = tails $ S.toList nts
 
     f :: [Production t (LR nt)] -> [nt] -> [Production t (LR nt)]
-    f prods [] = prods
-    f prods (n : ns) = error "removeIndirectLeftRecursion.f"
+    f prods' [] = prods'
+    f _prods' (_n : _ns) = error "removeIndirectLeftRecursion.f"
 
 items :: forall t nt . (nt -> Bool) -> Production t nt -> [Item t nt]
 items isNullable prod = go $ mkInitialItem prod

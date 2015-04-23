@@ -29,18 +29,23 @@ unproductives :: forall cfg t nt
 	      => cfg t nt -> S.Set (Production t nt)
 unproductives cfg = S.fromList (productions cfg) S.\\ productives cfg
 
--- | Returns an equivalent grammar not including unproductive
--- productions.
+-- | Returns an equivalent grammar excluding unproductive productions.
+-- Returns 'Nothing' if the start symbol is unproductive.
 removeUnproductives :: forall cfg t nt
 		    . (Cfg cfg t nt, Ord nt, Ord t)
-		    => cfg t nt -> FreeCfg t nt
-removeUnproductives cfg = FreeCfg {
-    terminals' = terminals cfg,
-    startSymbol' = startSymbol cfg,
-    nonterminals' = nts,
-    productionRules' = rules
-    }
+		    => cfg t nt -> Maybe (FreeCfg t nt)
+removeUnproductives cfg = if S.null $ rules ss
+			      then Nothing
+			      else Just cfg'
     where
+    cfg' = FreeCfg {
+	terminals' = terminals cfg,
+	startSymbol' = ss,
+	nonterminals' = nts,
+	productionRules' = rules
+	}
+
+    ss = startSymbol cfg
     nts :: S.Set nt
     nts = productiveNonterminals cfg
 

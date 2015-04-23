@@ -9,6 +9,7 @@ import Data.Cfg.FreeCfg(FreeCfg(..), toFreeCfg)
 import Data.Cfg.FreeCfgInstances()
 import Data.Cfg.Productive
 import Data.Cfg.TestGrammars(assertEqCfg, wiki)
+import Data.Maybe(fromJust)
 import qualified Data.Set as S
 import Test.Framework(Test, testGroup)
 import Test.Framework.Providers.HUnit(testCase)
@@ -26,7 +27,8 @@ wikiTest = testCase "wiki productivity test" $ do
 			      (productives wiki)
     assertEqual "unproductives" (S.fromList $ grammarProductions unprods')
 				(unproductives wiki)
-    assertEqCfg ctxt ctxt "productivity" expected $ removeUnproductives wiki
+    assertEqCfg ctxt ctxt "productivity"
+		expected (fromJust $ removeUnproductives wiki)
 
     where
     ctxt :: V String String -> Doc
@@ -44,7 +46,7 @@ wikiTest = testCase "wiki productivity test" $ do
 	s ::= b B | c C.
 	b ::= b B | B.
 	c ::= c C | C.
-	d ::= b D | c D | D.
+        d ::= b D | c D | D.
         |]
 
     unprods' :: Grammar String String

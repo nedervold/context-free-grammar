@@ -55,7 +55,7 @@ class Cfg cfg t nt where
 -- | Pretty-prints a member of 'Cfg'.  Use this to instantiate
 -- 'CPretty' for specific types.  (If we write an instance of 'CPretty'
 -- for all members of 'Cfg', we get overlapping instances when we try
--- to write instances for anything else.)
+-- to write 'CPretty' instances for anything else.)
 cprettyCfg :: (Cfg cfg t nt, MonadReader (V t nt -> Doc) m)
 	   => cfg t nt -> m Doc
 cprettyCfg cfg = liftM4 vcat' ss ts nts prods
@@ -78,13 +78,13 @@ cprettyCfg cfg = liftM4 vcat' ss ts nts prods
 				     (S.toList $ nonterminals cfg)))
 
     prods = do
-        ps' <- mapM cprettyProd (zip [1..] $ productions cfg)
+	ps' <- mapM cprettyProd (zip [1..] $ productions cfg)
 	return (text "Productions:"
 		     $$ nest 4 (vcat ps'))
 	where
 	cprettyProd (n, prod) = do
-            prod' <- cprettyProduction prod
-	    return (parens (int n) <> prod')
+	    prod' <- cprettyProduction prod
+	    return (parens (int n) <+> prod')
 
 ------------------------------------------------------------
 

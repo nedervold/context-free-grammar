@@ -27,7 +27,7 @@ leftRecursionDetectionTest = testCase "left-recursion detection" $ do
 	$ (not . isLeftRecursive) g0
 
 directLeftRecursionRemovalTest :: Test
-directLeftRecursionRemovalTest = testCase "direct left-recursion remove" $ do
+directLeftRecursionRemovalTest = testCase "direct left-recursion remove" $
     assertBool "removed commaList's left recursion"
 	$ (not . isLeftRecursive) commaList'
 

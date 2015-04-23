@@ -4,11 +4,13 @@
 -- | The free 'Cfg'
 module Data.Cfg.FreeCfg (
     FreeCfg(..),
+    bimapCfg,
     fromProductions,
     toFreeCfg
     ) where
 
-import Data.Cfg.Cfg(Cfg(..), Production, V(..), Vs)
+import Data.Cfg.Cfg(Cfg(..), Production, V(..), Vs,
+    bimapProductions, productions)
 import qualified Data.Set as S
 
 -- | Represents a context-free grammar with its nonterminal and
@@ -59,7 +61,20 @@ fromProductions start prods = FreeCfg {
 	where
 	f (hd, rhs) = NT hd : rhs
 
+    nts :: S.Set nt
     nts = S.fromList [ nt | NT nt <- vs ]
+
+    ts :: S.Set t
     ts = S.fromList [ t | T t <- vs ]
+
+    rules :: nt -> S.Set (Vs t nt)
     rules nt = S.fromList [ rhs | (nt', rhs) <- prods,
-                                  nt == nt' ]
+				  nt == nt' ]
+
+-- | Maps over the terminal and nonterminal symbols in a context-free
+-- grammar, returning a 'FreeCfg' over the new symbols.
+bimapCfg :: (Cfg cfg t nt, Ord nt', Ord t')
+	 => (t -> t') -> (nt -> nt')
+	 -> cfg t nt -> FreeCfg t' nt'
+bimapCfg f g cfg = fromProductions (g $ startSymbol cfg)
+                       $ bimapProductions f g $ productions cfg
