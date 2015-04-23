@@ -7,6 +7,8 @@ module Data.Cfg.Cfg(
     -- * Class
     Cfg(..),
     -- * Pretty-printing
+    cprettyVs,
+    cprettyProduction,
     cprettyCfg,
     -- * Vocabulary
     V(..),
@@ -75,17 +77,13 @@ cprettyCfg cfg = liftM4 vcat' ss ts nts prods
 				     (S.toList $ nonterminals cfg)))
 
     prods = do
-	prettyV <- ask
+        ps' <- mapM cprettyProd (zip [1..] $ productions cfg)
 	return (text "Productions:"
-		     $$ nest 4
-			     (vcat (map (prettyProd prettyV)
-					(zip [1..] $ productions cfg))))
+		     $$ nest 4 (vcat ps'))
 	where
-	prettyProd pv (n, (hd, rhs))
-	    = hsep [parens (int n),
-		    pv (NT hd), text "::=", rhs' <> text "."]
-	    where
-	    rhs' = hsep $ map pv rhs
+	cprettyProd (n, prod) = do
+            prod' <- cprettyProduction prod
+	    return (parens (int n) <> prod')
 
 ------------------------------------------------------------
 
@@ -126,6 +124,12 @@ type Vs t nt = [V t nt]
 bimapVs :: (t -> t') -> (nt -> nt') -> Vs t nt -> Vs t' nt'
 bimapVs f g = map (bimapV f g)
 
+-- | Pretty-prints a list of vocabulary items.
+cprettyVs :: (MonadReader (V t nt -> Doc) m) => Vs t nt -> m Doc
+cprettyVs vs = do
+    prettyV <- ask
+    return $ hsep $ map prettyV vs
+
 -- | Productions over vocabulary symbols
 type Production t nt = (nt, Vs t nt)
 
@@ -146,6 +150,14 @@ productions cfg = do
     nt <- S.toList $ nonterminals cfg
     vs <- S.toList $ productionRules cfg nt
     return (nt, vs)
+
+-- | Pretty-prints a 'Production'.
+cprettyProduction :: (MonadReader (V t nt -> Doc) m)
+		  => Production t nt -> m Doc
+cprettyProduction (hd, rhs) = do
+    rhs' <- cprettyVs rhs
+    prettyV <- ask
+    return $ hsep [prettyV (NT hd), text "::=", rhs' <> text "."]
 
 -- | Returns 'True' iff the two inhabitants of 'Cfg' are equal.
 eqCfg :: forall cfg cfg' t nt
