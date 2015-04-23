@@ -9,6 +9,7 @@ module Data.Cfg.Cfg(
     -- * Pretty-printing
     cprettyVs,
     cprettyProduction,
+    cprettyProductions,
     cprettyCfg,
     -- * Vocabulary
     V(..),
@@ -30,7 +31,7 @@ module Data.Cfg.Cfg(
     eqCfg {- ,
     compareCfg -}) where
 
-import Control.Monad(liftM4)
+import Control.Monad(liftM, liftM4)
 import Control.Monad.Reader(MonadReader, ask)
 import Data.Data(Data, Typeable)
 import qualified Data.Set as S
@@ -158,6 +159,11 @@ cprettyProduction (hd, rhs) = do
     rhs' <- cprettyVs rhs
     prettyV <- ask
     return $ hsep [prettyV (NT hd), text "::=", rhs' <> text "."]
+
+-- | Pretty-prints a list of 'Production's.
+cprettyProductions :: (MonadReader (V t nt -> Doc) m)
+		   => [Production t nt] -> m Doc
+cprettyProductions prods = liftM vcat $ mapM cprettyProduction prods
 
 -- | Returns 'True' iff the two inhabitants of 'Cfg' are equal.
 eqCfg :: forall cfg cfg' t nt
