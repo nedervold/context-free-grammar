@@ -1,12 +1,14 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 -- | The free 'Cfg'
 module Data.Cfg.FreeCfg (
     FreeCfg(..),
+    fromProductions,
     toFreeCfg
     ) where
 
-import Data.Cfg.Cfg(Cfg(..), Vs)
+import Data.Cfg.Cfg(Cfg(..), Production, V(..), Vs)
 import qualified Data.Set as S
 
 -- | Represents a context-free grammar with its nonterminal and
@@ -38,3 +40,26 @@ toFreeCfg cfg = FreeCfg {
     productionRules' = productionRules cfg,
     startSymbol' = startSymbol cfg
     }
+
+-- | Creates a 'FreeCfg' from a start symbol and a list of
+-- 'Production's.  Assumes the vocabulary items are exactly those
+-- present in the productions.
+fromProductions :: forall nt t
+		. (Ord nt, Ord t)
+		=> nt -> [Production t nt] -> FreeCfg t nt
+fromProductions start prods = FreeCfg {
+    nonterminals' = nts,
+    terminals' = ts,
+    productionRules' = rules,
+    startSymbol' = start
+    }
+    where
+    vs :: [V t nt]
+    vs = NT start : concatMap f prods
+	where
+	f (hd, rhs) = NT hd : rhs
+
+    nts = S.fromList [ nt | NT nt <- vs ]
+    ts = S.fromList [ t | T t <- vs ]
+    rules nt = S.fromList [ rhs | (nt', rhs) <- prods,
+                                  nt == nt' ]
