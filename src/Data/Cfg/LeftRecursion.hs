@@ -22,6 +22,8 @@ import Data.Ord(comparing)
 import qualified Data.Set as S
 import Text.PrettyPrint
 
+import Debug.Trace
+
 -- | Nonterminal wrapper to introduce symbols for tails of directly
 -- recursive productions.
 data LR nt = LR nt	-- ^ wrapped original symbols
@@ -30,7 +32,8 @@ data LR nt = LR nt	-- ^ wrapped original symbols
 
 -- | Removes left recursion from the grammar.
 removeLeftRecursion :: forall cfg t nt
-		    . (Cfg cfg t nt, Ord nt, Ord t)
+		    -- . (Cfg cfg t nt, Ord nt, Ord t)
+		    . (Cfg cfg t nt, Ord nt, Ord t, Show nt, Show t)
 		    => cfg t nt -> FreeCfg t (LR nt)
 removeLeftRecursion cfg = (toCfg . removeLR . map wrap . fromCfg) cfg
     where
@@ -62,20 +65,68 @@ removeLeftRecursion cfg = (toCfg . removeLR . map wrap . fromCfg) cfg
 	startSymbol' = LR $ startSymbol cfg
 	}
 	where
-	prodRules' nt = S.fromList [ rhs | (nt', rhs) <- prods,
-					   nt' == nt ]
+	prodRules' = S.fromList . flip lookupProductions prods
+
+removeIndirectLeftRecursion :: forall nt t
+			    . (Eq nt, Eq t, Show nt, Show t)
+			    -- . (Eq nt, Eq t)
+			    => S.Set nt
+			    -> [Production t (LR nt)]
+			    -> [Production t (LR nt)]
+removeIndirectLeftRecursion nts prods = trace msg $ foldl (flip $ uncurry f) prods nts'
+    where
+    msg = unlines [ "nts = " ++ show nts,
+		    "nts' = " ++ show nts' ]
+    nts' :: [(nt, [nt])]
+    nts' = map split $ tail $ reverse $ tails $ S.toList nts
+	where
+	split nts'' = (head nts'', tail nts'')
+
+    -- The mechanism above is just to implement the nested i/j loop
+    -- in the standard imperative algorithm:
+    --
+    -- for i in [1..n]
+    --	   for j in [1..i-1]
+    --	      expand A_j in A_i ::= A_j alpha.
+    --	   removeDirectRecursion in A_i
+
+    f :: nt -> [nt] -> [Production t (LR nt)] -> [Production t (LR nt)]
+    f nt prevNTs prods' = removeDirectLeftRecursion nt
+			      $ inlinePrevNts nt prevNTs prods'
+
+    inlinePrevNts :: nt -> [nt] -> [Production t (LR nt)]
+				-> [Production t (LR nt)]
+    inlinePrevNts nt prevNTs prods' = do
+	(hd, rhs) <- prods'
+	if hd == LR nt
+		     && not (null rhs)
+			 && head rhs `elem` map (NT . LR) prevNTs
+	    then do
+		let NT prevNT = head rhs
+		rhs' <- lookupProductions prevNT prods'
+		return (hd, rhs' ++ tail rhs)
+	    else return (hd, rhs)
+
+items :: forall t nt . (nt -> Bool) -> Production t nt -> [Item t nt]
+items isNullable prod = go $ mkInitialItem prod
+    where
+    go :: Item t nt -> [Item t nt]
+    go item = case nextV item of
+	Just (NT nt) -> if isNullable nt
+	    then item : maybe [] go (nextItem item)
+	    else [item]
+	_ -> []
 
 removeDirectLeftRecursion :: forall t nt
 			  . Eq nt
 			  => nt
 			  -> [Production t (LR nt)]
 			  -> [Production t (LR nt)]
-removeDirectLeftRecursion nt ps = rest ++ fixed
+removeDirectLeftRecursion nt ps = if null ntTailRhss
+				      then ps
+				      else rest ++ fixed
     where
-    ntHeaded :: Production t (LR nt) -> Bool
-    ntHeaded (nt', _) = nt' == LR nt
-
-    (ntHeads, rest) = partition ntHeaded ps
+    (ntHeads, rest) = partitionProds (LR nt) ps
 
     mkRhs :: Production t (LR nt) -> Either (Vs t (LR nt)) (Vs t (LR nt))
     mkRhs (_, NT (LR nt') : vs)
@@ -91,28 +142,11 @@ removeDirectLeftRecursion nt ps = rest ++ fixed
 	mkNTTailProd rhs = (LRTail nt, rhs)
 	baseProd = (LRTail nt, [])
 
-removeIndirectLeftRecursion :: forall nt t
-			    . S.Set nt
-			    -> [Production t (LR nt)]
-			    -> [Production t (LR nt)]
-removeIndirectLeftRecursion nts prods = foldl f prods nts'
-    where
-    nts' :: [[nt]]
-    nts' = tails $ S.toList nts
+partitionProds :: (Eq nt)
+	       => nt -> [Production t nt]
+		     -> ([Production t nt], [Production t nt])
+partitionProds nt = partition $ \ (nt', _) -> nt == nt'
 
-    f :: [Production t (LR nt)] -> [nt] -> [Production t (LR nt)]
-    f prods' [] = prods'
-    f _prods' (_n : _ns) = error "removeIndirectLeftRecursion.f"
-
-items :: forall t nt . (nt -> Bool) -> Production t nt -> [Item t nt]
-items isNullable prod = go $ mkInitialItem prod
-    where
-    go :: Item t nt -> [Item t nt]
-    go item = case nextV item of
-	Just (NT nt) -> if isNullable nt
-	    then item : maybe [] go (nextItem item)
-	    else [item]
-	_ -> []
 
 type E t nt = (nt, nt, Item t nt)
 
@@ -195,11 +229,11 @@ leftRecScc cfg = S.fromList $ map categorizeScc scc'
     categorizeScc [] = error "leftRecScc.categorizeScc [] : impossible"
     categorizeScc [nt] = if hasSelfLoop nt
 	then SelfLoop nt $ S.fromList [ e | (_, dst, e) <- out gr nt,
-					    nt == dst ]
-	else Singleton nt
+                                            nt == dst ]
+        else Singleton nt
     categorizeScc ns = SCComp $ delNodes others gr
-	where
-	others = S.toList (nodes gr S.\\ S.fromList ns)
+        where
+        others = S.toList (nodes gr S.\\ S.fromList ns)
 
     scc' :: [[nt]]
     scc' = scc gr

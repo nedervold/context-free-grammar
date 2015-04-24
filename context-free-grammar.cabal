@@ -27,13 +27,14 @@ Description:
     .
     * calculating predict sets
     .
+    * removing left-recursion
+    .
     You may define your context-free grammar textually using 'parse'
     or with the quasiquoter 'bnf' (both in "Data.Cfg.Bnf"), or you may
     use any data structure you like after making it an instance of
     'Cfg' (found in "Data.Cfg.Cfg").
     .
-    Testing is very thin in this version; basically just
-    sanity-checking.
+    Testing is thin in this version.
 
 Category:               Language
 Cabal-Version:          >= 1.10

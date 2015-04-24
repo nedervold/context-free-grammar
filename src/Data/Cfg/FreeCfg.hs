@@ -10,7 +10,7 @@ module Data.Cfg.FreeCfg (
     ) where
 
 import Data.Cfg.Cfg(Cfg(..), Production, V(..), Vs,
-    bimapProductions, productions)
+    bimapProductions, lookupProductions, productions)
 import qualified Data.Set as S
 
 -- | Represents a context-free grammar with its nonterminal and
@@ -68,8 +68,7 @@ fromProductions start prods = FreeCfg {
     ts = S.fromList [ t | T t <- vs ]
 
     rules :: nt -> S.Set (Vs t nt)
-    rules nt = S.fromList [ rhs | (nt', rhs) <- prods,
-				  nt == nt' ]
+    rules = S.fromList . flip lookupProductions prods
 
 -- | Maps over the terminal and nonterminal symbols in a context-free
 -- grammar, returning a 'FreeCfg' over the new symbols.

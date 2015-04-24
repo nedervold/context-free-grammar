@@ -27,6 +27,7 @@ module Data.Cfg.Cfg(
     -- * Productions
     Production,
     productions,
+    lookupProductions,
     -- * Utility functions
     eqCfg {- ,
     compareCfg -}) where
@@ -145,12 +146,17 @@ bimapProductions :: (t -> t') -> (nt -> nt')
 		-> [Production t nt] -> [Production t' nt']
 bimapProductions f g = map $ bimapProduction f g
 
--- | Returns the productions of the grammar.
+-- | The productions of the grammar.
 productions :: (Cfg cfg t nt) => cfg t nt -> [Production t nt]
 productions cfg = do
     nt <- S.toList $ nonterminals cfg
     vs <- S.toList $ productionRules cfg nt
     return (nt, vs)
+
+-- | The productions for the given nonterminal
+lookupProductions :: Eq nt => nt -> [Production t nt] -> [Vs t nt]
+lookupProductions nt prods = [ rhs | (nt', rhs) <- prods,
+				     nt == nt' ]
 
 -- | Pretty-prints a 'Production'.
 cprettyProduction :: (MonadReader (V t nt -> Doc) m)

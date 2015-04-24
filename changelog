@@ -1,3 +1,7 @@
+0.2.0 (2015-xx-xx):
+    - Removed nullables from the Analysis record.  removeUnproductives
+      can now fail in the case where the start symbol was
+      unproductive.  Added removal of left-recursion.
 0.1.0 (2015-04-02):
     - Restructured API so default is to keep partial analysis results;
       old way was too error-prone.
