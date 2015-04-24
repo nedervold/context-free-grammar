@@ -1,28 +1,21 @@
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE TypeSynonymInstances #-}
-{-# OPTIONS_GHC -fno-warn-orphans #-}
 module Data.Cfg.EpsilonProductionsTests (
     tests
     ) where
 
 import Data.Cfg.Bnf
-import Data.Cfg.Cfg
-import Data.Cfg.CPretty(CPretty(..))
 import Data.Cfg.EpsilonProductions
 import Data.Cfg.FreeCfg(FreeCfg(..), bimapCfg, toFreeCfg)
-import Data.Cfg.FreeCfgInstances()
+import Data.Cfg.Instances()
 import Data.Cfg.Productive(removeUnproductives)
 import Data.Cfg.Reachable(removeUnreachables)
-import Data.Cfg.TestGrammars(assertEqCfg, epsProds)
+import Data.Cfg.TestGrammars(assertEqCfg', epsProds)
 import Data.Maybe(fromJust, isJust)
 import Test.Framework(Test, testGroup)
 import Test.Framework.Providers.HUnit(testCase)
 import Test.Framework.Providers.QuickCheck2(testProperty)
 import Test.HUnit(assertBool)
 import Test.QuickCheck((==>), Property)
-import Text.PrettyPrint(Doc, text)
 
 tests :: Test
 tests = testGroup "Data.Cfg.EpsilonProductions" [
@@ -46,13 +39,9 @@ epsilonProductionsProp
 	      $ removeUnproductives
 		  $ removeUnreachables cfg
 
-instance CPretty (FreeCfg String (EP String)) (V String (EP String) -> Doc)
-    where
-    cpretty = cprettyCfg
-
 epsilonProductionsTest :: Test
 epsilonProductionsTest = testCase "removal of eps-productions" $ do
-    assertEqCfg ctxt ctxt
+    assertEqCfg'
 	"removed epsilon-productions correctly"
 	expected actual
     assertBool "removed epsilon-productions completely"
@@ -63,12 +52,7 @@ epsilonProductionsTest = testCase "removal of eps-productions" $ do
     actual = removeEpsilonProductions $ toFreeCfg epsProds
     expected = bimapCfg id EP cfg
     cfg = [bnf|
-	b ::= Z | a Z | Z a | a Z a .
-	a ::= A .
-	|]
+        b ::= Z | a Z | Z a | a Z a .
+        a ::= A .
+        |]
 
-    ctxt :: V String (EP String) -> Doc
-    ctxt v = text $ case v of
-                 NT (EP nt) -> nt
-                 NT (EPStart nt) -> nt ++ "$Start"
-                 T t -> t

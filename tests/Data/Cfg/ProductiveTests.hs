@@ -4,11 +4,11 @@ module Data.Cfg.ProductiveTests (
     ) where
 
 import Data.Cfg.Bnf(Grammar(..), bnf)
-import Data.Cfg.Cfg(Cfg(..), V(..))
+import Data.Cfg.Cfg(Cfg(..))
 import Data.Cfg.FreeCfg(FreeCfg(..), toFreeCfg)
-import Data.Cfg.FreeCfgInstances()
+import Data.Cfg.Instances()
 import Data.Cfg.Productive
-import Data.Cfg.TestGrammars(assertEqCfg, wiki)
+import Data.Cfg.TestGrammars(assertEqCfg', wiki)
 import Data.Maybe(fromJust, isJust)
 import qualified Data.Set as S
 import Test.Framework(Test, testGroup)
@@ -16,7 +16,6 @@ import Test.Framework.Providers.HUnit(testCase)
 import Test.Framework.Providers.QuickCheck2(testProperty)
 import Test.HUnit(assertEqual)
 import Test.QuickCheck((==>), Property)
-import Text.PrettyPrint
 
 tests :: Test
 tests = testGroup "Data.Cfg.Productive" [
@@ -30,15 +29,10 @@ wikiTest = testCase "wiki productivity test" $ do
 			      (productives wiki)
     assertEqual "unproductives" (S.fromList $ grammarProductions unprods')
 				(unproductives wiki)
-    assertEqCfg ctxt ctxt "productivity"
+    assertEqCfg' "productivity"
 		expected (fromJust $ removeUnproductives wiki)
 
     where
-    ctxt :: V String String -> Doc
-    ctxt v = text $ case v of
-			NT nt -> nt
-			T t -> t
-
     expected :: FreeCfg String String
     expected = (toFreeCfg prods') {
 	terminals' = terminals wiki

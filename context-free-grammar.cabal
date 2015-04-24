@@ -50,13 +50,13 @@ Library
                       , Data.Cfg.Augment
                       , Data.Cfg.Bnf
                       , Data.Cfg.Cfg
-                      , Data.Cfg.CPretty
                       , Data.Cfg.EpsilonProductions
                       , Data.Cfg.FreeCfg
                       , Data.Cfg.Item
                       , Data.Cfg.LeftRecursion
                       , Data.Cfg.LookaheadSet
                       , Data.Cfg.Nullable
+                      , Data.Cfg.Pretty
                       , Data.Cfg.Productive
                       , Data.Cfg.Reachable
                       , Data.Cfg.RuleApplication
@@ -93,8 +93,8 @@ Test-Suite test
                       , Data.Cfg.EpsilonProductionsTests
                       , Data.Cfg.FirstSetTests
                       , Data.Cfg.FollowSetTests
-                      , Data.Cfg.FreeCfgInstances
                       , Data.Cfg.FreeCfgTests
+                      , Data.Cfg.Instances
                       , Data.Cfg.LeftRecursionTests
                       , Data.Cfg.LookaheadSetTests
                       , Data.Cfg.ProductiveTests

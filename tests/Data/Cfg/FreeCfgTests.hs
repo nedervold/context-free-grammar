@@ -7,13 +7,12 @@ module Data.Cfg.FreeCfgTests (
 import Data.Cfg.Bnf(bnf)
 import Data.Cfg.Cfg(Cfg(..), Production(..), V(..), eqCfg, productions)
 import Data.Cfg.FreeCfg
-import Data.Cfg.FreeCfgInstances()
-import Data.Cfg.TestGrammars(assertEqCfg)
+import Data.Cfg.Instances()
+import Data.Cfg.TestGrammars(assertEqCfg')
 import qualified Data.Set as S
 import Test.Framework(Test, testGroup)
 import Test.Framework.Providers.HUnit(testCase)
 import Test.Framework.Providers.QuickCheck2(testProperty)
-import Text.PrettyPrint
 
 tests :: Test
 tests = testGroup "Data.Cfg.FreeCfg" [
@@ -23,7 +22,7 @@ tests = testGroup "Data.Cfg.FreeCfg" [
 
 bimapCfgTest :: Test
 bimapCfgTest = testCase "bimapCfg works properly" $
-    assertEqCfg ctxt ctxt "bimapCfg result is correct" expected cfg'
+    assertEqCfg' "bimapCfg result is correct" expected cfg'
     where
     cfg = toFreeCfg [bnf|
 		a ::= A b.
@@ -36,9 +35,6 @@ bimapCfgTest = testCase "bimapCfg works properly" $
     expected = toFreeCfg [bnf|
 		   nt_a ::= A_TERMINAL nt_b .
 		   nt_b ::= nt_b B_TERMINAL | . |]
-    ctxt v = text $ case v of
-			NT nt -> nt
-			T t -> t
 
 bimapCfgProp :: Test
 bimapCfgProp = testProperty "bimapCfg id id == removeUnusedTerminals" f

@@ -1,12 +1,8 @@
 -- | Sample grammars for tests
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE QuasiQuotes #-}
-{-# OPTIONS_GHC -fno-warn-orphans #-}
-
 module Data.Cfg.TestGrammars (
     -- * Assertion for equality in 'Cfg'
-    assertEqCfg,
+    assertEqCfg',
     -- * Grammars for sanity checks
     commaList,
     epsProds,
@@ -19,42 +15,27 @@ module Data.Cfg.TestGrammars (
     g0Analysis,
     leftRecAnalysis,
     microAnalysis,
-    wikiAnalysis,
-    -- * Convenience functions for the REPL
-    pretty'
+    wikiAnalysis
     ) where
 
 import Data.Cfg.Analysis
-import Data.Cfg.Augment
 import Data.Cfg.Bnf
-import Data.Cfg.Cfg(Cfg(..), V(..), cprettyCfg, eqCfg)
-import Data.Cfg.CPretty
+import Data.Cfg.Cfg(Cfg(..), eqCfg)
+import Data.Cfg.Pretty(Pretty(..))
 import Text.PrettyPrint
 import Test.HUnit(assertBool)
 
 -- | An assertion for testing equality of 'Cfg'.
-assertEqCfg :: (Cfg cfg t nt, CPretty (cfg t nt) ctxt,
-		Cfg cfg' t nt, CPretty (cfg' t nt) ctxt',
-		Eq t, Eq nt)
-		=> ctxt -> ctxt' -> String -> cfg t nt -> cfg' t nt -> IO ()
-assertEqCfg ctxt ctxt' msg expected actual =
+assertEqCfg' :: (Cfg cfg t nt, Cfg cfg' t nt,
+		 Pretty (cfg t nt), Pretty (cfg' t nt),
+		 Eq t, Eq nt)
+		=> String -> cfg t nt -> cfg' t nt -> IO ()
+assertEqCfg' msg expected actual =
     assertBool msg' (eqCfg expected actual)
     where
     msg' = show $ vcat [text msg, expected', actual']
-    expected' = text "Expected:" <+> cpretty expected ctxt
-    actual' = text "Actual:" <+> cpretty actual ctxt'
-
-pretty' :: AugFreeCfg String String -> Doc
-pretty' cfg = cprettyCfg cfg ctxt
-    where
-    ctxt :: AugV String String -> Doc
-    ctxt v = text $ case v of
-		 NT nt -> case nt of
-		     StartSymbol -> "$start"
-		     AugNT s -> s
-		 T t -> case t of
-		     EOF -> "$EOF"
-		     AugT s -> s
+    expected' = text "Expected:" <+> pretty expected
+    actual' = text "Actual:" <+> pretty actual
 
 -- | A test grammar.  Found in Crafting a compiler, by Charles
 -- N. Fischer and Richard J. LeBlanc, Jr., (c) 1998, pg. 95.

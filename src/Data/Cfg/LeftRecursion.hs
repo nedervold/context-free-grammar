@@ -1,5 +1,5 @@
 -- | Functionality for detecting and removing left-recursion.
-{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts #-} -- for Eq (gr n e)
 {-# LANGUAGE ScopedTypeVariables #-}
 module Data.Cfg.LeftRecursion(
     LR(..),
@@ -9,10 +9,10 @@ module Data.Cfg.LeftRecursion(
     reportLeftRec) where
 
 import Data.Cfg.Cfg
-import Data.Cfg.CPretty
 import Data.Cfg.FreeCfg
 import Data.Cfg.Item
 import Data.Cfg.Nullable
+import Data.Cfg.Pretty
 import Data.Either(partitionEithers)
 import Data.Graph.Inductive.PatriciaTree
 import Data.Graph.Inductive.ULGraph hiding (empty)
@@ -138,8 +138,8 @@ removeDirectLeftRecursion nt ps = if null ntTailRhss
 
     fixed = map mkNTProd ntRhss ++ baseProd : map mkNTTailProd ntTailRhss
 	where
-	mkNTProd rhs = Production (LR nt) rhs
-	mkNTTailProd rhs = Production (LRTail nt) rhs
+	mkNTProd = Production (LR nt)
+	mkNTTailProd = Production (LRTail nt)
 	baseProd = Production (LRTail nt) []
 
 partitionProds :: (Eq nt)
@@ -158,26 +158,26 @@ isLeftRecursive cfg = case S.toList $ leftRecScc cfg of
 
 -- | Produces a pretty-printed report giving the left-recursion of the
 -- grammar.
-reportLeftRec :: (Cfg cfg t nt, Ord nt, Ord t)
-	      => (V t nt -> Doc)
-	      -> cfg t nt
+reportLeftRec :: (Cfg cfg t nt, Ord nt, Ord t,
+		  Pretty (V t nt), Pretty (Item t nt))
+	      => cfg t nt
 	      -> Doc
-reportLeftRec pv = leftRecReport pv . leftRecScc
+reportLeftRec = leftRecReport . leftRecScc
 
 leftRecReport :: forall t nt
-	      . (V t nt -> Doc)
-	      -> S.Set (SCComp Gr nt (Item t nt))
+	      . (Pretty (V t nt), Pretty (Item t nt))
+	      => S.Set (SCComp Gr nt (Item t nt))
 	      -> Doc
-leftRecReport prettyV = vcat .	map f . S.toList
+leftRecReport = vcat .	map f . S.toList
     where
-    prettyNT = prettyV . NT
+    prettyNT = pretty . (NT :: nt -> V t nt)
 
     f :: SCComp Gr nt (Item t nt) -> Doc
     f (Singleton _) = empty
     f (SelfLoop n es) = text "direct left-recursion on" <+> prettyNT n <+> text "via"
 			    $$ nest 4 items'
 	where
-	items' = vcat [cpretty e prettyV | e <- S.toList es]
+	items' = vcat [pretty e | e <- S.toList es]
     f (SCComp gr) = text "indirect left-recursion on" <+> hsep (map prettyNT ns)
 			$$ nest 4 es'
 	where
@@ -187,7 +187,7 @@ leftRecReport prettyV = vcat .	map f . S.toList
 	g :: Edge nt (Item t nt) -> Doc
 	g (src, dst, item) = hsep [prettyNT src,
 				   arrow,
-				   cpretty item prettyV,
+				   pretty item,
 				   arrow,
 				   prettyNT dst]
 	arrow = text "->"

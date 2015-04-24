@@ -1,16 +1,10 @@
 -- | Context-free grammars.
 {-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 module Data.Cfg.Cfg(
     -- * Class
     Cfg(..),
-    -- * Pretty-printing
-    cprettyVs,
-    cprettyProduction,
-    cprettyProductions,
-    cprettyCfg,
     -- * Vocabulary
     V(..),
     Vs,
@@ -32,11 +26,8 @@ module Data.Cfg.Cfg(
     eqCfg {- ,
     compareCfg -}) where
 
-import Control.Monad(liftM, liftM4)
-import Control.Monad.Reader(MonadReader, ask)
 import Data.Data(Data, Typeable)
 import qualified Data.Set as S
-import Text.PrettyPrint
 
 ------------------------------------------------------------
 
@@ -52,40 +43,6 @@ class Cfg cfg t nt where
     startSymbol :: cfg t nt -> nt
 	-- ^ the start symbol of the grammar; must be an element of
 	-- 'nonterminals' 'cfg'
-
--- | Pretty-prints a member of 'Cfg'.  Use this to instantiate
--- 'CPretty' for specific types.  (If we write an instance of 'CPretty'
--- for all members of 'Cfg', we get overlapping instances when we try
--- to write 'CPretty' instances for anything else.)
-cprettyCfg :: (Cfg cfg t nt, MonadReader (V t nt -> Doc) m)
-	   => cfg t nt -> m Doc
-cprettyCfg cfg = liftM4 vcat' ss ts nts prods
-    where
-    vcat' a b c d = vcat [a, b, c, d]
-    ss = do
-	prettyV <- ask
-	return (text "Start symbol:" <+> prettyV (NT $ startSymbol cfg))
-    ts = do
-	prettyV <- ask
-	return (text "Terminals:"
-		   <+> fsep (punctuate comma
-			       $ map (prettyV . T)
-				     (S.toList $ terminals cfg)))
-    nts = do
-	prettyV <- ask
-	return (text "Nonterminals:"
-		   <+> fsep (punctuate comma
-			       $ map (prettyV . NT)
-				     (S.toList $ nonterminals cfg)))
-
-    prods = do
-	ps' <- mapM cprettyProd (zip [1..] $ productions cfg)
-	return (text "Productions:"
-		     $$ nest 4 (vcat ps'))
-	where
-	cprettyProd (n, prod) = do
-	    prod' <- cprettyProduction prod
-	    return (parens (int n) <+> prod')
 
 ------------------------------------------------------------
 
@@ -126,12 +83,6 @@ type Vs t nt = [V t nt]
 bimapVs :: (t -> t') -> (nt -> nt') -> Vs t nt -> Vs t' nt'
 bimapVs f g = map (bimapV f g)
 
--- | Pretty-prints a list of vocabulary items.
-cprettyVs :: (MonadReader (V t nt -> Doc) m) => Vs t nt -> m Doc
-cprettyVs vs = do
-    prettyV <- ask
-    return $ hsep $ map prettyV vs
-
 -- | Productions over vocabulary symbols
 data Production t nt = Production {
     productionHead :: nt,
@@ -161,19 +112,6 @@ productions cfg = do
 lookupProductions :: Eq nt => nt -> [Production t nt] -> [Vs t nt]
 lookupProductions nt prods = [ rhs | Production nt' rhs <- prods,
 				     nt == nt' ]
-
--- | Pretty-prints a 'Production'.
-cprettyProduction :: (MonadReader (V t nt -> Doc) m)
-		  => Production t nt -> m Doc
-cprettyProduction (Production hd rhs) = do
-    rhs' <- cprettyVs rhs
-    prettyV <- ask
-    return $ hsep [prettyV (NT hd), text "::=", rhs' <> text "."]
-
--- | Pretty-prints a list of 'Production's.
-cprettyProductions :: (MonadReader (V t nt -> Doc) m)
-		   => [Production t nt] -> m Doc
-cprettyProductions prods = liftM vcat $ mapM cprettyProduction prods
 
 -- | Returns 'True' iff the two inhabitants of 'Cfg' are equal.
 eqCfg :: forall cfg cfg' t nt
@@ -217,7 +155,7 @@ usedVocabulary cfg
 -- | Returns all vocabulary used in the productions plus the start
 -- symbol but not declared in 'nonterminals' or 'terminals'.
 undeclaredVocabulary :: (Cfg cfg t nt, Ord nt, Ord t)
-                     => cfg t nt -> S.Set (V t nt)
+		     => cfg t nt -> S.Set (V t nt)
 undeclaredVocabulary cfg = usedVocabulary cfg S.\\ vocabulary cfg
 
 ------------------------------------------------------------

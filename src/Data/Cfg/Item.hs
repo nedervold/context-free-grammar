@@ -1,5 +1,3 @@
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
 -- | Parsing items.
 module Data.Cfg.Item (
     AugItem,
@@ -16,11 +14,8 @@ module Data.Cfg.Item (
     nextV
     ) where
 
-import Control.Monad.Reader
 import Data.Cfg.Augment
 import Data.Cfg.Cfg
-import Data.Cfg.CPretty
-import Text.PrettyPrint
 
 -- | A parsing \"item\": a partially processed production.
 data Item t nt = Item {
@@ -31,18 +26,6 @@ data Item t nt = Item {
 	-- ^ The production for the 'Item'
     }
     deriving (Eq, Ord)
-
-instance CPretty (Item t nt) (V t nt -> Doc) where
-    cpretty item = do
-	prettyV <- ask
-	let rhs' = map prettyV (beforeMark item)
-		       ++ char markChar
-		       : map prettyV (afterMark item)
-	return $ hsep [prettyV (NT hd), text "::=", hsep rhs'] <> char '.'
-
-	where
-	hd = productionHead $ production item
-	markChar = '\x2022'
 
 -- | An augmented 'Item'.
 type AugItem t nt = Item (AugT t) (AugNT nt)
@@ -73,5 +56,5 @@ afterMark item = drop (mark item) $ productionRhs (production item)
 -- | The next vocabulary term to be processed, if there is one.
 nextV :: Item t nt -> Maybe (V t nt)
 nextV item = case afterMark item of
-                 [] -> Nothing
-                 (v : _) -> Just v
+		 [] -> Nothing
+	         (v : _) -> Just v
