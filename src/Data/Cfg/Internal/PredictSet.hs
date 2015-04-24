@@ -10,7 +10,7 @@ module Data.Cfg.Internal.PredictSet (
     ) where
 
 import Data.Cfg.Augment
-import Data.Cfg.Cfg(Cfg(..))
+import Data.Cfg.Cfg(Cfg(..), Production(..))
 import Data.Cfg.Collect
 import Data.Cfg.Internal.FirstSet(firstsOfVs)
 import Data.Cfg.LookaheadSet
@@ -23,7 +23,7 @@ predictSet :: (Ord t)
 	   -> (AugNT nt -> LookaheadSet t)    -- ^ 'followSet' for the grammar
 	   -> AugProduction t nt	      -- ^ the production
 	   -> LookaheadSet t
-predictSet firstSet' followSet' (hd, vs)
+predictSet firstSet' followSet' (Production hd vs)
     = firstsOfVs firstSet' vs <> followSet' hd
 
 -- | A lookahead set with the productions it predicts
@@ -50,7 +50,7 @@ ll1InfoMap cfg predictSet' = mkMap mkPredictions $ S.toList $ nonterminals cfg
 	lookaheadProds :: [(AugT t, AugProduction t nt)]
 	lookaheadProds	= do
 	    rhs <- S.toList $ productionRules cfg nt
-	    let prod = (nt, rhs)
+	    let prod = Production nt rhs
 	    t <- S.toList $ toSet $ predictSet' prod
 	    return (t, prod)
 

@@ -7,7 +7,7 @@ module Data.Cfg.Productive (
     ) where
 
 import Control.Monad(guard, unless)
-import Data.Cfg.Cfg(Cfg(..), Production, V(..), Vs, productions)
+import Data.Cfg.Cfg(Cfg(..), Production(..), V(..), Vs, productions)
 import Data.Cfg.FixedPoint(fixedPoint)
 import Data.Cfg.FreeCfg(FreeCfg(..))
 import qualified Data.Set as S
@@ -71,7 +71,7 @@ productiveNonterminals cfg = fixedPoint f S.empty
 isProductiveProduction :: forall t nt
 		       . (Ord nt)
 		       => S.Set nt -> Production t nt -> Bool
-isProductiveProduction productiveNTs (hd, rhs)
+isProductiveProduction productiveNTs (Production hd rhs)
     = hd `S.member` productiveNTs
 	  && isProductiveVs productiveNTs rhs
 

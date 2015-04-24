@@ -9,7 +9,7 @@ module Data.Cfg.FreeCfg (
     toFreeCfg
     ) where
 
-import Data.Cfg.Cfg(Cfg(..), Production, V(..), Vs,
+import Data.Cfg.Cfg(Cfg(..), Production(..), V(..), Vs,
     bimapProductions, lookupProductions, productions)
 import qualified Data.Set as S
 
@@ -59,7 +59,7 @@ fromProductions start prods = FreeCfg {
     vs :: [V t nt]
     vs = NT start : concatMap f prods
 	where
-	f (hd, rhs) = NT hd : rhs
+	f (Production hd rhs) = NT hd : rhs
 
     nts :: S.Set nt
     nts = S.fromList [ nt | NT nt <- vs ]

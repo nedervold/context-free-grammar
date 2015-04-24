@@ -5,7 +5,7 @@ module Data.Cfg.FreeCfgTests (
     ) where
 
 import Data.Cfg.Bnf(bnf)
-import Data.Cfg.Cfg(Cfg(..), V(..), eqCfg, productions)
+import Data.Cfg.Cfg(Cfg(..), Production(..), V(..), eqCfg, productions)
 import Data.Cfg.FreeCfg
 import Data.Cfg.FreeCfgInstances()
 import Data.Cfg.TestGrammars(assertEqCfg)
@@ -55,7 +55,7 @@ removeUnusedTerminals cfg = (toFreeCfg cfg) {
 
     where
     vs :: [V t nt]
-    vs = concat [ NT hd : rhs | (hd, rhs) <- productions cfg ]
+    vs = concat [ NT hd : rhs | Production hd rhs <- productions cfg ]
 
     usedTerminals :: S.Set t
     usedTerminals = S.fromList [ t | T t <- vs ]

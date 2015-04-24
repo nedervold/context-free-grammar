@@ -41,7 +41,7 @@ instance CPretty (Item t nt) (V t nt -> Doc) where
 	return $ hsep [prettyV (NT hd), text "::=", hsep rhs'] <> char '.'
 
 	where
-	hd = fst $ production item
+	hd = productionHead $ production item
 	markChar = '\x2022'
 
 -- | An augmented 'Item'.
@@ -64,11 +64,11 @@ atEnd = null . afterMark
 
 -- | The processed vocabulary terms of the production.
 beforeMark :: Item t nt -> [V t nt]
-beforeMark item	 = take (mark item) $ snd (production item)
+beforeMark item	 = take (mark item) $ productionRhs (production item)
 
 -- | The unprocessed vocabulary terms of the production.
 afterMark :: Item t nt -> [V t nt]
-afterMark item = drop (mark item) $ snd (production item)
+afterMark item = drop (mark item) $ productionRhs (production item)
 
 -- | The next vocabulary term to be processed, if there is one.
 nextV :: Item t nt -> Maybe (V t nt)

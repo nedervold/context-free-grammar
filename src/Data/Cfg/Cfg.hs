@@ -25,7 +25,7 @@ module Data.Cfg.Cfg(
     undeclaredVocabulary,
     isFullyDeclared,
     -- * Productions
-    Production,
+    Production(..),
     productions,
     lookupProductions,
     -- * Utility functions
@@ -133,12 +133,16 @@ cprettyVs vs = do
     return $ hsep $ map prettyV vs
 
 -- | Productions over vocabulary symbols
-type Production t nt = (nt, Vs t nt)
+data Production t nt = Production {
+    productionHead :: nt,
+    productionRhs :: Vs t nt
+    }
+    deriving (Eq, Ord, Show, Data, Typeable)
 
 -- | Maps over the terminal and nonterminal symbols in a 'Production'
 bimapProduction :: (t -> t') -> (nt -> nt')
 		-> Production t nt -> Production t' nt'
-bimapProduction f g (nt, rhs) = (g nt, bimapVs f g rhs)
+bimapProduction f g (Production nt rhs) = Production (g nt) (bimapVs f g rhs)
 
 -- | Maps over the terminal and nonterminal symbols in a list of
 -- 'Production's.
@@ -151,17 +155,17 @@ productions :: (Cfg cfg t nt) => cfg t nt -> [Production t nt]
 productions cfg = do
     nt <- S.toList $ nonterminals cfg
     vs <- S.toList $ productionRules cfg nt
-    return (nt, vs)
+    return $ Production nt vs
 
 -- | The productions for the given nonterminal
 lookupProductions :: Eq nt => nt -> [Production t nt] -> [Vs t nt]
-lookupProductions nt prods = [ rhs | (nt', rhs) <- prods,
+lookupProductions nt prods = [ rhs | Production nt' rhs <- prods,
 				     nt == nt' ]
 
 -- | Pretty-prints a 'Production'.
 cprettyProduction :: (MonadReader (V t nt -> Doc) m)
 		  => Production t nt -> m Doc
-cprettyProduction (hd, rhs) = do
+cprettyProduction (Production hd rhs) = do
     rhs' <- cprettyVs rhs
     prettyV <- ask
     return $ hsep [prettyV (NT hd), text "::=", rhs' <> text "."]
@@ -208,7 +212,7 @@ usedVocabulary :: (Cfg cfg t nt, Ord nt, Ord t)
 usedVocabulary cfg
     = S.fromList
 	  $ NT (startSymbol cfg) :
-	      concat [ NT nt : vs | (nt, vs) <- productions cfg]
+	      concat [ NT nt : vs | Production nt vs <- productions cfg]
 
 -- | Returns all vocabulary used in the productions plus the start
 -- symbol but not declared in 'nonterminals' or 'terminals'.

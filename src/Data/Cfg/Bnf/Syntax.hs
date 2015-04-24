@@ -4,7 +4,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 module Data.Cfg.Bnf.Syntax(Grammar(..)) where
 
-import Data.Cfg.Cfg(Cfg(..), Production, V(..), Vs, lookupProductions)
+import Data.Cfg.Cfg(Cfg(..), Production(..), V(..), Vs, lookupProductions)
 import Data.Data(Data, Typeable)
 import qualified Data.Set as S
 
@@ -23,7 +23,7 @@ instance (Ord nt, Ord t) => Cfg Grammar t nt where
     nonterminals = S.fromList . concatMap nonterminalsProd . grammarProductions
     productionRules g nt
 	= S.fromList $ lookupProductions nt $ grammarProductions g
-    startSymbol = fst . head . grammarProductions
+    startSymbol = productionHead . head . grammarProductions
 
 nonterminalsVs :: Vs t nt -> [nt]
 nonterminalsVs vs = [ nt | NT nt <- vs ]
@@ -32,7 +32,7 @@ terminalsVs :: Vs t nt -> [t]
 terminalsVs vs = [ t | T t <- vs ]
 
 nonterminalsProd :: Production t nt -> [nt]
-nonterminalsProd (nt, rhs) = nt : nonterminalsVs rhs
+nonterminalsProd (Production nt rhs) = nt : nonterminalsVs rhs
 
 terminalsProd :: Production t nt -> [t]
-terminalsProd = terminalsVs . snd
+terminalsProd (Production _ vs) = terminalsVs vs

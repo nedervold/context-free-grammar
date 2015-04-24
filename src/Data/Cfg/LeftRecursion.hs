@@ -43,7 +43,7 @@ removeLeftRecursion cfg = (toCfg . removeLR . map wrap . fromCfg) cfg
     fromCfg = productions
 
     wrap :: Production t nt -> Production t (LR nt)
-    wrap (nt, vs) = (LR nt, bimapVs id LR vs)
+    wrap (Production nt vs) = Production (LR nt) (bimapVs id LR vs)
 
     removeLR :: [Production t (LR nt)] -> [Production t (LR nt)]
     removeLR prods = foldl f prods sccs
@@ -59,7 +59,7 @@ removeLeftRecursion cfg = (toCfg . removeLR . map wrap . fromCfg) cfg
     toCfg :: [Production t (LR nt)] -> FreeCfg t (LR nt)
     toCfg prods = FreeCfg {
 	nonterminals' = S.map LR (nonterminals cfg)
-			    `S.union` S.fromList (map fst prods),
+			    `S.union` S.fromList (map productionHead prods),
 	terminals' = terminals cfg,
 	productionRules' = prodRules',
 	startSymbol' = LR $ startSymbol cfg
@@ -97,15 +97,15 @@ removeIndirectLeftRecursion nts prods = trace msg $ foldl (flip $ uncurry f) pro
     inlinePrevNts :: nt -> [nt] -> [Production t (LR nt)]
 				-> [Production t (LR nt)]
     inlinePrevNts nt prevNTs prods' = do
-	(hd, rhs) <- prods'
+	Production hd rhs <- prods'
 	if hd == LR nt
 		     && not (null rhs)
 			 && head rhs `elem` map (NT . LR) prevNTs
 	    then do
 		let NT prevNT = head rhs
 		rhs' <- lookupProductions prevNT prods'
-		return (hd, rhs' ++ tail rhs)
-	    else return (hd, rhs)
+		return $ Production hd (rhs' ++ tail rhs)
+	    else return $ Production hd rhs
 
 items :: forall t nt . (nt -> Bool) -> Production t nt -> [Item t nt]
 items isNullable prod = go $ mkInitialItem prod
@@ -129,24 +129,23 @@ removeDirectLeftRecursion nt ps = if null ntTailRhss
     (ntHeads, rest) = partitionProds (LR nt) ps
 
     mkRhs :: Production t (LR nt) -> Either (Vs t (LR nt)) (Vs t (LR nt))
-    mkRhs (_, NT (LR nt') : vs)
+    mkRhs (Production _ (NT (LR nt') : vs))
 	| nt == nt'  = Left (vs ++ [NT $ LRTail nt])
-    mkRhs (_, vs) = Right (vs ++ [NT $ LRTail nt])
+    mkRhs (Production _ vs) = Right (vs ++ [NT $ LRTail nt])
 
     ntRhss, ntTailRhss :: [Vs t (LR nt)]
     (ntTailRhss, ntRhss) = partitionEithers $ map mkRhs ntHeads
 
     fixed = map mkNTProd ntRhss ++ baseProd : map mkNTTailProd ntTailRhss
 	where
-	mkNTProd rhs = (LR nt, rhs)
-	mkNTTailProd rhs = (LRTail nt, rhs)
-	baseProd = (LRTail nt, [])
+	mkNTProd rhs = Production (LR nt) rhs
+	mkNTTailProd rhs = Production (LRTail nt) rhs
+	baseProd = Production (LRTail nt) []
 
 partitionProds :: (Eq nt)
 	       => nt -> [Production t nt]
 		     -> ([Production t nt], [Production t nt])
-partitionProds nt = partition $ \ (nt', _) -> nt == nt'
-
+partitionProds nt = partition $ \ (Production nt' _) -> nt == nt'
 
 type E t nt = (nt, nt, Item t nt)
 
@@ -255,13 +254,13 @@ makeEdges cfg = map itemEdge allItems
     where
     allItems :: [Item t nt]
     allItems = do
-        (nt, rhs) <- productions cfg
-        items isNullable (nt, rhs)
+        Production nt rhs <- productions cfg
+        items isNullable (Production nt rhs)
 
     itemEdge :: Item t nt -> E t nt
     itemEdge item = (hdNode, ntNode, item)
         where
-        hdNode = fst $ production item
+        hdNode = productionHead $ production item
         ntNode = nt
             where
             Just (NT nt) = nextV item

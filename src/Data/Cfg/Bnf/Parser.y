@@ -6,7 +6,7 @@ import qualified Data.Map as M
 import Data.Cfg.Bnf.Scanner(scan)
 import Data.Cfg.Bnf.Syntax
 import Data.Cfg.Bnf.Token
-import Data.Cfg.Cfg(Production, V(..), Vs)
+import Data.Cfg.Cfg(Production(..), V(..), Vs)
 }
 
 %name parseTokens grammar
@@ -32,7 +32,8 @@ prods :: { [Production String String] }
       | prod { $1 }
 
 prod :: { [Production String String] }
-     : LOWER_IDENTIFIER YIELDS rhs FULL_STOP { [ ($1, alt) | alt <- $3 ] }
+     : LOWER_IDENTIFIER YIELDS rhs FULL_STOP
+	{ [ Production $1 alt | alt <- $3 ] }
 
 rhs :: { [Vs String String] }
     : alts { $1 }
