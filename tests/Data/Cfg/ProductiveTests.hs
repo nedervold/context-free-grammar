@@ -6,16 +6,15 @@ module Data.Cfg.ProductiveTests (
 import Data.Cfg.Bnf(Grammar(..), bnf)
 import Data.Cfg.Cfg(Cfg(..))
 import Data.Cfg.FreeCfg(FreeCfg(..), toFreeCfg)
-import Data.Cfg.Instances()
+import Data.Cfg.Instances(ProductiveCfg(..))
 import Data.Cfg.Productive
 import Data.Cfg.TestGrammars(assertEqCfg', wiki)
-import Data.Maybe(fromJust, isJust)
+import Data.Maybe(fromJust)
 import qualified Data.Set as S
 import Test.Framework(Test, testGroup)
 import Test.Framework.Providers.HUnit(testCase)
 import Test.Framework.Providers.QuickCheck2(testProperty)
 import Test.HUnit(assertEqual)
-import Test.QuickCheck((==>), Property)
 
 tests :: Test
 tests = testGroup "Data.Cfg.Productive" [
@@ -53,9 +52,5 @@ wikiTest = testCase "wiki productivity test" $ do
 	|]
 
 removeUnproductivesProp :: Test
-removeUnproductivesProp = testProperty "removeUnproductives does" f
-    where
-    f :: FreeCfg Int Int -> Property
-    f cfg = isJust mCfg ==> S.null $ unproductives $ fromJust mCfg
-        where
-        mCfg = removeUnproductives cfg
+removeUnproductivesProp = testProperty "removeUnproductives does"
+    $ S.null . unproductives . unProductiveCfg

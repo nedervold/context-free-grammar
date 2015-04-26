@@ -7,19 +7,14 @@ import Data.Cfg.Bnf
 import Data.Cfg.Pretty
 import Data.Cfg.EpsilonProductions(removeEpsilonProductions)
 import Data.Cfg.FreeCfg(FreeCfg, bimapCfg, toFreeCfg)
-import Data.Cfg.Instances()
+import Data.Cfg.Instances(ProductiveEpsFreeCfg(..))
 import Data.Cfg.LeftRecursion(LR(..), isLeftRecursive, removeLeftRecursion)
-import Data.Cfg.Productive(removeUnproductives)
-import Data.Cfg.Reachable(removeUnreachables)
 import Data.Cfg.TestGrammars(assertEqCfg', commaList, g0, leftRec)
 import Data.List(isSuffixOf)
-import Data.Maybe(fromJust, isJust)
 import Test.Framework(Test, testGroup)
 import Test.Framework.Providers.HUnit(testCase)
 import Test.Framework.Providers.QuickCheck2(testProperty)
 import Test.HUnit(assertBool)
-import Test.QuickCheck((==>), Property)
--- import Text.PrettyPrint
 
 tests :: Test
 tests = testGroup "Data.Cfg.LeftRecursion" [
@@ -60,15 +55,11 @@ directLeftRecursionRemovalTest = testCase "direct left-recursion removal" $ do
 		    else LR str
 
 removeLeftRecursionProp :: Test
-removeLeftRecursionProp = testProperty "removeLeftRecursion does" f
-    where
-    f :: FreeCfg Int Int -> Property
-    f cfg = isJust mCfg' ==> (not . isLeftRecursive)
-				 $ removeLeftRecursion
-				     $ removeEpsilonProductions
-					 $ fromJust mCfg'
-	where
-	mCfg' = removeUnproductives $ removeUnreachables cfg
+removeLeftRecursionProp = testProperty "removeLeftRecursion does" $
+    (not . isLeftRecursive)
+	. removeLeftRecursion
+	    . removeEpsilonProductions
+		. unProductiveEpsFreeCfg
 
 indirectLeftRecursionRemovalTest :: Test
 indirectLeftRecursionRemovalTest

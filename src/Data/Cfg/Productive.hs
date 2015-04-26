@@ -3,7 +3,8 @@
 module Data.Cfg.Productive (
     productives,
     unproductives,
-    removeUnproductives
+    removeUnproductives,
+    removeUnproductivesUnsafe
     ) where
 
 import Control.Monad(guard, unless)
@@ -34,18 +35,29 @@ unproductives cfg = S.fromList (productions cfg) S.\\ productives cfg
 removeUnproductives :: forall cfg t nt
 		    . (Cfg cfg t nt, Ord nt, Ord t)
 		    => cfg t nt -> Maybe (FreeCfg t nt)
-removeUnproductives cfg = if S.null $ rules ss
-			      then Nothing
-			      else Just cfg'
+removeUnproductives cfg = if startSymbol cfg' `S.member` nonterminals cfg'
+			      then Just cfg'
+			      else Nothing
     where
-    cfg' = FreeCfg {
+    cfg' = removeUnproductivesUnsafe cfg
+
+-- | Returns an equivalent grammar excluding unproductive productions.
+-- Unsafe because if start symbol is not productive, results are
+-- nonsense.
+removeUnproductivesUnsafe :: forall cfg t nt
+			  . (Cfg cfg t nt, Ord nt, Ord t)
+			  => cfg t nt -> FreeCfg t nt
+removeUnproductivesUnsafe cfg =	 FreeCfg {
 	terminals' = terminals cfg,
 	startSymbol' = ss,
 	nonterminals' = nts,
 	productionRules' = rules
 	}
 
+    where
+    ss :: nt
     ss = startSymbol cfg
+
     nts :: S.Set nt
     nts = productiveNonterminals cfg
 
@@ -79,7 +91,7 @@ isProductiveProduction productiveNTs (Production hd rhs)
 -- symbol productive?
 isProductiveVs :: forall t nt
 	       . (Ord nt)
-	       => S.Set nt -> Vs t nt -> Bool
+               => S.Set nt -> Vs t nt -> Bool
 isProductiveVs productiveNTs = all isProductiveV
     where
     -- | Given a set of known productive nonterminals, is the vocabulary
