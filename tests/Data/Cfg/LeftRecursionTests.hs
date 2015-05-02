@@ -3,20 +3,16 @@ module Data.Cfg.LeftRecursionTests (
     tests
     ) where
 
-import Data.Cfg.Bnf
-import Data.Cfg.FreeCfg(FreeCfg, bimapCfg)
 import Data.Cfg.Instances()
-import Data.Cfg.LeftRecursion(LR(..), isLeftRecursive, removeLeftRecursion)
-import Data.Cfg.TestGrammars(assertEqCfg', commaList, g0, leftRec)
-import Data.List(isSuffixOf)
+import Data.Cfg.LeftRecursion(isLeftRecursive)
+import Data.Cfg.TestGrammars(g0, leftRec)
 import Test.Framework(Test, testGroup)
 import Test.Framework.Providers.HUnit(testCase)
 import Test.HUnit(assertBool)
 
 tests :: Test
 tests = testGroup "Data.Cfg.LeftRecursion" [
-    leftRecursionDetectionTest,
-    directLeftRecursionRemovalTest
+    leftRecursionDetectionTest
     ]
 
 leftRecursionDetectionTest :: Test
@@ -26,6 +22,7 @@ leftRecursionDetectionTest = testCase "left-recursion detection" $ do
     assertBool "g0 grammar's lack of recursion is detected"
 	$ (not . isLeftRecursive) g0
 
+{-
 directLeftRecursionRemovalTest :: Test
 directLeftRecursionRemovalTest = testCase "direct left-recursion removal" $ do
     assertBool "removed commaList's left recursion"
@@ -49,7 +46,7 @@ directLeftRecursionRemovalTest = testCase "direct left-recursion removal" $ do
 			     $ (reverse . drop (length "_tail") . reverse) str
 		    else LR str
 
-{-
+
 removeLeftRecursionProp :: Test
 removeLeftRecursionProp = testProperty "removeLeftRecursion does" $
     (not . isLeftRecursive)

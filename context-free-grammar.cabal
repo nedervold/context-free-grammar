@@ -52,6 +52,7 @@ Library
                       , Data.Cfg.FreeCfg
                       , Data.Cfg.Item
                       , Data.Cfg.LeftRecursion
+                      , Data.Cfg.LeftRecursion.Cycles
                       , Data.Cfg.LookaheadSet
                       , Data.Cfg.Nullable
                       , Data.Cfg.Pretty

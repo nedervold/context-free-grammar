@@ -2,18 +2,17 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Data.Cfg.Instances() where
 
-import Control.Monad(forM, liftM)
+import Control.Monad(forM)
 import Data.Char(toLower, toUpper)
 import Data.Cfg.Augment(AugNT(..), AugT(..))
 import Data.Cfg.Cfg(V(..))
 import Data.Cfg.FreeCfg(FreeCfg(..))
-import Data.Cfg.EpsilonProductions(EP(..), removeEpsilonProductions)
+import Data.Cfg.EpsilonProductions(EP(..))
 import Data.Cfg.LeftRecursion(LR(..))
 import Data.Cfg.Pretty(Pretty(..))
 import qualified Data.Map as M
 import qualified Data.Set as S
-import Test.QuickCheck(Arbitrary(..), Gen,
-    choose, elements, listOf, suchThat, vectorOf)
+import Test.QuickCheck(Arbitrary(..), choose, elements, listOf, vectorOf)
 import Text.PrettyPrint
 
 base26 :: Int -> String
@@ -91,7 +90,7 @@ instance Pretty (V String (EP String)) where
 instance Pretty (V String (LR String)) where
     pretty v = text $ case v of
 			  NT (LR nt) -> nt
-			  NT (LRTail nt) -> nt ++ "_tail"
+	                  NT (LRTail nt) -> nt ++ "_tail"
                           T t -> t
 
 instance Pretty (V (AugT String) (AugNT String)) where
