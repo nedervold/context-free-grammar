@@ -6,7 +6,7 @@ module Data.Cfg.EpsilonProductionsTests (
 import Data.Cfg.Bnf
 import Data.Cfg.EpsilonProductions
 import Data.Cfg.FreeCfg(FreeCfg(..), bimapCfg, toFreeCfg)
-import Data.Cfg.Instances(ProductiveEpsFreeCfg(..))
+import Data.Cfg.Instances()
 import Data.Cfg.TestGrammars(assertEqCfg', epsProds)
 import Test.Framework(Test, testGroup)
 import Test.Framework.Providers.HUnit(testCase)
@@ -21,8 +21,10 @@ tests = testGroup "Data.Cfg.EpsilonProductions" [
 
 epsilonProductionsProp :: Test
 epsilonProductionsProp
-    = testProperty "result of removeEpsilonProductions is epsilon-free" $
-	  isEpsilonFree . unProductiveEpsFreeCfg
+    = testProperty "result of removeEpsilonProductions is epsilon-free" f
+    where
+    f :: FreeCfg Int Int -> Bool
+    f = isEpsilonFree . removeEpsilonProductions
 
 epsilonProductionsTest :: Test
 epsilonProductionsTest = testCase "removal of eps-productions" $ do
@@ -38,6 +40,6 @@ epsilonProductionsTest = testCase "removal of eps-productions" $ do
     expected = bimapCfg id EP cfg
     cfg = [bnf|
 	b ::= Z | a Z | Z a | a Z a .
-	a ::= A .
+        a ::= A .
         |]
 

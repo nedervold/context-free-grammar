@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-} -- because "Int Int" isn't "t nt"
 {-# OPTIONS_GHC -fno-warn-orphans #-}
-module Data.Cfg.Instances(ProductiveCfg(..), ProductiveEpsFreeCfg(..)) where
+module Data.Cfg.Instances() where
 
 import Control.Monad(forM, liftM)
 import Data.Char(toLower, toUpper)
@@ -10,19 +10,11 @@ import Data.Cfg.FreeCfg(FreeCfg(..))
 import Data.Cfg.EpsilonProductions(EP(..), removeEpsilonProductions)
 import Data.Cfg.LeftRecursion(LR(..))
 import Data.Cfg.Pretty(Pretty(..))
-import Data.Cfg.Productive(removeUnproductivesUnsafe)
 import qualified Data.Map as M
 import qualified Data.Set as S
 import Test.QuickCheck(Arbitrary(..), Gen,
     choose, elements, listOf, suchThat, vectorOf)
 import Text.PrettyPrint
-
-instance Pretty (V Int Int) where
-    pretty v = text $ map f $ base26 n
-	where
-	(f, n) = case v of
-		     NT n' -> (toLower, n')
-		     T n' -> (toUpper, n')
 
 base26 :: Int -> String
 base26 n'
@@ -63,6 +55,13 @@ instance Arbitrary (FreeCfg Int Int) where
 
 ------------------------------------------------------------
 
+instance Pretty (V Int Int) where
+    pretty v = text $ map f $ base26 n
+	where
+	(f, n) = case v of
+		     NT n' -> (toLower, n')
+		     T n' -> (toUpper, n')
+
 instance Pretty (V Int (EP Int)) where
     pretty v = text $ f $ base26 n
 	where
@@ -77,49 +76,6 @@ instance Pretty (V Int (EP Int)) where
 instance Show (FreeCfg Int (EP Int)) where
     show = show . pretty
 
-------------------------------------------------------------
-
--- | A wrapper around a 'FreeCfg' that is guaranteed to be productive
-newtype ProductiveCfg = ProductiveCfg {
-    unProductiveCfg :: FreeCfg Int Int
-    }
-
-instance Show ProductiveCfg where
-    show = show . unProductiveCfg
-
-instance Arbitrary ProductiveCfg where
-    arbitrary = do
-	let arbitrary' = arbitrary :: Gen (FreeCfg Int Int)
-	cfg <- liftM removeUnproductivesUnsafe arbitrary'
-		   `suchThat` hasProductives
-	let nts = nonterminals' cfg
-	return $ ProductiveCfg
-		   $ if startSymbol' cfg `S.member` nts
-			 then cfg
-			 else cfg {
-			     startSymbol' = head $ S.toList nts
-			     }
-	where
-	hasProductives :: FreeCfg Int Int -> Bool
-	hasProductives = not . S.null . nonterminals'
-
-------------------------------------------------------------
-
--- | A wrapper around a 'FreeCfg' that is guaranteed to be productive
--- and epsilon-production free
-newtype ProductiveEpsFreeCfg = ProductiveEpsFreeCfg {
-    unProductiveEpsFreeCfg :: FreeCfg Int (EP Int)
-    }
-
-instance Show ProductiveEpsFreeCfg where
-    show = show . unProductiveEpsFreeCfg
-
-instance Arbitrary ProductiveEpsFreeCfg where
-    arbitrary = liftM (ProductiveEpsFreeCfg
-			   . removeEpsilonProductions
-			       . unProductiveCfg) arbitrary
-
-------------------------------------------------------------
 
 instance Pretty (V String String) where
     pretty v = text $ case v of
@@ -134,8 +90,8 @@ instance Pretty (V String (EP String)) where
 
 instance Pretty (V String (LR String)) where
     pretty v = text $ case v of
-                          NT (LR nt) -> nt
-                          NT (LRTail nt) -> nt ++ "_tail"
+			  NT (LR nt) -> nt
+			  NT (LRTail nt) -> nt ++ "_tail"
                           T t -> t
 
 instance Pretty (V (AugT String) (AugNT String)) where

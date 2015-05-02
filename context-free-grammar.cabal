@@ -19,8 +19,6 @@ Description:
     .
     * calculating reachability
     .
-    * calculating productivity
-    .
     * calculating first sets
     .
     * calculating follow sets
@@ -57,7 +55,6 @@ Library
                       , Data.Cfg.LookaheadSet
                       , Data.Cfg.Nullable
                       , Data.Cfg.Pretty
-                      , Data.Cfg.Productive
                       , Data.Cfg.Reachable
                       , Data.Cfg.RuleApplication
   Other-Modules:        Data.Cfg.Bnf.Parser
@@ -97,7 +94,6 @@ Test-Suite test
                       , Data.Cfg.Instances
                       , Data.Cfg.LeftRecursionTests
                       , Data.Cfg.LookaheadSetTests
-                      , Data.Cfg.ProductiveTests
                       , Data.Cfg.ReachableTests
                       , Data.Cfg.TestGrammars
   Build-Depends:        base

@@ -7,7 +7,6 @@ import qualified Data.Cfg.FollowSetTests
 import qualified Data.Cfg.FreeCfgTests
 import qualified Data.Cfg.LeftRecursionTests
 import qualified Data.Cfg.LookaheadSetTests
-import qualified Data.Cfg.ProductiveTests
 import qualified Data.Cfg.ReachableTests
 import Test.Framework(Test, testGroup)
 
@@ -20,6 +19,5 @@ tests = testGroup "Data.Cfg" [
     Data.Cfg.FreeCfgTests.tests,
     Data.Cfg.LeftRecursionTests.tests,
     Data.Cfg.LookaheadSetTests.tests,
-    Data.Cfg.ProductiveTests.tests,
     Data.Cfg.ReachableTests.tests
     ]

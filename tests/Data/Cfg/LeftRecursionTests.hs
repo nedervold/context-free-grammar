@@ -4,22 +4,17 @@ module Data.Cfg.LeftRecursionTests (
     ) where
 
 import Data.Cfg.Bnf
-import Data.Cfg.Pretty
-import Data.Cfg.EpsilonProductions(removeEpsilonProductions)
-import Data.Cfg.FreeCfg(FreeCfg, bimapCfg, toFreeCfg)
-import Data.Cfg.Instances(ProductiveEpsFreeCfg(..))
+import Data.Cfg.FreeCfg(FreeCfg, bimapCfg)
+import Data.Cfg.Instances()
 import Data.Cfg.LeftRecursion(LR(..), isLeftRecursive, removeLeftRecursion)
 import Data.Cfg.TestGrammars(assertEqCfg', commaList, g0, leftRec)
 import Data.List(isSuffixOf)
 import Test.Framework(Test, testGroup)
 import Test.Framework.Providers.HUnit(testCase)
-import Test.Framework.Providers.QuickCheck2(testProperty)
 import Test.HUnit(assertBool)
 
 tests :: Test
 tests = testGroup "Data.Cfg.LeftRecursion" [
-    -- removeLeftRecursionProp,
-    -- indirectLeftRecursionRemovalTest,
     leftRecursionDetectionTest,
     directLeftRecursionRemovalTest
     ]
@@ -54,30 +49,22 @@ directLeftRecursionRemovalTest = testCase "direct left-recursion removal" $ do
 			     $ (reverse . drop (length "_tail") . reverse) str
 		    else LR str
 
+{-
 removeLeftRecursionProp :: Test
 removeLeftRecursionProp = testProperty "removeLeftRecursion does" $
     (not . isLeftRecursive)
 	. removeLeftRecursion
 	    . removeEpsilonProductions
 		. unProductiveEpsFreeCfg
+-}
 
-indirectLeftRecursionRemovalTest :: Test
-indirectLeftRecursionRemovalTest
-    = testCase "indirect left-recursion removal" $ do
-	  print $ pretty cfg
-	  assertBool "indirectLeftRec grammar's recursion is detected"
-	      $ isLeftRecursive cfg
-	  print $ pretty cfg'
-	  error "boom!"
-
-    where
+{-
     cfg :: FreeCfg String String
     cfg = toFreeCfg [bnf|
                a ::= b B | c .
                b ::= a A | d .
                c ::= C.
                d ::= D. |]
+-}
 
-    cfg' :: FreeCfg String (LR String)
-    cfg' = removeLeftRecursion cfg
 
