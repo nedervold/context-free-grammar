@@ -58,6 +58,7 @@ Library
                       , Data.Cfg.Pretty
                       , Data.Cfg.Reachable
                       , Data.Cfg.RuleApplication
+                      , Data.Cfg.SCComp
   Other-Modules:        Data.Cfg.Bnf.Parser
                       , Data.Cfg.Bnf.QQ
                       , Data.Cfg.Bnf.Scanner

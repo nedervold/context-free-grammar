@@ -12,6 +12,7 @@ import Data.Cfg.Cfg
 import Data.Cfg.Item
 import Data.Cfg.LeftRecursion.Cycles
 import Data.Cfg.Pretty
+import Data.Cfg.SCComp(SCComp(..))
 import Data.Graph.Inductive.PatriciaTree
 import Data.Graph.Inductive.ULGraph hiding (empty)
 import qualified Data.Set as S
