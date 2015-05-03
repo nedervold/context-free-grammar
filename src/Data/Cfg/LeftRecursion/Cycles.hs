@@ -1,3 +1,5 @@
+-- | Calculating the strongly-connected components of the
+-- left-recursion graph.
 {-# LANGUAGE ScopedTypeVariables #-}
 module Data.Cfg.LeftRecursion.Cycles (
     lrSccs
@@ -7,9 +9,9 @@ import Data.Cfg.Cfg
 import Data.Cfg.Item
 import Data.Cfg.Nullable
 import Data.Cfg.SCComp(SCComp(..))
-import Data.Graph.Inductive.PatriciaTree
+import Data.Graph.Inductive.PatriciaTree(Gr)
 import Data.Graph.Inductive.ULGraph hiding (empty)
-import Data.Graph.Inductive.ULGraph.Query.DFS
+import Data.Graph.Inductive.ULGraph.Query.DFS(scc)
 import qualified Data.Set as S
 
 type E t nt = (nt, nt, Item t nt)
@@ -49,6 +51,7 @@ items isNullable prod = go $ mkInitialItem prod
 	    else [item]
 	_ -> []
 
+-- | Strongly-connected components of the left-recursion graph.
 lrSccs :: forall cfg nt t
        . (Cfg cfg t nt, Ord nt, Ord t)
        => cfg t nt

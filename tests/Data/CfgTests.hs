@@ -1,6 +1,7 @@
 module Data.CfgTests (tests) where
 
 import qualified Data.Cfg.BnfTests
+import qualified Data.Cfg.CyclicTests
 import qualified Data.Cfg.EpsilonProductionsTests
 import qualified Data.Cfg.FirstSetTests
 import qualified Data.Cfg.FollowSetTests
@@ -13,6 +14,7 @@ import Test.Framework(Test, testGroup)
 tests :: Test
 tests = testGroup "Data.Cfg" [
     Data.Cfg.BnfTests.tests,
+    Data.Cfg.CyclicTests.tests,
     Data.Cfg.FirstSetTests.tests,
     Data.Cfg.EpsilonProductionsTests.tests,
     Data.Cfg.FollowSetTests.tests,

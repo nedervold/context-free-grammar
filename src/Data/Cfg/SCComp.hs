@@ -1,3 +1,4 @@
+-- | Categorized strongly-connected components of a graph.
 {-# LANGUAGE FlexibleContexts #-} -- for Eq (gr n e)
 module Data.Cfg.SCComp (
     SCComp(..),

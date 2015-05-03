@@ -48,6 +48,7 @@ Library
                       , Data.Cfg.Augment
                       , Data.Cfg.Bnf
                       , Data.Cfg.Cfg
+                      , Data.Cfg.Cyclic
                       , Data.Cfg.EpsilonProductions
                       , Data.Cfg.FreeCfg
                       , Data.Cfg.Item
@@ -89,6 +90,7 @@ Test-Suite test
   Main-Is:              Test.hs
   Other-Modules:        Data.CfgTests
                       , Data.Cfg.BnfTests
+                      , Data.Cfg.CyclicTests
                       , Data.Cfg.EpsilonProductionsTests
                       , Data.Cfg.FirstSetTests
                       , Data.Cfg.FollowSetTests
