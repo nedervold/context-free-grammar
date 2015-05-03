@@ -4,11 +4,12 @@
 module Data.Cfg.CycleRemoval(
     SCComp(..),
     removeCycles,
+    removeCycles',
     ) where
 
 import Control.Monad.State
-import Data.Cfg.Cfg(Cfg, Production)
-import Data.Cfg.FreeCfg(FreeCfg, withProductions)
+import Data.Cfg.Cfg(Cfg, Production, ProductionMap)
+import Data.Cfg.FreeCfg(FreeCfg, withProductionMap, withProductions)
 import Data.Graph.Inductive.Graph(Graph)
 import Data.Graph.Inductive.ULGraph
 import Data.Ord(comparing)
@@ -72,9 +73,47 @@ removeCycles removeIndirect removeDirect sccs
 		let n_j = ns !! j
 		modify $ removeIndirect n_i n_j
 	    modify $ removeDirect n_i
+	where
+	n = length ns
+	ns = S.toList $ nodes gr
+    removeCyclesSccProductions (SelfLoop n _) ps = removeDirect n ps
+    removeCyclesSccProductions (Singleton _) ps = ps
+
+-- | Removes cycles from a context-free grammar.  This is a
+-- generalization of the algorithm used by Paull to remove
+-- left-recursion from a grammar.  Each strongly-connected component
+-- of the graph is processed one by one.  @direct@ is called to remove
+-- loops from its argument to itself.  @indirect@ is called to remove
+-- edges from its first argument to its second.	 It may substitute new
+-- edges to later components.
+removeCycles' :: forall cfg e gr n nt t
+	      . (Cfg cfg t nt, Graph gr, Ord nt, Ord t)
+	      => (n -> n -> ProductionMap t nt -> ProductionMap t nt)
+		     -- ^ indirect
+	      -> (n -> ProductionMap t nt -> ProductionMap t nt) -- ^ direct
+	      -> [SCComp gr n e] -- ^ components of the graph
+	      -> cfg t nt -- ^ the grammar
+	      -> FreeCfg t nt
+removeCycles' removeIndirect removeDirect sccs
+    = withProductionMap removeCyclesProductionMap
+
+    where
+    removeCyclesProductionMap :: ProductionMap t nt -> ProductionMap t nt
+    removeCyclesProductionMap pm
+	= foldl (flip removeCyclesSccProductionMap) pm sccs
+
+    removeCyclesSccProductionMap :: SCComp gr n e -> ProductionMap t nt
+						  -> ProductionMap t nt
+    removeCyclesSccProductionMap (SCComp gr) pm = flip execState pm $
+	forM_ [0 .. n-1] $ \ i -> do
+	    let n_i = ns !! i
+            forM_ [0 .. i-1] $ \ j -> do
+                let n_j = ns !! j
+                modify $ removeIndirect n_i n_j
+            modify $ removeDirect n_i
         where
         n = length ns
         ns = S.toList $ nodes gr
-    removeCyclesSccProductions (SelfLoop n _) ps = removeDirect n ps
-    removeCyclesSccProductions (Singleton _) ps = ps
+    removeCyclesSccProductionMap (SelfLoop n _) pm = removeDirect n pm
+    removeCyclesSccProductionMap (Singleton _) pm = pm
 

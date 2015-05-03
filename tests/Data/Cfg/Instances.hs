@@ -32,16 +32,16 @@ instance Show (FreeCfg Int Int) where
 
 instance Arbitrary (FreeCfg Int Int) where
     arbitrary = do
-	tCnt <- choose (1, tMax)
+	tCnt <- choose (1, tMAX)
 	let ts = [0..tCnt-1]
-	ntCnt <- choose (1, ntMax)
+	ntCnt <- choose (1, ntMAX)
 	let nts = [0..ntCnt-1]
 	let vs = map T ts ++ map NT nts
 	let genV = elements vs
-	vsCnt <- choose (0, vsMax)
+	vsCnt <- choose (0, vsMAX)
 	let genVs = vectorOf vsCnt genV
 	pairs <- forM nts $ \nt -> do
-	    altCnt <- choose (1, altMax)
+	    altCnt <- choose (1, altMAX)
 	    rhss <- vectorOf altCnt genVs
 	    return (nt, S.fromList rhss)
 
@@ -54,12 +54,10 @@ instance Arbitrary (FreeCfg Int Int) where
 	    }
 
         where
-	tMax = 25
-	-- ntMax = 100
-	-- ntMax = 25 -- hangs, even at 25
-	ntMax = 16
-	vsMax = 10
-	altMax = 5
+	tMAX = 25
+	ntMAX = 100
+	vsMAX = 10
+	altMAX = 5
 
 ------------------------------------------------------------
 

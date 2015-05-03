@@ -2,10 +2,12 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module Data.Cfg.Cyclic (
     isCyclic,
-    removeCycles
+    removeCycles,
+    removeCycles'
     ) where
 
-import Data.Cfg.Cfg(Cfg, Production(..), V(..), lookupProductions, productions)
+import Data.Cfg.Cfg(Cfg, Production(..), ProductionMap, V(..), Vs,
+    lookupProductions, productions)
 import qualified Data.Cfg.CycleRemoval as CR
 import Data.Cfg.CycleRemoval(SCComp(..))
 import Data.Cfg.EpsilonProductions(removeEpsilonProductions)
@@ -13,6 +15,7 @@ import Data.Cfg.FreeCfg(FreeCfg, toFreeCfg)
 import Data.Graph.Inductive.PatriciaTree(Gr)
 import Data.Graph.Inductive.ULGraph
 import Data.Graph.Inductive.ULGraph.Query.DFS(scc)
+import qualified Data.Map as M
 import qualified Data.Set as S
 
 -- | Is the grammar cyclic?  That is, is there a NT @a@ such that @a
@@ -52,6 +55,26 @@ removeCycles cfg = CR.removeCycles indirect direct (S.toList $ cycSccs cfg) cfg
     direct :: nt -> [Production t nt] -> [Production t nt]
     direct nt = filter (not . isCyclicLoop nt)
 
+-- | Produces an equivalent non-cyclic grammar.
+removeCycles' :: forall cfg nt t
+	     . (Cfg cfg t nt, Ord nt, Ord t)
+	     => cfg t nt -> FreeCfg t nt
+removeCycles' cfg
+    = CR.removeCycles' indirect direct (S.toList $ cycSccs cfg) cfg
+    where
+    indirect :: nt -> nt -> ProductionMap t nt -> ProductionMap t nt
+    indirect src dst pm = M.adjust f src pm
+	where
+	f :: S.Set (Vs t nt) -> S.Set (Vs t nt)
+	f rhss = if [NT dst] `S.member` rhss
+		     then [NT dst] `S.delete` rhss `S.union` (pm M.! dst)
+		     else rhss
+
+    direct :: nt -> ProductionMap t nt -> ProductionMap t nt
+    direct nt = M.adjust removeLoop nt
+	where
+	removeLoop = S.filter (/= [NT nt])
+
 cycSccs :: forall cfg nt t
        . (Cfg cfg t nt, Ord nt)
        => cfg t nt
@@ -76,7 +99,7 @@ cycSccs cfg = S.fromList $ map categorizeScc $ scc gr
 type E nt = (nt, nt, ())
 
 mkCycGraph :: (Cfg cfg t nt, Ord nt)
-	   => cfg t nt -> ULGraph Gr nt ()
+           => cfg t nt -> ULGraph Gr nt ()
 mkCycGraph = mkULGraph [] . makeEdges
 
 makeEdges :: forall cfg t nt

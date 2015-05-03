@@ -20,10 +20,10 @@ tests = testGroup "Data.Cfg.Cyclic" [
     ]
 
 cyclicProp :: Test
-cyclicProp = testProperty "result of removeCycles is not cyclic" f
+cyclicProp = testProperty "result of removeCycles is non-cyclic" f
     where
     f :: FreeCfg Int Int -> Bool
-    f = not . isCyclic . removeCycles . removeEpsilonProductions
+    f = not . isCyclic . removeCycles' . removeEpsilonProductions
 
 cyclicDetectionTest :: Test
 cyclicDetectionTest = testCase "cyclic detection" $ do
