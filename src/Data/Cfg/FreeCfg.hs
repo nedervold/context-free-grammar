@@ -3,15 +3,21 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 -- | The free 'Cfg'
 module Data.Cfg.FreeCfg (
+    -- * free context-free grammars
     FreeCfg(..),
     bimapCfg,
+    toFreeCfg,
+    -- * productions
     fromProductions,
     withProductions,
-    toFreeCfg
+    -- * production maps
+    fromProductionMap,
+    withProductionMap
     ) where
 
-import Data.Cfg.Cfg(Cfg(..), Production(..), V(..), Vs,
-    bimapProductions, lookupProductions, productions)
+import Data.Cfg.Cfg(Cfg(..), Production(..), ProductionMap, V(..), Vs,
+    bimapProductions, lookupProductions, productionMap, productions)
+import qualified Data.Map as M
 import qualified Data.Set as S
 
 -- | Represents a context-free grammar with its nonterminal and
@@ -82,5 +88,24 @@ bimapCfg f g cfg = fromProductions (g $ startSymbol cfg)
 -- | Lifts a function from 'Production's to 'Cfg's
 withProductions :: (Cfg cfg t nt, Ord nt, Ord t)
 		=> ([Production t nt] -> [Production t nt])
-                -> cfg t nt -> FreeCfg t nt
+		-> cfg t nt -> FreeCfg t nt
 withProductions f cfg = fromProductions (startSymbol cfg) $ f $ productions cfg
+
+------------------------------------------------------------
+
+-- | Creates a 'FreeCfg' from a start symbol and a 'ProductionMap'.
+-- Assumes the vocabulary items are exactly those present in the
+-- 'ProductionMap'.
+fromProductionMap :: (Ord nt, Ord t)
+		  => nt -> ProductionMap t nt -> FreeCfg t nt
+fromProductionMap ss pm = fromProductions ss $ do
+    (nt, rhss) <- M.toList pm
+    rhs <- S.toList rhss
+    return $ Production nt rhs
+
+-- | Lifts a function from 'ProductionMap's to 'Cfg's
+withProductionMap :: (Cfg cfg t nt, Ord nt, Ord t)
+		  => (ProductionMap t nt -> ProductionMap t nt)
+                  -> cfg t nt -> FreeCfg t nt
+withProductionMap f cfg
+    = fromProductionMap (startSymbol cfg) $ f $ productionMap cfg

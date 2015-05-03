@@ -18,15 +18,19 @@ module Data.Cfg.Cfg(
     usedVocabulary,
     undeclaredVocabulary,
     isFullyDeclared,
-    -- * Productions
+    -- * productions
     Production(..),
     productions,
     lookupProductions,
+    -- * production maps
+    ProductionMap,
+    productionMap,
     -- * Utility functions
     eqCfg {- ,
     compareCfg -}) where
 
 import Data.Data(Data, Typeable)
+import qualified Data.Map as M
 import qualified Data.Set as S
 
 ------------------------------------------------------------
@@ -112,6 +116,15 @@ productions cfg = do
 lookupProductions :: Eq nt => nt -> [Production t nt] -> [Vs t nt]
 lookupProductions nt prods = [ rhs | Production nt' rhs <- prods,
 				     nt == nt' ]
+
+-- | Productions of a grammar collected by their left-hand sides.
+type ProductionMap t nt = M.Map nt (S.Set (Vs t nt))
+
+-- | The 'ProductionMap' for the grammar
+productionMap :: (Cfg cfg t nt, Ord nt) => cfg t nt -> ProductionMap t nt
+productionMap cfg
+    = M.fromList [(nt, productionRules cfg nt)
+		      | nt <- S.toList $ nonterminals cfg]
 
 -- | Returns 'True' iff the two inhabitants of 'Cfg' are equal.
 eqCfg :: forall cfg cfg' t nt
