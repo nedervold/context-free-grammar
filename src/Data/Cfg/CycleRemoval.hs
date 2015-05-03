@@ -1,7 +1,7 @@
--- | Categorized strongly-connected components of a graph.
+-- | Removal of cycles from a grammar.
 {-# LANGUAGE FlexibleContexts #-} -- for Eq (gr n e)
 {-# LANGUAGE ScopedTypeVariables #-}
-module Data.Cfg.SCComp (
+module Data.Cfg.CycleRemoval(
     SCComp(..),
     removeCycles,
     ) where

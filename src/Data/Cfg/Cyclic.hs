@@ -7,7 +7,7 @@ module Data.Cfg.Cyclic (
 import Data.Cfg.Cfg(Cfg, Production(..), V(..), productions)
 import Data.Cfg.FreeCfg(toFreeCfg)
 import Data.Cfg.EpsilonProductions(removeEpsilonProductions)
-import Data.Cfg.SCComp(SCComp(..))
+import Data.Cfg.CycleRemoval(SCComp(..))
 import Data.Graph.Inductive.PatriciaTree(Gr)
 import Data.Graph.Inductive.ULGraph
 import Data.Graph.Inductive.ULGraph.Query.DFS(scc)

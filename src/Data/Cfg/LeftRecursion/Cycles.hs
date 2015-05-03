@@ -6,9 +6,9 @@ module Data.Cfg.LeftRecursion.Cycles (
     ) where
 
 import Data.Cfg.Cfg
+import Data.Cfg.CycleRemoval(SCComp(..))
 import Data.Cfg.Item
 import Data.Cfg.Nullable
-import Data.Cfg.SCComp(SCComp(..))
 import Data.Graph.Inductive.PatriciaTree(Gr)
 import Data.Graph.Inductive.ULGraph hiding (empty)
 import Data.Graph.Inductive.ULGraph.Query.DFS(scc)
