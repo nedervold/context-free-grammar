@@ -6,6 +6,7 @@ module Data.Cfg.FreeCfg (
     FreeCfg(..),
     bimapCfg,
     fromProductions,
+    withProductions,
     toFreeCfg
     ) where
 
@@ -76,4 +77,10 @@ bimapCfg :: (Cfg cfg t nt, Ord nt', Ord t')
 	 => (t -> t') -> (nt -> nt')
 	 -> cfg t nt -> FreeCfg t' nt'
 bimapCfg f g cfg = fromProductions (g $ startSymbol cfg)
-                       $ bimapProductions f g $ productions cfg
+		       $ bimapProductions f g $ productions cfg
+
+-- | Lifts a function from 'Production's to 'Cfg's
+withProductions :: (Cfg cfg t nt, Ord nt, Ord t)
+		=> ([Production t nt] -> [Production t nt])
+                -> cfg t nt -> FreeCfg t nt
+withProductions f cfg = fromProductions (startSymbol cfg) $ f $ productions cfg

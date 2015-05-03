@@ -54,7 +54,6 @@ Library
                       , Data.Cfg.FreeCfg
                       , Data.Cfg.Item
                       , Data.Cfg.LeftRecursion
-                      , Data.Cfg.LeftRecursion.Cycles
                       , Data.Cfg.LookaheadSet
                       , Data.Cfg.Nullable
                       , Data.Cfg.Pretty
@@ -70,6 +69,7 @@ Library
                       , Data.Cfg.Internal.FirstSet
                       , Data.Cfg.Internal.FollowSet
                       , Data.Cfg.Internal.PredictSet
+                      , Data.Cfg.LeftRecursion.Cycles
                       , Data.Graph.Inductive.ULGraph
                       , Data.Graph.Inductive.ULGraph.Query.DFS
   Build-Depends:        base >= 4 && < 5

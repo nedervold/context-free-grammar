@@ -7,8 +7,8 @@ module Data.Cfg.CycleRemoval(
     ) where
 
 import Control.Monad.State
-import Data.Cfg.Cfg(Cfg(startSymbol), Production, productions)
-import Data.Cfg.FreeCfg(FreeCfg, fromProductions)
+import Data.Cfg.Cfg(Cfg, Production)
+import Data.Cfg.FreeCfg(FreeCfg, withProductions)
 import Data.Graph.Inductive.Graph(Graph)
 import Data.Graph.Inductive.ULGraph
 import Data.Ord(comparing)
@@ -40,22 +40,25 @@ instance (Eq e, Eq (gr n e), Ord n) => Ord (SCComp gr n e) where
 	f (SelfLoop n _) = (1, S.singleton n)
 	f (Singleton n) = (2, S.singleton n)
 
--- | Removes cycles from a context-free grammar.
+-- | Removes cycles from a context-free grammar.  This is a
+-- generalization of the algorithm used by Paull to remove
+-- left-recursion from a grammar.  Each strongly-connected component
+-- of the graph is processed one by one.  @direct@ is called to remove
+-- loops from its argument to itself.  @indirect@ is called to remove
+-- edges from its first argument to its second.	 It may substitute new
+-- edges to later components.
 removeCycles :: forall cfg e gr n nt t
 	     . (Cfg cfg t nt, Graph gr, Ord nt, Ord t)
 	     => (n -> n -> [Production t nt] -> [Production t nt])
-	     -> (n -> [Production t nt] -> [Production t nt])
-	     -> [SCComp gr n e] -> cfg t nt -> FreeCfg t nt
+		    -- ^ indirect
+	     -> (n -> [Production t nt] -> [Production t nt]) -- ^ direct
+	     -> [SCComp gr n e] -- ^ components of the graph
+	     -> cfg t nt -- ^ the grammar
+	     -> FreeCfg t nt
 removeCycles removeIndirect removeDirect sccs
     = withProductions removeCyclesProductions
 
     where
-    -- | Lifts a function from 'Production's to 'Cfg's
-    withProductions :: ([Production t nt] -> [Production t nt])
-		    -> cfg t nt -> FreeCfg t nt
-    withProductions f cfg = fromProductions (startSymbol cfg)
-				$ f $ productions cfg
-
     removeCyclesProductions :: [Production t nt] -> [Production t nt]
     removeCyclesProductions ps
 	= foldl (flip removeCyclesSccProductions) ps sccs
@@ -68,7 +71,7 @@ removeCycles removeIndirect removeDirect sccs
 	    forM_ [0 .. i-1] $ \ j -> do
 		let n_j = ns !! j
 		modify $ removeIndirect n_i n_j
-            modify $ removeDirect n_i
+	    modify $ removeDirect n_i
         where
         n = length ns
         ns = S.toList $ nodes gr
