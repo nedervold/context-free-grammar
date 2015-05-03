@@ -12,9 +12,11 @@ module Data.Cfg.FreeCfg (
     withProductions,
     -- * production maps
     fromProductionMap,
-    withProductionMap
+    withProductionMap,
+    withProductionMapM
     ) where
 
+import Control.Monad(liftM)
 import Data.Cfg.Cfg(Cfg(..), Production(..), ProductionMap, V(..), Vs,
     bimapProductions, lookupProductions, productionMap, productions)
 import qualified Data.Map as M
@@ -106,6 +108,13 @@ fromProductionMap ss pm = fromProductions ss $ do
 -- | Lifts a function from 'ProductionMap's to 'Cfg's
 withProductionMap :: (Cfg cfg t nt, Ord nt, Ord t)
 		  => (ProductionMap t nt -> ProductionMap t nt)
-                  -> cfg t nt -> FreeCfg t nt
+		  -> cfg t nt -> FreeCfg t nt
 withProductionMap f cfg
     = fromProductionMap (startSymbol cfg) $ f $ productionMap cfg
+
+-- | Lifts a function from 'ProductionMap's to 'Cfg's
+withProductionMapM :: (Cfg cfg t nt, Monad m, Ord nt, Ord t)
+		   => (ProductionMap t nt -> m (ProductionMap t nt))
+                   -> cfg t nt -> m (FreeCfg t nt)
+withProductionMapM f cfg
+    = liftM (fromProductionMap (startSymbol cfg)) $ f $ productionMap cfg

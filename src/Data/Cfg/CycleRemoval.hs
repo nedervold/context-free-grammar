@@ -5,11 +5,13 @@ module Data.Cfg.CycleRemoval(
     SCComp(..),
     removeCycles,
     removeCycles',
+    removeCyclesM',
     ) where
 
 import Control.Monad.State
 import Data.Cfg.Cfg(Cfg, Production, ProductionMap)
-import Data.Cfg.FreeCfg(FreeCfg, withProductionMap, withProductions)
+import Data.Cfg.FreeCfg(FreeCfg, withProductionMap, withProductionMapM,
+    withProductions)
 import Data.Graph.Inductive.Graph(Graph)
 import Data.Graph.Inductive.ULGraph
 import Data.Ord(comparing)
@@ -107,13 +109,58 @@ removeCycles' removeIndirect removeDirect sccs
     removeCyclesSccProductionMap (SCComp gr) pm = flip execState pm $
 	forM_ [0 .. n-1] $ \ i -> do
 	    let n_i = ns !! i
-            forM_ [0 .. i-1] $ \ j -> do
-                let n_j = ns !! j
-                modify $ removeIndirect n_i n_j
-            modify $ removeDirect n_i
-        where
-        n = length ns
-        ns = S.toList $ nodes gr
+	    forM_ [0 .. i-1] $ \ j -> do
+		let n_j = ns !! j
+		modify $ removeIndirect n_i n_j
+	    modify $ removeDirect n_i
+	where
+	n = length ns
+	ns = S.toList $ nodes gr
     removeCyclesSccProductionMap (SelfLoop n _) pm = removeDirect n pm
     removeCyclesSccProductionMap (Singleton _) pm = pm
 
+-- | Removes cycles from a context-free grammar monadically.  This is
+-- a generalization of the algorithm used by Paull to remove
+-- left-recursion from a grammar.  Each strongly-connected component
+-- of the graph is processed one by one.  @directM@ is called to
+-- remove loops from its argument to itself.  @indirectM@ is called to
+-- remove edges from its first argument to its second.  It may
+-- substitute new edges to later components.
+removeCyclesM' :: forall cfg e gr m n nt t
+	       . (Cfg cfg t nt, Graph gr, Monad m, Ord nt, Ord t)
+	       => (n -> n -> ProductionMap t nt -> m (ProductionMap t nt))
+		      -- ^ indirectM
+	       -> (n -> ProductionMap t nt -> m (ProductionMap t nt))
+		      -- ^ directM
+	       -> [SCComp gr n e] -- ^ components of the graph
+	       -> cfg t nt -- ^ the grammar
+	       -> m (FreeCfg t nt)
+removeCyclesM' indirectM directM sccs
+    = withProductionMapM removeCyclesProductionMapM
+
+    where
+    removeCyclesProductionMapM :: ProductionMap t nt -> m (ProductionMap t nt)
+    removeCyclesProductionMapM pm
+	= foldM (flip removeCyclesSccProductionMapM) pm sccs
+
+    removeCyclesSccProductionMapM :: SCComp gr n e -> ProductionMap t nt
+						   -> m (ProductionMap t nt)
+    removeCyclesSccProductionMapM (SCComp gr) pm = flip execStateT pm $
+	forM_ [0 .. n-1] $ \ i -> do
+	    let n_i = ns !! i
+            forM_ [0 .. i-1] $ \ j -> do
+                let n_j = ns !! j
+                modify' $ indirectM n_i n_j
+            modify' $ directM n_i
+        where
+        n = length ns
+        ns = S.toList $ nodes gr
+
+    removeCyclesSccProductionMapM (SelfLoop n _) pm = directM n pm
+    removeCyclesSccProductionMapM (Singleton _) pm = return pm
+
+    modify' :: (s -> m s) -> StateT s m ()
+    modify' f = do
+        s <- get
+        s' <- lift $ f s
+        put s'
