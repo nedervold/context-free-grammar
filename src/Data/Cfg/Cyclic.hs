@@ -26,6 +26,7 @@ isCyclic cfg = case S.toList
 		   SelfLoop _ _ : _ -> True
 		   _ -> False
 
+-- | Produces an equivalent non-cyclic grammar.
 removeCycles :: forall cfg nt t
 	     . (Cfg cfg t nt, Ord nt, Ord t)
 	     => cfg t nt -> FreeCfg t nt
