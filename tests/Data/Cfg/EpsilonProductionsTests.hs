@@ -4,7 +4,8 @@ module Data.Cfg.EpsilonProductionsTests (
     ) where
 
 import Data.Cfg.Bnf
-import Data.Cfg.EpsilonProductions
+import Data.Cfg.EpsilonProductions(EP(..), isEpsilonFree,
+    removeEpsilonProductions)
 import Data.Cfg.FreeCfg(FreeCfg(..), bimapCfg, toFreeCfg)
 import Data.Cfg.Instances()
 import Data.Cfg.TestGrammars(assertEqCfg', epsProds)

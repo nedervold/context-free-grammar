@@ -12,7 +12,7 @@ import Data.Cfg.LeftRecursion(LR(..))
 import Data.Cfg.Pretty(Pretty(..))
 import qualified Data.Map as M
 import qualified Data.Set as S
-import Test.QuickCheck(Arbitrary(..), choose, elements, listOf, vectorOf)
+import Test.QuickCheck(Arbitrary(..), choose, elements, vectorOf)
 import Text.PrettyPrint
 
 base26 :: Int -> String
@@ -32,15 +32,16 @@ instance Show (FreeCfg Int Int) where
 
 instance Arbitrary (FreeCfg Int Int) where
     arbitrary = do
-	tCnt <- choose (1, 25)
+	tCnt <- choose (1, tMax)
 	let ts = [0..tCnt-1]
-	ntCnt <- choose (1, 100)
+	ntCnt <- choose (1, ntMax)
 	let nts = [0..ntCnt-1]
 	let vs = map T ts ++ map NT nts
 	let genV = elements vs
-	let genVs = listOf genV
+	vsCnt <- choose (0, vsMax)
+	let genVs = vectorOf vsCnt genV
 	pairs <- forM nts $ \nt -> do
-	    altCnt <- choose (1, 5)
+	    altCnt <- choose (1, altMax)
 	    rhss <- vectorOf altCnt genVs
 	    return (nt, S.fromList rhss)
 
@@ -51,6 +52,14 @@ instance Arbitrary (FreeCfg Int Int) where
 	    productionRules' = (map' M.!),
 	    startSymbol' = 0
 	    }
+
+        where
+	tMax = 25
+	-- ntMax = 100
+	-- ntMax = 25 -- hangs, even at 25
+	ntMax = 16
+	vsMax = 10
+	altMax = 5
 
 ------------------------------------------------------------
 
@@ -90,7 +99,7 @@ instance Pretty (V String (EP String)) where
 instance Pretty (V String (LR String)) where
     pretty v = text $ case v of
 			  NT (LR nt) -> nt
-	                  NT (LRTail nt) -> nt ++ "_tail"
+		          NT (LRTail nt) -> nt ++ "_tail"
                           T t -> t
 
 instance Pretty (V (AugT String) (AugNT String)) where

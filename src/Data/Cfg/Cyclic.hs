@@ -1,13 +1,15 @@
 -- | Functionality for detecting and removing cycles.
 {-# LANGUAGE ScopedTypeVariables #-}
 module Data.Cfg.Cyclic (
-    isCyclic
+    isCyclic,
+    removeCycles
     ) where
 
-import Data.Cfg.Cfg(Cfg, Production(..), V(..), productions)
-import Data.Cfg.FreeCfg(toFreeCfg)
-import Data.Cfg.EpsilonProductions(removeEpsilonProductions)
+import Data.Cfg.Cfg(Cfg, Production(..), V(..), lookupProductions, productions)
+import qualified Data.Cfg.CycleRemoval as CR
 import Data.Cfg.CycleRemoval(SCComp(..))
+import Data.Cfg.EpsilonProductions(removeEpsilonProductions)
+import Data.Cfg.FreeCfg(FreeCfg, toFreeCfg)
 import Data.Graph.Inductive.PatriciaTree(Gr)
 import Data.Graph.Inductive.ULGraph
 import Data.Graph.Inductive.ULGraph.Query.DFS(scc)
@@ -23,6 +25,31 @@ isCyclic cfg = case S.toList
 		   SCComp _ : _ -> True
 		   SelfLoop _ _ : _ -> True
 		   _ -> False
+
+removeCycles :: forall cfg nt t
+	     . (Cfg cfg t nt, Ord nt, Ord t)
+	     => cfg t nt -> FreeCfg t nt
+removeCycles cfg = CR.removeCycles indirect direct (S.toList $ cycSccs cfg) cfg
+    where
+    indirect :: nt -> nt -> [Production t nt] -> [Production t nt]
+    indirect src dst ps = do
+	p <- ps
+	if isCyclicEdge src dst p
+	    then do
+		rhs <- lookupProductions dst ps
+		return $ Production src rhs
+	    else return p
+
+    isCyclicEdge :: nt -> nt -> Production t nt -> Bool
+    isCyclicEdge src dst (Production src' [NT dst'])
+	= src == src' && dst == dst'
+    isCyclicEdge _ _ _ = False
+
+    isCyclicLoop :: nt -> Production t nt -> Bool
+    isCyclicLoop nt = isCyclicEdge nt nt
+
+    direct :: nt -> [Production t nt] -> [Production t nt]
+    direct nt = filter (not . isCyclicLoop nt)
 
 cycSccs :: forall cfg nt t
        . (Cfg cfg t nt, Ord nt)
@@ -52,6 +79,6 @@ mkCycGraph :: (Cfg cfg t nt, Ord nt)
 mkCycGraph = mkULGraph [] . makeEdges
 
 makeEdges :: forall cfg t nt
-	  . (Cfg cfg t nt, Ord nt)
+          . (Cfg cfg t nt, Ord nt)
           => cfg t nt -> [E nt]
 makeEdges cfg = [ (nt, nt', ()) | Production nt [NT nt'] <- productions cfg]
