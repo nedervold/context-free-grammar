@@ -37,10 +37,10 @@ instance Arbitrary (FreeCfg Int Int) where
 	ntCnt <- choose (1, ntMAX)
 	let nts = [0..ntCnt-1]
 	let vs = map T ts ++ map NT nts
-	let genV = elements vs
-	vsCnt <- choose (0, vsMAX)
-	let genVs = vectorOf vsCnt genV
 	pairs <- forM nts $ \nt -> do
+	    let genV = elements vs
+	    vsCnt <- choose (0, vsMAX)
+	    let genVs = vectorOf vsCnt genV
 	    altCnt <- choose (1, altMAX)
 	    rhss <- vectorOf altCnt genVs
 	    return (nt, S.fromList rhss)
@@ -53,10 +53,12 @@ instance Arbitrary (FreeCfg Int Int) where
 	    startSymbol' = 0
 	    }
 
-        where
+	where
 	tMAX = 25
-	ntMAX = 100
-	vsMAX = 10
+	-- ntMAX = 100
+	ntMAX = 8
+	-- vsMAX = 8
+	vsMAX = 6
 	altMAX = 5
 
 ------------------------------------------------------------
@@ -97,14 +99,41 @@ instance Pretty (V String (EP String)) where
 instance Pretty (V String (LR String)) where
     pretty v = text $ case v of
 			  NT (LR nt) -> nt
-		          NT (LRTail nt) -> nt ++ "_tail"
-                          T t -> t
+			  NT (LRTail nt) -> nt ++ "_tail"
+			  T t -> t
 
 instance Pretty (V (AugT String) (AugNT String)) where
     pretty v = text $ case v of
-                          NT nt -> case nt of
-                              StartSymbol -> "$start"
-                              AugNT s -> s
-                          T t -> case t of
-                              EOF -> "$EOF"
-                              AugT s -> s
+			  NT nt -> case nt of
+			      StartSymbol -> "$start"
+			      AugNT s -> s
+			  T t -> case t of
+			      EOF -> "$EOF"
+			      AugT s -> s
+
+-- temporary for development of left-recursion
+instance Show (FreeCfg String (LR (EP String))) where
+    show = show . pretty
+
+instance Pretty (V String (LR (EP String))) where
+    pretty v = text $ case v of
+			  NT (LR ep) -> map toLower $ f ep
+                          NT (LRTail ep) -> map toLower (f ep ++ "_tail")
+                          T str -> map toUpper str
+        where
+        f ep = case ep of
+            EP nt -> nt
+            EPStart nt -> nt ++ "_start"
+
+instance Show (FreeCfg Int (LR (EP Int))) where
+    show = show . pretty
+
+instance Pretty (V Int (LR (EP Int))) where
+    pretty v = text $ case v of
+                          NT (LR ep) -> map toLower $ f ep
+                          NT (LRTail ep) -> map toLower (f ep ++ "_tail")
+                          T t -> map toUpper $ base26 t
+        where
+        f ep = case ep of
+            EP nt -> base26 nt
+            EPStart nt -> base26 nt ++ "_start"
