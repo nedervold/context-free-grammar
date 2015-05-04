@@ -53,6 +53,7 @@ Library
                       , Data.Cfg.EpsilonProductions
                       , Data.Cfg.FreeCfg
                       , Data.Cfg.Item
+                      , Data.Cfg.LeftFactor
                       , Data.Cfg.LeftRecursion
                       , Data.Cfg.LookaheadSet
                       , Data.Cfg.Nullable
@@ -96,6 +97,7 @@ Test-Suite test
                       , Data.Cfg.FollowSetTests
                       , Data.Cfg.FreeCfgTests
                       , Data.Cfg.Instances
+                      , Data.Cfg.LeftFactorTests
                       , Data.Cfg.LeftRecursionTests
                       , Data.Cfg.LookaheadSetTests
                       , Data.Cfg.ReachableTests

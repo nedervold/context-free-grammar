@@ -9,6 +9,7 @@ module Data.Cfg.TestGrammars (
     g0,
     leftRec,
     micro,
+    micro',
     wiki,
     -- * Analysis of grammars for sanity checks
     commaListAnalysis,
@@ -68,6 +69,26 @@ micro = [bnf|
     expression ::= primary primary_tail.
     primary_tail ::= add_op primary primary_tail.
     primary_tail ::=.
+    primary ::= LPAREN expression RPAREN.
+    primary ::= ID.
+    primary ::= INT_LITERAL.
+    add_op ::= PLUS.
+    add_op ::= MINUS.
+    |]
+
+-- | A variation on micro.
+micro' :: Grammar String String
+micro' = [bnf|
+    program ::= BEGIN statement_list END.
+    statement_list ::= statement statement_list.
+    statement_list ::= statement.
+    statement ::= ID ASSIGN expression SEMI.
+    statement ::= READ LPAREN id_list RPAREN SEMI.
+    statement ::= WRITE LPAREN expr_list RPAREN SEMI.
+    id_list ::= ID COMMA id_list | ID.
+    expr_list ::= expression COMMA expression_list.
+    expr_list ::= expression.
+    expression ::= primary add_op expression | primary .
     primary ::= LPAREN expression RPAREN.
     primary ::= ID.
     primary ::= INT_LITERAL.
