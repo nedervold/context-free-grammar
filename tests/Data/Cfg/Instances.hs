@@ -4,15 +4,17 @@ module Data.Cfg.Instances() where
 
 import Control.Monad(forM)
 import Data.Char(toLower, toUpper)
-import Data.Cfg.Augment(AugNT(..), AugT(..))
-import Data.Cfg.Cfg(V(..))
-import Data.Cfg.FreeCfg(FreeCfg(..))
+-- import Data.Cfg.Augment(AugNT(..), AugT(..))
+import Data.Cfg.Cfg(Cfg(..), V(..), productions)
+import Data.Cfg.FreeCfg(FreeCfg(..), fromProductions)
 import Data.Cfg.EpsilonProductions(EP(..))
+import Data.Cfg.LeftFactor(LF(..))
 import Data.Cfg.LeftRecursion(LR(..))
 import Data.Cfg.Pretty(Pretty(..))
 import qualified Data.Map as M
 import qualified Data.Set as S
 import Test.QuickCheck(Arbitrary(..), choose, elements, vectorOf)
+import Test.QuickCheck.Arbitrary(shrinkList)
 import Text.PrettyPrint
 
 base26 :: Int -> String
@@ -60,6 +62,12 @@ instance Arbitrary (FreeCfg Int Int) where
 	vsMAX = 8
 	altMAX = 5
 
+    shrink _ = []
+{-
+    shrink cfg = map (fromProductions (startSymbol cfg))
+		     $ shrinkList (const []) $ productions cfg
+	-}
+
 ------------------------------------------------------------
 
 instance Pretty (V Int Int) where
@@ -83,7 +91,6 @@ instance Pretty (V Int (EP Int)) where
 instance Show (FreeCfg Int (EP Int)) where
     show = show . pretty
 
-
 instance Pretty (V String String) where
     pretty v = text $ case v of
 			  NT nt -> nt
@@ -93,7 +100,17 @@ instance Pretty (V String (EP String)) where
     pretty v = text $ case v of
 			  NT (EP nt) -> nt
 			  NT (EPStart nt) -> nt ++ "_start"
-                          T t -> t
+			  T t -> t
+
+instance Pretty (V String (LF String String)) where
+    pretty v = case v of
+	NT (LF nt) -> text $ map toLower nt
+	NT (LFTail nt vs) -> braces $ hsep [pretty (NT (LF nt)
+                                              :: V String (LF String String)),
+                                            text "::=",
+                                            hsep (map pretty vs),
+                                            text "..."]
+        T t -> text $ map toUpper t
 
 instance Pretty (V String (LR String)) where
     pretty v = text $ case v of
@@ -101,11 +118,3 @@ instance Pretty (V String (LR String)) where
                           NT (LRTail nt) -> nt ++ "_tail"
                           T t -> t
 
-instance Pretty (V (AugT String) (AugNT String)) where
-    pretty v = text $ case v of
-                          NT nt -> case nt of
-                              StartSymbol -> "$start"
-                              AugNT s -> s
-                          T t -> case t of
-                              EOF -> "$EOF"
-                              AugT s -> s
