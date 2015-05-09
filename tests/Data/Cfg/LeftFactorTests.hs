@@ -2,8 +2,7 @@ module Data.Cfg.LeftFactorTests (
     tests
     ) where
 
-import Data.Cfg.Bnf(bnf)
-import Data.Cfg.FreeCfg(FreeCfg, toFreeCfg)
+import Data.Cfg.FreeCfg(FreeCfg)
 import Data.Cfg.Instances()
 import Data.Cfg.LeftFactor(hasLeftFactors, leftFactor)
 import Data.Cfg.TestGrammars(micro, micro')

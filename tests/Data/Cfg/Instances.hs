@@ -4,9 +4,8 @@ module Data.Cfg.Instances() where
 
 import Control.Monad(forM)
 import Data.Char(toLower, toUpper)
--- import Data.Cfg.Augment(AugNT(..), AugT(..))
-import Data.Cfg.Cfg(Cfg(..), V(..), productions)
-import Data.Cfg.FreeCfg(FreeCfg(..), fromProductions)
+import Data.Cfg.Cfg(V(..))
+import Data.Cfg.FreeCfg(FreeCfg(..))
 import Data.Cfg.EpsilonProductions(EP(..))
 import Data.Cfg.LeftFactor(LF(..))
 import Data.Cfg.LeftRecursion(LR(..))
@@ -14,7 +13,6 @@ import Data.Cfg.Pretty(Pretty(..))
 import qualified Data.Map as M
 import qualified Data.Set as S
 import Test.QuickCheck(Arbitrary(..), choose, elements, vectorOf)
-import Test.QuickCheck.Arbitrary(shrinkList)
 import Text.PrettyPrint
 
 base26 :: Int -> String
@@ -57,16 +55,9 @@ instance Arbitrary (FreeCfg Int Int) where
 
 	where
 	tMAX = 25
-	-- ntMAX = 100
-	ntMAX = 80
+	ntMAX = 100
 	vsMAX = 8
 	altMAX = 5
-
-    shrink _ = []
-{-
-    shrink cfg = map (fromProductions (startSymbol cfg))
-		     $ shrinkList (const []) $ productions cfg
-	-}
 
 ------------------------------------------------------------
 
@@ -106,7 +97,7 @@ instance Pretty (V String (LF String String)) where
     pretty v = case v of
 	NT (LF nt) -> text $ map toLower nt
 	NT (LFTail nt vs) -> braces $ hsep [pretty (NT (LF nt)
-                                              :: V String (LF String String)),
+		                              :: V String (LF String String)),
                                             text "::=",
                                             hsep (map pretty vs),
                                             text "..."]
