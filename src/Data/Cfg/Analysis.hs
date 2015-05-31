@@ -50,16 +50,24 @@ mkAnalysis cfg = Analysis {
     followSet = fols,
     predictSet = predict,
     isLL1 = isLL1',
-    ll1Info = (ll1InfoMap M.!)
+    ll1Info = ll1Info'
     }
     where
     bcfg = toFreeCfg cfg
     cfg' = augmentCfg bcfg
     fsm = I.firstSetMap cfg'
-    fs nt = fsm M.! nt
+
+    -- TODO: this kludge should be back-ported into the calculation
+    fs nt = M.findWithDefault empty nt fsm
     folm = I.followSetMap cfg' fs
-    fols nt = folm M.! nt
+
+    fols nt = M.findWithDefault err nt folm
+	where
+	err = error "mkAnalysis.fols"
     predict = I.predictSet fs fols
     ll1InfoMap = I.ll1InfoMap cfg' predict
     isLL1' = I.isLL1 ll1InfoMap
 
+    ll1Info' nt = M.findWithDefault err nt ll1InfoMap
+        where
+        err = error "mkAnalysis.ll1Info'"

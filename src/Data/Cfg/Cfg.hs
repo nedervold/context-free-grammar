@@ -10,10 +10,6 @@ module Data.Cfg.Cfg(
     Vs,
     isNT,
     isT,
-    bimapV,
-    bimapVs,
-    bimapProduction,
-    bimapProductions,
     vocabulary,
     usedVocabulary,
     undeclaredVocabulary,
@@ -29,6 +25,7 @@ module Data.Cfg.Cfg(
     eqCfg {- ,
     compareCfg -}) where
 
+import Data.Bifunctor
 import Data.Data(Data, Typeable)
 import qualified Data.Map as M
 import qualified Data.Set as S
@@ -55,6 +52,14 @@ data V t nt = T t	-- ^ a terminal
     | NT nt		-- ^ a nonterminal
     deriving (Eq, Ord, Show, Data, Typeable)
 
+instance Functor (V t) where
+    fmap _f (T t) = T t
+    fmap f (NT nt) = NT $ f nt
+
+instance Bifunctor V where
+    bimap f _g (T t) = T $ f t
+    bimap _f g (NT nt) = NT $ g nt
+
 -- | Returns 'True' iff the vocabularly symbols is a terminal.
 isT :: V t nt -> Bool
 isT (T _) = True
@@ -65,15 +70,6 @@ isNT :: V t nt -> Bool
 isNT (NT _) = True
 isNT _ = False
 
-instance Functor (V t) where
-    fmap _f (T t) = T t
-    fmap f (NT nt) = NT $ f nt
-
--- | Maps over the terminal and nonterminal symbols in a 'V'.
-bimapV :: (t -> t') -> (nt -> nt') -> V t nt -> V t' nt'
-bimapV f _g (T t) = T $ f t
-bimapV _f g (NT nt) = NT $ g nt
-
 -- | Returns the vocabulary symbols of the grammar: elements of
 -- 'terminals' and 'nonterminals'.
 vocabulary :: (Cfg cfg t nt, Ord nt, Ord t) => cfg t nt -> S.Set (V t nt)
@@ -83,10 +79,6 @@ vocabulary cfg = S.map T (terminals cfg)
 -- | Synonym for lists of vocabulary symbols.
 type Vs t nt = [V t nt]
 
--- | Maps over the terminal and nonterminal symbols in a list of 'V's.
-bimapVs :: (t -> t') -> (nt -> nt') -> Vs t nt -> Vs t' nt'
-bimapVs f g = map (bimapV f g)
-
 -- | Productions over vocabulary symbols
 data Production t nt = Production {
     productionHead :: nt,
@@ -94,16 +86,8 @@ data Production t nt = Production {
     }
     deriving (Eq, Ord, Show, Data, Typeable)
 
--- | Maps over the terminal and nonterminal symbols in a 'Production'
-bimapProduction :: (t -> t') -> (nt -> nt')
-		-> Production t nt -> Production t' nt'
-bimapProduction f g (Production nt rhs) = Production (g nt) (bimapVs f g rhs)
-
--- | Maps over the terminal and nonterminal symbols in a list of
--- 'Production's.
-bimapProductions :: (t -> t') -> (nt -> nt')
-		-> [Production t nt] -> [Production t' nt']
-bimapProductions f g = map $ bimapProduction f g
+instance Bifunctor Production where
+    bimap f g (Production nt rhs) = Production (g nt) (map (bimap f g) rhs)
 
 -- | The productions of the grammar.
 productions :: (Cfg cfg t nt) => cfg t nt -> [Production t nt]

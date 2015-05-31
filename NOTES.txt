@@ -2,6 +2,14 @@ Notes for context-free-grammar.
 
 ----
 
+TODOs:
+
+look at removeCycles and removeCycles'
+firstmap is not fully inhabited
+Reachable is included in Cfg but none of the others
+
+----
+
 Should the arguments of cpretty be flipped?  I'm usually currying on
 the context.  Answer is no, because we want to use it as a Monad.
 Context comes last because it's the constant in the MonadReader.

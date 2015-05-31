@@ -5,8 +5,8 @@
 module Data.Cfg.FreeCfg (
     -- * free context-free grammars
     FreeCfg(..),
-    bimapCfg,
     toFreeCfg,
+    bimapCfg,
     -- * productions
     fromProductions,
     withProductions,
@@ -18,7 +18,8 @@ module Data.Cfg.FreeCfg (
 
 import Control.Monad(liftM)
 import Data.Cfg.Cfg(Cfg(..), Production(..), ProductionMap, V(..), Vs,
-    bimapProductions, lookupProductions, productionMap, productions)
+    lookupProductions, productionMap, productions)
+import Data.Bifunctor
 import qualified Data.Map as M
 import qualified Data.Set as S
 
@@ -84,8 +85,12 @@ fromProductions start prods = FreeCfg {
 bimapCfg :: (Cfg cfg t nt, Ord nt', Ord t')
 	 => (t -> t') -> (nt -> nt')
 	 -> cfg t nt -> FreeCfg t' nt'
+
+    -- We can't define FreeCfg as an instance of Bifunctor
+    -- because of the constraints on t' and nt'
+
 bimapCfg f g cfg = fromProductions (g $ startSymbol cfg)
-		       $ bimapProductions f g $ productions cfg
+		       $ map (bimap f g) $ productions cfg
 
 -- | Lifts a function from 'Production's to 'Cfg's
 withProductions :: (Cfg cfg t nt, Ord nt, Ord t)

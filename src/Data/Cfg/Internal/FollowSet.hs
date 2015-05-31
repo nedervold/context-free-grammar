@@ -49,7 +49,10 @@ firstsOfFollowSite firsts knownFollows followSite
     where
     firstsOfNTTail, firstsOfProdHead  :: LookaheadSet t
     firstsOfNTTail = firstsOfVs firsts (ntTail followSite)
-    firstsOfProdHead = knownFollows M.! prodHead followSite
+    -- firstsOfProdHead = knownFollows M.! prodHead followSite
+    firstsOfProdHead = M.findWithDefault err (prodHead followSite) knownFollows
+	where
+	err = error "firstsOfFollowSite.firstsOfProdHead"
 
 -- | Returns the follow sets for the grammar as a map.
 followSetMap :: forall cfg t nt
@@ -73,7 +76,7 @@ followSetMap cfg fs = fixedPoint go initMap
     initMap :: M.Map (AugNT nt) (LookaheadSet t)
     initMap = M.fromList [(nt, case nt of
 				   StartSymbol -> singleton EOF
-                                   _ -> empty) | nt <- nts]
+				   _ -> empty) | nt <- nts]
         where
         nts = S.toList $ nonterminals cfg
 
