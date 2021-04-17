@@ -20,9 +20,9 @@ tests = testGroup "Data.Cfg.LeftFactor" [
 leftFactorDetectionTest :: Test
 leftFactorDetectionTest = testCase "left-factors detection" $ do
     assertBool "micro' grammar's left factors are detected"
-	$ hasLeftFactors micro'
+        $ hasLeftFactors micro'
     assertBool "micro grammar's lack of left factors is detected"
-	$ (not . hasLeftFactors) micro
+        $ (not . hasLeftFactors) micro
 
 leftFactorProp :: Test
 leftFactorProp

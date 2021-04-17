@@ -20,10 +20,10 @@ import Data.Cfg.Cfg
 -- | A parsing \"item\": a partially processed production.
 data Item t nt = Item {
     mark :: Int,
-	-- ^ The index showing how many vocabulary term of the production
-	-- have been processed
+        -- ^ The index showing how many vocabulary term of the production
+        -- have been processed
     production :: Production t nt
-	-- ^ The production for the 'Item'
+        -- ^ The production for the 'Item'
     }
     deriving (Eq, Ord)
 
@@ -47,7 +47,7 @@ atEnd = null . afterMark
 
 -- | The processed vocabulary terms of the production.
 beforeMark :: Item t nt -> [V t nt]
-beforeMark item	 = take (mark item) $ productionRhs (production item)
+beforeMark item  = take (mark item) $ productionRhs (production item)
 
 -- | The unprocessed vocabulary terms of the production.
 afterMark :: Item t nt -> [V t nt]
@@ -56,5 +56,5 @@ afterMark item = drop (mark item) $ productionRhs (production item)
 -- | The next vocabulary term to be processed, if there is one.
 nextV :: Item t nt -> Maybe (V t nt)
 nextV item = case afterMark item of
-		 [] -> Nothing
-	         (v : _) -> Just v
+                 [] -> Nothing
+                 (v : _) -> Just v

@@ -14,7 +14,7 @@ import qualified Data.Set as S
 -- head of the first of the productions.
 newtype Grammar t nt = Grammar {
     grammarProductions :: [Production t nt]
-	-- ^ the productions of the 'Grammar'
+        -- ^ the productions of the 'Grammar'
     }
     deriving (Data, Typeable)
 
@@ -22,7 +22,7 @@ instance (Ord nt, Ord t) => Cfg Grammar t nt where
     terminals = S.fromList . concatMap terminalsProd . grammarProductions
     nonterminals = S.fromList . concatMap nonterminalsProd . grammarProductions
     productionRules g nt
-	= S.fromList $ lookupProductions nt $ grammarProductions g
+        = S.fromList $ lookupProductions nt $ grammarProductions g
     startSymbol = productionHead . head . grammarProductions
 
 nonterminalsVs :: Vs t nt -> [nt]

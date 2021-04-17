@@ -24,23 +24,23 @@ tests = testGroup "Data.Cfg.Reachable" [
 wikiTest :: Test
 wikiTest = testCase "wiki reachability test" $ do
     assertEqual "reachables" (S.fromList $ words "s b c e")
-			     (reachables wiki)
+                             (reachables wiki)
     assertEqual "unreachables" (S.fromList $ words "d")
-			       (unreachables wiki)
+                               (unreachables wiki)
     assertEqCfg' "reachability" expected $ removeUnreachables wiki
 
     where
     reach = [bnf|
-	s ::= b B | c C | e E.
-	b ::= b B | B.
-	c ::= c C | C.
-	e ::= e E.
-	|]
+        s ::= b B | c C | e E.
+        b ::= b B | B.
+        c ::= c C | C.
+        e ::= e E.
+        |]
 
     expected :: FreeCfg String String
     expected = (toFreeCfg reach){
-	    terminals' = terminals wiki
-	}
+            terminals' = terminals wiki
+        }
 
 removeUnreachablesProp :: Test
 removeUnreachablesProp = testProperty "removeUnreachables does" f

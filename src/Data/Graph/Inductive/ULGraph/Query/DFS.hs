@@ -68,7 +68,7 @@ dfsWith' f gr = G.dfsWith' (toFglCFun gr f) (toGraph gr)
 -- | Depth-first forest from a list of nodes, using the 'CFun' to
 -- generate the forest of results.
 dffWith :: (G.Graph gr, Ord n)
-	=> CFun n e r -> [n] -> ULGraph gr n e -> [Tree r]
+        => CFun n e r -> [n] -> ULGraph gr n e -> [Tree r]
 dffWith f ns gr = G.dffWith (toFglCFun gr f) (map (toNode gr) ns) (toGraph gr)
 
 -- | Depth-first forest from all nodes of a graph, using the 'CFun' to
@@ -80,32 +80,32 @@ dffWith' f gr = G.dffWith' (toFglCFun gr f) (toGraph gr)
 -- 'CFun' to generate the successor nodes and a 'CFun' to generate the
 -- list of results.
 xdfsWith :: (G.Graph gr, Ord n)
-	 => CFun n e [n] -> CFun n e r -> [n] -> ULGraph gr n e -> [r]
+         => CFun n e [n] -> CFun n e r -> [n] -> ULGraph gr n e -> [r]
 xdfsWith sucF f ns gr = G.xdfsWith (map (toNode gr) . toFglCFun gr sucF)
-				   (toFglCFun gr f)
-				   (map (toNode gr) ns)
-				   (toGraph gr)
+                                   (toFglCFun gr f)
+                                   (map (toNode gr) ns)
+                                   (toGraph gr)
 
 -- | Generalized depth-first forest from a list of nodes, using a
 -- 'CFun' to generate the successor nodes and a 'CFun' to generate the
 -- forest of results.  Returns the forest and the remaining graph
 -- after the given nodes are visited.
 xdfWith :: (G.Graph gr, Ord n)
-	 => CFun n e [n] -> CFun n e r -> [n] -> ULGraph gr n e
-	 -> ([Tree r], ULGraph gr n e)
+         => CFun n e [n] -> CFun n e r -> [n] -> ULGraph gr n e
+         -> ([Tree r], ULGraph gr n e)
 xdfWith sucF f ns gr = (forest, fromGraph gr'')
     where
     (forest, gr'') = G.xdfWith (map (toNode gr) . toFglCFun gr sucF)
-			       (toFglCFun gr f)
-			       (map (toNode gr) ns)
-			       (toGraph gr)
+                               (toFglCFun gr f)
+                               (map (toNode gr) ns)
+                               (toGraph gr)
 
 -- | Generalized depth-first forest from a list of nodes, using a
 -- 'CFun' to generate the successor nodes and a 'CFun' to generate the
 -- forest of results.
 xdffWith :: (G.Graph gr, Ord n)
-	 => CFun n e [n] -> CFun n e r -> [n] -> ULGraph gr n e
-	 -> [Tree r]
+         => CFun n e [n] -> CFun n e r -> [n] -> ULGraph gr n e
+         -> [Tree r]
 xdffWith sucF f ns gr = fst $ xdfWith sucF f ns gr
 
 -- | Topological sorting of the graph's nodes

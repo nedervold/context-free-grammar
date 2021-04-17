@@ -28,11 +28,11 @@ cyclicProp = testProperty "result of removeCycles is non-cyclic" f
 cyclicDetectionTest :: Test
 cyclicDetectionTest = testCase "cyclic detection" $ do
     assertBool "cyclic is cyclic"
-	$ isCyclic cyclic
+        $ isCyclic cyclic
     assertBool "sneakyCyclic is cyclic"
-	$ isCyclic sneakyCyclic
+        $ isCyclic sneakyCyclic
     assertBool "noncyclic is not cyclic"
-	$ (not . isCyclic) noncyclic
+        $ (not . isCyclic) noncyclic
 
 cyclic :: FreeCfg String String
 cyclic = toFreeCfg [bnf|

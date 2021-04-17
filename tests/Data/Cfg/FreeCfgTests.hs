@@ -25,16 +25,16 @@ bimapCfgTest = testCase "bimapCfg works properly" $
     assertEqCfg' "bimapCfg result is correct" expected cfg'
     where
     cfg = toFreeCfg [bnf|
-		a ::= A b.
-		b ::= b B | .
-		|]
+                a ::= A b.
+                b ::= b B | .
+                |]
 
     cfg' :: FreeCfg String String
     cfg' = bimapCfg (++ "_TERMINAL") ("nt_" ++) cfg
 
     expected = toFreeCfg [bnf|
-		   nt_a ::= A_TERMINAL nt_b .
-		   nt_b ::= nt_b B_TERMINAL | . |]
+                   nt_a ::= A_TERMINAL nt_b .
+                   nt_b ::= nt_b B_TERMINAL | . |]
 
 bimapCfgProp :: Test
 bimapCfgProp = testProperty "bimapCfg id id == removeUnusedTerminals" f
@@ -43,8 +43,8 @@ bimapCfgProp = testProperty "bimapCfg id id == removeUnusedTerminals" f
     f cfg = eqCfg (removeUnusedTerminals cfg) (bimapCfg id id cfg)
 
 removeUnusedTerminals :: forall cfg nt t
-		      . (Cfg cfg t nt, Ord t)
-		      => cfg t nt -> FreeCfg t nt
+                      . (Cfg cfg t nt, Ord t)
+                      => cfg t nt -> FreeCfg t nt
 removeUnusedTerminals cfg = (toFreeCfg cfg) {
     terminals' = usedTerminals
     }
