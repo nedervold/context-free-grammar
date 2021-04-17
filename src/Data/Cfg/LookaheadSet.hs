@@ -11,8 +11,9 @@ module Data.Cfg.LookaheadSet (
     unions
     ) where
 
-import Data.Cfg.Augment(AugT(..))
-import Data.Monoid(Monoid(..), (<>))
+import Data.Cfg.Augment ( AugT(..) )
+import Data.Monoid      ( Monoid(..) )
+import Data.Semigroup   ( Semigroup(..) )
 import qualified Data.Set as S
 
 -- | Set of lookahead symbols providing different 'Monoid' semantics
@@ -24,12 +25,15 @@ newtype LookaheadSet t = LookaheadSet {
     }
     deriving (Eq, Ord, Show)
 
-instance Ord t => Monoid (LookaheadSet t) where
-    mempty = LookaheadSet $ S.singleton EOF
-    l@(LookaheadSet s) `mappend` LookaheadSet s'
+instance Ord t => Semigroup (LookaheadSet t) where
+    l@(LookaheadSet s) <> LookaheadSet s'
         = if EOF `S.member` s
               then LookaheadSet $ S.delete EOF s `S.union` s'
               else l
+
+instance Ord t => Monoid (LookaheadSet t) where
+    mempty  = LookaheadSet $ S.singleton EOF
+    mappend = (<>)
 
 -- | Creates a 'LookaheadSet'
 mkLookaheadSet :: (Ord t)

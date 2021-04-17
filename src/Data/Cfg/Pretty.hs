@@ -10,7 +10,7 @@ import Data.Cfg.Cfg
 import Data.Cfg.FreeCfg(FreeCfg)
 import Data.Cfg.Item
 import qualified Data.Set as S
-import Text.PrettyPrint
+import Text.PrettyPrint as P
 
 -- | Objects that can be pretty-printed
 class Pretty p where
@@ -23,7 +23,7 @@ instance Pretty (V t nt) => Pretty (Production t nt) where
     pretty (Production hd tl :: Production t nt)
         = hsep [pretty (NT hd :: V t nt),
                 text "::=",
-                prettyList tl <> text "."]
+                prettyList tl P.<> text "."]
 
 instance (Pretty (V t nt)) => Pretty (FreeCfg t nt) where
     prettyList = vcat . map pretty      -- I'd rather have vsep...
@@ -50,7 +50,7 @@ instance (Pretty (V t nt)) => Pretty (FreeCfg t nt) where
 instance Pretty (V t nt) => Pretty (Item t nt) where
     prettyList items = brackets $ hsep $ punctuate comma (map pretty items)
     pretty (item :: Item t nt)
-        = hsep [pretty (NT hd :: V t nt), text "::=", hsep rhs'] <> char '.'
+        = hsep [pretty (NT hd :: V t nt), text "::=", hsep rhs'] P.<> char '.'
         where
         rhs' = map pretty (beforeMark item)
                        ++ char markChar
@@ -58,4 +58,3 @@ instance Pretty (V t nt) => Pretty (Item t nt) where
 
         hd = productionHead $ production item
         markChar = '\x2022'
-
