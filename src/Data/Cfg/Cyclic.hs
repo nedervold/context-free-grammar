@@ -22,31 +22,31 @@ import qualified Data.Set as S
 -- =>+ a@?
 isCyclic :: (Cfg cfg t nt, Ord nt, Ord t) => cfg t nt -> Bool
 isCyclic cfg = case S.toList
-			$ cycSccs
-			    $ removeEpsilonProductions
-				$ toFreeCfg cfg of
-		   SCComp _ : _ -> True
-		   SelfLoop _ _ : _ -> True
-		   _ -> False
+                        $ cycSccs
+                            $ removeEpsilonProductions
+                                $ toFreeCfg cfg of
+                   SCComp _ : _ -> True
+                   SelfLoop _ _ : _ -> True
+                   _ -> False
 
 -- | Produces an equivalent non-cyclic grammar.
 removeCycles :: forall cfg nt t
-	     . (Cfg cfg t nt, Ord nt, Ord t)
-	     => cfg t nt -> FreeCfg t nt
+             . (Cfg cfg t nt, Ord nt, Ord t)
+             => cfg t nt -> FreeCfg t nt
 removeCycles cfg = CR.removeCycles indirect direct (S.toList $ cycSccs cfg) cfg
     where
     indirect :: nt -> nt -> [Production t nt] -> [Production t nt]
     indirect src dst ps = do
-	p <- ps
-	if isCyclicEdge src dst p
-	    then do
-		rhs <- lookupProductions dst ps
-		return $ Production src rhs
-	    else return p
+        p <- ps
+        if isCyclicEdge src dst p
+            then do
+                rhs <- lookupProductions dst ps
+                return $ Production src rhs
+            else return p
 
     isCyclicEdge :: nt -> nt -> Production t nt -> Bool
     isCyclicEdge src dst (Production src' [NT dst'])
-	= src == src' && dst == dst'
+        = src == src' && dst == dst'
     isCyclicEdge _ _ _ = False
 
     isCyclicLoop :: nt -> Production t nt -> Bool
@@ -57,23 +57,23 @@ removeCycles cfg = CR.removeCycles indirect direct (S.toList $ cycSccs cfg) cfg
 
 -- | Produces an equivalent non-cyclic grammar.
 removeCycles' :: forall cfg nt t
-	     . (Cfg cfg t nt, Ord nt, Ord t)
-	     => cfg t nt -> FreeCfg t nt
+             . (Cfg cfg t nt, Ord nt, Ord t)
+             => cfg t nt -> FreeCfg t nt
 removeCycles' cfg
     = CR.removeCycles' indirect direct (S.toList $ cycSccs cfg) cfg
     where
     indirect :: nt -> nt -> ProductionMap t nt -> ProductionMap t nt
     indirect src dst pm = M.adjust f src pm
-	where
-	f :: S.Set (Vs t nt) -> S.Set (Vs t nt)
-	f rhss = if [NT dst] `S.member` rhss
-		     then [NT dst] `S.delete` rhss `S.union` (pm M.! dst)
-		     else rhss
+        where
+        f :: S.Set (Vs t nt) -> S.Set (Vs t nt)
+        f rhss = if [NT dst] `S.member` rhss
+                     then [NT dst] `S.delete` rhss `S.union` (pm M.! dst)
+                     else rhss
 
     direct :: nt -> ProductionMap t nt -> ProductionMap t nt
     direct nt = M.adjust removeLoop nt
-	where
-	removeLoop = S.filter (/= [NT nt])
+        where
+        removeLoop = S.filter (/= [NT nt])
 
 cycSccs :: forall cfg nt t
        . (Cfg cfg t nt, Ord nt)
@@ -87,11 +87,11 @@ cycSccs cfg = S.fromList $ map categorizeScc $ scc gr
     categorizeScc :: [nt] -> SCComp Gr nt ()
     categorizeScc [] = error "lrSccs.categorizeScc [] : impossible"
     categorizeScc [nt] = if hasSelfLoop nt
-	then SelfLoop nt $ S.singleton ()
-	else Singleton nt
+        then SelfLoop nt $ S.singleton ()
+        else Singleton nt
     categorizeScc ns = SCComp $ delNodes others gr
-	where
-	others = S.toList (nodes gr S.\\ S.fromList ns)
+        where
+        others = S.toList (nodes gr S.\\ S.fromList ns)
 
     hasSelfLoop :: nt -> Bool
     hasSelfLoop nt = nt `elem` suc gr nt

@@ -14,10 +14,10 @@ import qualified Data.Set as S
 
 -- | Nonterminal wrapper to introduce a symbol for the non-nullable
 -- start nonterminal when removing epsilons.
-data EP nt = EP nt	-- ^ non-nullable versions of the symbol
+data EP nt = EP nt      -- ^ non-nullable versions of the symbol
     | EPStart nt
-	-- ^ nullable version of the symbol (only the start symbol can
-	-- be nullable)
+        -- ^ nullable version of the symbol (only the start symbol can
+        -- be nullable)
     deriving (Eq, Ord, Show)
 
 -- | A slight misnomer: returns true if the analysis's grammar is
@@ -30,13 +30,13 @@ isEpsilonFree cfg = S.null ns
 -- | Given a grammar, returns its augmented grammar with
 -- epsilon-productions removed.
 removeEpsilonProductions :: forall t nt
-			 . (Ord nt, Ord t)
-			 => FreeCfg t nt
-			 -> FreeCfg t (EP nt)
+                         . (Ord nt, Ord t)
+                         => FreeCfg t nt
+                         -> FreeCfg t (EP nt)
 removeEpsilonProductions cfg = FreeCfg {
     nonterminals' = if startIsNullable
-	then EPStart oldStart `S.insert` S.map EP (nonterminals cfg)
-	else S.map EP (nonterminals cfg),
+        then EPStart oldStart `S.insert` S.map EP (nonterminals cfg)
+        else S.map EP (nonterminals cfg),
     terminals' = terminals cfg,
     productionRules' = rules',
     startSymbol' = if startIsNullable then EPStart oldStart else EP oldStart
@@ -56,16 +56,16 @@ removeEpsilonProductions cfg = FreeCfg {
 
     nonnullableRhss :: nt -> S.Set (Vs t (EP nt))
     nonnullableRhss nt = S.fromList
-			     $ filter (not . null)
-				 $ concatMap expandRhs
-				     $ S.toList
-					 $ productionRules cfg nt
-	where
-	expandRhs :: Vs t nt -> [Vs t (EP nt)]
-	expandRhs [] = return []
-	expandRhs (v : vs) = case v of
-	    T t -> liftM (T t:) rest
-	    NT nt' -> liftM (NT (EP nt'):) rest
+                             $ filter (not . null)
+                                 $ concatMap expandRhs
+                                     $ S.toList
+                                         $ productionRules cfg nt
+        where
+        expandRhs :: Vs t nt -> [Vs t (EP nt)]
+        expandRhs [] = return []
+        expandRhs (v : vs) = case v of
+            T t -> liftM (T t:) rest
+            NT nt' -> liftM (NT (EP nt'):) rest
                           `mplus` (if nt' `S.member` ns
                                        then rest
                                        else mzero)

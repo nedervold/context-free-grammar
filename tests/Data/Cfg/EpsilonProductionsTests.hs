@@ -30,17 +30,17 @@ epsilonProductionsProp
 epsilonProductionsTest :: Test
 epsilonProductionsTest = testCase "removal of eps-productions" $ do
     assertEqCfg'
-	"removed epsilon-productions correctly"
-	expected actual
+        "removed epsilon-productions correctly"
+        expected actual
     assertBool "removed epsilon-productions completely"
-	(isEpsilonFree expected)
+        (isEpsilonFree expected)
 
     where
     actual, expected :: FreeCfg String (EP String)
     actual = removeEpsilonProductions $ toFreeCfg epsProds
     expected = bimapCfg id EP cfg
     cfg = [bnf|
-	b ::= Z | a Z | Z a | a Z a .
+        b ::= Z | a Z | Z a | a Z a .
         a ::= A .
         |]
 

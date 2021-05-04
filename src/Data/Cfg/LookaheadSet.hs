@@ -4,38 +4,42 @@ module Data.Cfg.LookaheadSet (
     mkLookaheadSet,
     fromList,
     toSet,
-    (<>),	-- reexport
+    (<>),       -- reexport
     -- * Set operations
     empty,
     singleton,
     unions
     ) where
 
-import Data.Cfg.Augment(AugT(..))
-import Data.Monoid(Monoid(..), (<>))
+import Data.Cfg.Augment ( AugT(..) )
+import Data.Monoid      ( Monoid(..) )
+import Data.Semigroup   ( Semigroup(..) )
 import qualified Data.Set as S
 
 -- | Set of lookahead symbols providing different 'Monoid' semantics
--- than 'Data.Set.Set'.	 ('mappend' implements concatenation, not set
+-- than 'Data.Set.Set'.  ('mappend' implements concatenation, not set
 -- union.)
 newtype LookaheadSet t = LookaheadSet {
     toSet :: S.Set (AugT t)
-	-- ^ Converts the 'LookaheadSet' to a regular 'Data.Set.Set'
+        -- ^ Converts the 'LookaheadSet' to a regular 'Data.Set.Set'
     }
     deriving (Eq, Ord, Show)
 
+instance Ord t => Semigroup (LookaheadSet t) where
+    l@(LookaheadSet s) <> LookaheadSet s'
+        = if EOF `S.member` s
+              then LookaheadSet $ S.delete EOF s `S.union` s'
+              else l
+
 instance Ord t => Monoid (LookaheadSet t) where
-    mempty = LookaheadSet $ S.singleton EOF
-    l@(LookaheadSet s) `mappend` LookaheadSet s'
-	= if EOF `S.member` s
-	      then LookaheadSet $ S.delete EOF s `S.union` s'
-	      else l
+    mempty  = LookaheadSet $ S.singleton EOF
+    mappend = (<>)
 
 -- | Creates a 'LookaheadSet'
 mkLookaheadSet :: (Ord t)
-	       => Bool	-- ^ true iff it has 'EOF'
-	       -> [t]	-- ^ terminal symbols
-	       -> LookaheadSet t
+               => Bool  -- ^ true iff it has 'EOF'
+               -> [t]   -- ^ terminal symbols
+               -> LookaheadSet t
 mkLookaheadSet hasEOF = LookaheadSet . S.fromList . f . map AugT
     where
     f = if hasEOF then (EOF:) else id

@@ -27,19 +27,19 @@ leftRecursionProp
     where
     f :: FreeCfg Int Int -> Property
     f cfg = not itExploded ==> not (isLeftRecursive cfg')
-	where
-	mCfg = rmLR cfg
-	itExploded = isNothing mCfg
-	cfg' = fromJust mCfg
+        where
+        mCfg = rmLR cfg
+        itExploded = isNothing mCfg
+        cfg' = fromJust mCfg
 
     rmLR :: FreeCfg Int Int -> Maybe (FreeCfg Int (LR (EP Int)))
     rmLR = removeLeftRecursionBounded 5000
-	       . removeCycles'
-		   . removeEpsilonProductions
+               . removeCycles'
+                   . removeEpsilonProductions
 
 leftRecursionDetectionTest :: Test
 leftRecursionDetectionTest = testCase "left-recursion detection" $ do
     assertBool "leftRec grammar's recursion is detected"
-	$ isLeftRecursive leftRec
+        $ isLeftRecursive leftRec
     assertBool "g0 grammar's lack of recursion is detected"
         $ (not . isLeftRecursive) g0

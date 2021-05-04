@@ -20,28 +20,28 @@ import qualified Data.Map.Strict as M
 -- | Analysis of a context-free grammar
 data Analysis t nt = Analysis {
     baseCfg :: FreeCfg t nt,
-	-- ^ (a 'FreeCfg' equivalent to) the source grammar
+        -- ^ (a 'FreeCfg' equivalent to) the source grammar
     augmentedCfg :: FreeCfg (AugT t) (AugNT nt),
-	-- ^ the augmented grammar
+        -- ^ the augmented grammar
     firstSet :: AugNT nt -> LookaheadSet t,
-	-- ^ the first set of the nonterminal for the grammar
+        -- ^ the first set of the nonterminal for the grammar
     firstsOfVs :: AugVs t nt -> LookaheadSet t,
-	-- ^ the first set of a list of symbols
+        -- ^ the first set of a list of symbols
     followSet :: AugNT nt -> LookaheadSet t,
-	-- ^ the follow set of the nonterminal for the grammar
+        -- ^ the follow set of the nonterminal for the grammar
     predictSet :: AugProduction t nt -> LookaheadSet t,
-	-- ^ the predict set of the production
+        -- ^ the predict set of the production
     isLL1 :: Bool,
-	-- ^ 'True' iff the grammar is LL(1)
+        -- ^ 'True' iff the grammar is LL(1)
     ll1Info :: AugNT nt -> Predictions t nt
-	-- ^ the productions for this nonterminal and the lookaheads
-	-- that predict them
+        -- ^ the productions for this nonterminal and the lookaheads
+        -- that predict them
     }
 
 -- | Analyzes a context-free grammar
 mkAnalysis :: forall cfg t nt
-	   . (Cfg.Cfg cfg t nt, Ord nt, Ord t)
-	   => cfg t nt -> Analysis t nt
+           . (Cfg.Cfg cfg t nt, Ord nt, Ord t)
+           => cfg t nt -> Analysis t nt
 mkAnalysis cfg = Analysis {
     baseCfg = bcfg,
     augmentedCfg = cfg',
@@ -62,8 +62,8 @@ mkAnalysis cfg = Analysis {
     folm = I.followSetMap cfg' fs
 
     fols nt = M.findWithDefault err nt folm
-	where
-	err = error "mkAnalysis.fols"
+        where
+        err = error "mkAnalysis.fols"
     predict = I.predictSet fs fols
     ll1InfoMap = I.ll1InfoMap cfg' predict
     isLL1' = I.isLL1 ll1InfoMap

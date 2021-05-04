@@ -90,13 +90,13 @@ type GDecomp gr n e = (Context n e, ULGraph gr n e)
 -- | A uniquely labeled graph
 data ULGraph gr n e = ULGraph {
     toGraph :: gr n e,
-	-- ^ the underlying FGL 'Data.Graph.Inductive.Graph.Graph'
+        -- ^ the underlying FGL 'Data.Graph.Inductive.Graph.Graph'
     toNodeMap :: M.Map n G.Node,
-	-- ^ the map from the nodes to the FGL
-	-- 'Data.Graph.Inductive.Graph.Node's
+        -- ^ the map from the nodes to the FGL
+        -- 'Data.Graph.Inductive.Graph.Node's
     toLabelMap :: M.Map G.Node n
-	-- ^ the map from the FGL 'Data.Graph.Inductive.Graph.Node's
-	-- to the nodes
+        -- ^ the map from the FGL 'Data.Graph.Inductive.Graph.Node's
+        -- to the nodes
     }
     deriving (Eq, Ord)
 
@@ -122,15 +122,15 @@ fromGraph gr = fromMaybe err $ safeFromGraph gr
 -- 'Data.Graph.Inductive.Graph.Graph' if the nodes are uniquely
 -- labeled.
 safeFromGraph :: forall gr n e
-	      . (G.Graph gr, Ord n)
-	      => gr n e -> Maybe (ULGraph gr n e)
+              . (G.Graph gr, Ord n)
+              => gr n e -> Maybe (ULGraph gr n e)
 safeFromGraph gr = do
     toNodeMap' <- pairsToMap toNodePairs
     return ULGraph {
-	toGraph = gr,
-	toNodeMap = toNodeMap',
-	toLabelMap = M.fromList toLabelPairs
-	}
+        toGraph = gr,
+        toNodeMap = toNodeMap',
+        toLabelMap = M.fromList toLabelPairs
+        }
     where
     toLabelPairs :: [(G.Node, n)]
     toLabelPairs = G.labNodes gr
@@ -140,14 +140,14 @@ safeFromGraph gr = do
 
     pairsToMap :: forall a b . Ord a => [(a, b)] -> Maybe (M.Map a b)
     pairsToMap abs' = T.mapM f m'
-	where
-	m' :: M.Map a [b]
-	m' = M.fromListWith (++) [(a, [b]) | (a, b) <- abs']
+        where
+        m' :: M.Map a [b]
+        m' = M.fromListWith (++) [(a, [b]) | (a, b) <- abs']
 
-	f :: [b] -> Maybe b
-	f bs = case bs of
-	    [b] -> Just b
-	    _ -> Nothing
+        f :: [b] -> Maybe b
+        f bs = case bs of
+            [b] -> Just b
+            _ -> Nothing
 
 -- | An empty 'ULGraph'.
 empty :: G.Graph gr => ULGraph gr n e
@@ -181,8 +181,8 @@ matchAny gr = (fromFglContext gr ctxt, fromGraph gr')
 -- Nodes need not appear in the list of nodes; it's enough to appear
 -- as one end of an edge.
 mkULGraph :: forall gr n e
-	  . (G.Graph gr, Ord n)
-	  => [n] -> [(n, n, e)] -> ULGraph gr n e
+          . (G.Graph gr, Ord n)
+          => [n] -> [(n, n, e)] -> ULGraph gr n e
 mkULGraph ns es = ULGraph {
     toGraph = G.mkGraph lns les,
     toNodeMap = toNodeMap',
@@ -191,8 +191,8 @@ mkULGraph ns es = ULGraph {
     where
     ns' :: S.Set n
     ns' = S.fromList $ ns ++ concatMap f es
-	where
-	f (src, dst, _) = [src, dst]
+        where
+        f (src, dst, _) = [src, dst]
 
     lns :: [(G.Node, n)]
     lns = zip [1..] (S.toList ns')
@@ -207,8 +207,8 @@ mkULGraph ns es = ULGraph {
 -- Nodes need not appear in the list of nodes; it's enough to appear
 -- as one end of an edge.
 mkULGraph' :: forall gr n
-	   . (G.Graph gr, Ord n)
-	   => [n] -> [(n, n)] -> ULGraph gr n ()
+           . (G.Graph gr, Ord n)
+           => [n] -> [(n, n)] -> ULGraph gr n ()
 mkULGraph' ns es = mkULGraph ns es'
     where
     es' = [(src, dst, ()) | (src, dst) <- es]
@@ -228,7 +228,7 @@ equal gr gr' = nodes gr == nodes gr' && edges gr == edges gr'
 -- | A list of all 'Edge's in the 'ULGraph'.
 edges :: G.Graph gr => ULGraph gr n e -> [Edge n e]
 edges gr = [(toLabel gr src, toLabel gr dst, e)
-	       | (src, dst, e) <- G.labEdges $ toGraph gr]
+               | (src, dst, e) <- G.labEdges $ toGraph gr]
 
 -- | 'True' if the node is in the 'ULGraph'
 member :: Ord n => G.Graph gr => ULGraph gr n e -> n -> Bool
@@ -240,7 +240,7 @@ notMember gr n = n `M.notMember` toNodeMap gr
 
 -- | Removes a node from the 'ULGraph'.
 delNode :: (G.Graph gr, Ord n)
-	=> n -> ULGraph gr n e -> ULGraph gr n e
+        => n -> ULGraph gr n e -> ULGraph gr n e
 delNode n gr = ULGraph {
     toGraph = G.delNode n' $ toGraph gr,
     toNodeMap = n `M.delete` toNodeMap gr,
@@ -252,7 +252,7 @@ delNode n gr = ULGraph {
 
 -- | Removes multiple nodes from the 'ULGraph'.
 delNodes :: (G.Graph gr, Ord n)
-	 => [n] -> ULGraph gr n e -> ULGraph gr n e
+         => [n] -> ULGraph gr n e -> ULGraph gr n e
     -- The quickest to write, but perhaps not the most efficient
 delNodes ns gr = foldr delNode gr ns
 
@@ -271,12 +271,12 @@ pre gr n = map (toLabel gr) $ G.pre (toGraph gr) (toNode gr n)
 -- | All outward-bound 'Edge's for the given node.
 out :: (G.Graph gr, Ord n) => ULGraph gr n e -> n -> [Edge n e]
 out gr n = [(toLabel gr src, toLabel gr dst, e)
-	       | (src, dst, e) <- G.out (toGraph gr) (toNode gr n)]
+               | (src, dst, e) <- G.out (toGraph gr) (toNode gr n)]
 
 -- | All inward-bound 'Edge's for the given node.
 inn :: (G.Graph gr, Ord n) => ULGraph gr n e -> n -> [Edge n e]
 inn gr n = [(toLabel gr src, toLabel gr dst, e)
-	       | (src, dst, e) <- G.inn (toGraph gr) (toNode gr n)]
+               | (src, dst, e) <- G.inn (toGraph gr) (toNode gr n)]
 
 -- | The outward-bound degree of the node.
 outdeg :: (G.Graph gr, Ord n) => ULGraph gr n e -> n -> Int

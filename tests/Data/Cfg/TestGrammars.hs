@@ -28,9 +28,9 @@ import Test.HUnit(assertBool)
 
 -- | An assertion for testing equality of 'Cfg'.
 assertEqCfg' :: (Cfg cfg t nt, Cfg cfg' t nt,
-		 Pretty (cfg t nt), Pretty (cfg' t nt),
-		 Eq t, Eq nt)
-		=> String -> cfg t nt -> cfg' t nt -> IO ()
+                 Pretty (cfg t nt), Pretty (cfg' t nt),
+                 Eq t, Eq nt)
+                => String -> cfg t nt -> cfg' t nt -> IO ()
 assertEqCfg' msg expected actual =
     assertBool msg' (eqCfg expected actual)
     where
@@ -129,7 +129,7 @@ epsProds = [bnf|
 commaList :: Grammar String String
 commaList = [bnf|
     comma_list ::= comma_list COMMA ELMT
-	       | ELMT .
+               | ELMT .
     |]
 
 g0Analysis :: Analysis String String

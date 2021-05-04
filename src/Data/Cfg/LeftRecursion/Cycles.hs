@@ -17,26 +17,26 @@ import qualified Data.Set as S
 type E t nt = (nt, nt, Item t nt)
 
 mkLRGraph :: (Cfg cfg t nt, Ord nt)
-	  => cfg t nt -> ULGraph Gr nt (Item t nt)
+          => cfg t nt -> ULGraph Gr nt (Item t nt)
 mkLRGraph = mkULGraph [] . makeEdges
 
 makeEdges :: forall cfg t nt
-	  . (Cfg cfg t nt, Ord nt)
-	  => cfg t nt -> [E t nt]
+          . (Cfg cfg t nt, Ord nt)
+          => cfg t nt -> [E t nt]
 makeEdges cfg = map itemEdge allItems
     where
     allItems :: [Item t nt]
     allItems = do
-	Production nt rhs <- productions cfg
-	items isNullable (Production nt rhs)
+        Production nt rhs <- productions cfg
+        items isNullable (Production nt rhs)
 
     itemEdge :: Item t nt -> E t nt
     itemEdge item = (hdNode, ntNode, item)
-	where
-	hdNode = productionHead $ production item
-	ntNode = nt
-	    where
-	    Just (NT nt) = nextV item
+        where
+        hdNode = productionHead $ production item
+        ntNode = nt
+            where
+            Just (NT nt) = nextV item
 
     isNullable :: nt -> Bool
     isNullable nt = nt `S.member` nullables cfg
@@ -46,10 +46,10 @@ items isNullable prod = go $ mkInitialItem prod
     where
     go :: Item t nt -> [Item t nt]
     go item = case nextV item of
-	Just (NT nt) -> if isNullable nt
-	    then item : maybe [] go (nextItem item)
-	    else [item]
-	_ -> []
+        Just (NT nt) -> if isNullable nt
+            then item : maybe [] go (nextItem item)
+            else [item]
+        _ -> []
 
 -- | Strongly-connected components of the left-recursion graph.
 lrSccs :: forall cfg nt t
@@ -61,12 +61,12 @@ lrSccs cfg = S.fromList $ map categorizeScc scc'
     categorizeScc :: [nt] -> SCComp Gr nt (Item t nt)
     categorizeScc [] = error "lrSccs.categorizeScc [] : impossible"
     categorizeScc [nt] = if hasSelfLoop nt
-	then SelfLoop nt $ S.fromList [ e | (_, dst, e) <- out gr nt,
-					    nt == dst ]
-	else Singleton nt
+        then SelfLoop nt $ S.fromList [ e | (_, dst, e) <- out gr nt,
+                                            nt == dst ]
+        else Singleton nt
     categorizeScc ns = SCComp $ delNodes others gr
-	where
-	others = S.toList (nodes gr S.\\ S.fromList ns)
+        where
+        others = S.toList (nodes gr S.\\ S.fromList ns)
 
     scc' :: [[nt]]
     scc' = scc gr
