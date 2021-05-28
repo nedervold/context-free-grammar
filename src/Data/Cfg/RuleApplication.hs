@@ -7,7 +7,7 @@ module Data.Cfg.RuleApplication
   , directlyYields
   ) where
 
-import Control.Monad (liftM, msum)
+import Control.Monad (msum)
 import Control.Monad.Omega
 import Data.Cfg.Cfg
 import qualified Data.DList as DL
@@ -48,7 +48,7 @@ yields cfg = map DL.toList $ runOmega $ yieldNT (startSymbol cfg)
             NT nt' -> yieldNT nt'
             t -> return $ DL.singleton t
         yieldVs :: Vs t nt -> Omega (DL.DList (V t nt))
-        yieldVs = liftM DL.concat . mapM yieldV
+        yieldVs = fmap DL.concat . mapM yieldV
 
 -- NOTE: you shouldn't get symbol strings repeating if the grammar is
 -- unambiguous.
