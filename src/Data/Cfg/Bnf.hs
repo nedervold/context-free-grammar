@@ -16,14 +16,12 @@ characters and underscores; nonterminals by strings of lower-case
 characters and underscores.  Quoted strings are literal tokens.
 
 -}
-
-module Data.Cfg.Bnf (
-    Grammar(..),
-    bnf,
-    parse
-    ) where
+module Data.Cfg.Bnf
+  ( Grammar(..)
+  , bnf
+  , parse
+  ) where
 
 import Data.Cfg.Bnf.Parser
 import Data.Cfg.Bnf.QQ
 import Data.Cfg.Bnf.Syntax
-

@@ -53,6 +53,14 @@ docs-open : docs
 
 
 ################################
+# reformatting
+################################
+
+.PHONY : reformat
+reformat :
+	find src tests -name '*.hs' -exec hindent \{} \;
+
+################################
 # de-linting
 ################################
 
