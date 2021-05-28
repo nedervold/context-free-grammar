@@ -1,56 +1,39 @@
-.PHONY : all clean configure dist dist-test docs docs-open lint \
-	maintainer-clean test
-
-all : configure
+.PHONY : all
+all :
 	cabal build
 
-test : all
+.PHONY : test
+test :
 	cabal test
 
 ################################
 # department of sanitation
 ################################
 
+.PHONY : clean
 clean :
 	cabal clean
 	# remove emacs cruft
 	-find . -name '*~' -delete
 	-find . -name '\#*' -delete
 
-maintainer-clean : clean
-	-cabal sandbox delete
-	-rm cabal.config
-
-################################
-# the cabal does not exist
-################################
-
-cabal.config :
-	echo 'tests: True' > cabal.config
-
-.cabal-sandbox :
-	cabal sandbox init
-
-configure : .cabal-sandbox cabal.config
-	cabal install --dependencies-only
-	cabal configure
-
 ################################
 # distribution
 ################################
 
+.PHONY : dist
 dist : all
 	-cabal check
 	cabal sdist
 
 TEMPDIR := $(shell mktemp -d /tmp/temp.XXXX)
 
+.PHONY : dist-test
 dist-test : dist
 	$(eval DIR := $(shell (cabal info . | awk '{print $$2 ; exit}')))
 	$(eval TARBALL := $(DIR).tar)
 	$(eval TGZBALL := $(TARBALL).gz)
-	echo $(TEMPDIR)
-	cp dist/$(TGZBALL) $(TEMPDIR)
+	cp dist-newstyle/sdist/$(TGZBALL) $(TEMPDIR)
 	cd $(TEMPDIR) && gunzip $(TGZBALL) && tar -xf $(TARBALL)
 	cd $(TEMPDIR)/$(DIR) && make test
 	rm -rf $(TEMPDIR)
@@ -59,16 +42,20 @@ dist-test : dist
 # documentation
 ################################
 
-docs : configure
-	cabal haddock
+.PHONY : docs
+docs :
+	cabal haddock --haddock-for-hackage
 
+.PHONY : docs-open
 docs-open : docs
-	open dist/doc/html/context-free-grammar/index.html
+	# I can't find a better way to find the haddocks than guessing.
+	open `find dist-newstyle/ -name doc-index.html`
+
 
 ################################
 # de-linting
 ################################
 
+.PHONY : lint
 lint :
-	hlint -i 'Use import/export shortcut' src tests
-	# The import/export shortcut plays poorly with Haddock
+	hlint src tests
