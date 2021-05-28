@@ -17,5 +17,5 @@ instance Arbitrary (LookaheadSet Int) where
 tests :: Test
 tests = testGroup "Data.Cfg.Lookahead" [
     testProperty "monoid laws for lookahead sets"
-	$ eq $ prop_Monoid (T :: T (LookaheadSet Int))
+    $ eq $ prop_Monoid (T :: T (LookaheadSet Int))
     ]

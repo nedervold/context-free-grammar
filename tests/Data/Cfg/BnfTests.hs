@@ -21,8 +21,8 @@ test = testCase "bnf quasiquoter sanity test" $ do
     where
     cfg' = toFreeCfg gram'
     gram' = [bnf|foo ::= A B C D bar.
-		  foo ::= .
-		  bar ::= E A B. |]
+          foo ::= .
+          bar ::= E A B. |]
 
 {- Test code for yieldCfg.
 import Data.Cfg.RuleApplication
@@ -33,6 +33,6 @@ py n = mapM_ print $ take n y
     y = yieldCfg cfg
     cfg = gramToCfg' gram'
     gram' = [gram|digits ::= digit | digit digits .
-	          digit ::= O | I . |]
+              digit ::= O | I . |]
 
 -}

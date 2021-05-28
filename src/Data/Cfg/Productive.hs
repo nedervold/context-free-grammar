@@ -14,26 +14,26 @@ import qualified Data.Set as S
 
 -- | Returns the productive productions of this grammar.
 productives :: forall cfg t nt
-	    . (Cfg cfg t nt, Ord nt, Ord t)
-	    => cfg t nt -> S.Set (Production t nt)
+        . (Cfg cfg t nt, Ord nt, Ord t)
+        => cfg t nt -> S.Set (Production t nt)
 productives cfg = S.fromList
-		      $ filter (isProductiveProduction productiveNTs)
-			  $ productions cfg
+              $ filter (isProductiveProduction productiveNTs)
+              $ productions cfg
     where
     productiveNTs :: S.Set nt
     productiveNTs = productiveNonterminals cfg
 
 -- | Returns the unproductive productions of this grammar.
 unproductives :: forall cfg t nt
-	      . (Cfg cfg t nt, Ord nt, Ord t)
-	      => cfg t nt -> S.Set (Production t nt)
+          . (Cfg cfg t nt, Ord nt, Ord t)
+          => cfg t nt -> S.Set (Production t nt)
 unproductives cfg = S.fromList (productions cfg) S.\\ productives cfg
 
 -- | Returns an equivalent grammar not including unproductive
 -- productions.
 removeUnproductives :: forall cfg t nt
-		    . (Cfg cfg t nt, Ord nt, Ord t)
-		    => cfg t nt -> FreeCfg t nt
+            . (Cfg cfg t nt, Ord nt, Ord t)
+            => cfg t nt -> FreeCfg t nt
 removeUnproductives cfg = FreeCfg {
     terminals' = terminals cfg,
     startSymbol' = startSymbol cfg,
@@ -46,35 +46,35 @@ removeUnproductives cfg = FreeCfg {
 
     rules :: nt -> S.Set (Vs t nt)
     rules nt = if nt `S.member` nts
-	then S.filter (isProductiveVs nts) $ productionRules cfg nt
-	else S.empty
+    then S.filter (isProductiveVs nts) $ productionRules cfg nt
+    else S.empty
 
 -- | Returns the productive nonterminals of the grammar
 productiveNonterminals :: forall cfg t nt
-		       . (Cfg cfg t nt, Ord nt, Ord t)
-		       => cfg t nt -> S.Set nt
+               . (Cfg cfg t nt, Ord nt, Ord t)
+               => cfg t nt -> S.Set nt
 productiveNonterminals cfg = fixedPoint f S.empty
     where
     f :: S.Set nt -> S.Set nt
     f productiveNTs = S.fromList $ do
-	nt <- S.toList $ nonterminals cfg
-	unless (nt `S.member` productiveNTs) $ do
-	    let rhss = productionRules cfg nt
-	    guard (any (isProductiveVs productiveNTs) $ S.toList rhss)
-	return nt
+    nt <- S.toList $ nonterminals cfg
+    unless (nt `S.member` productiveNTs) $ do
+        let rhss = productionRules cfg nt
+        guard (any (isProductiveVs productiveNTs) $ S.toList rhss)
+    return nt
 
 isProductiveProduction :: forall t nt
-		       . (Ord nt)
-		       => S.Set nt -> Production t nt -> Bool
+               . (Ord nt)
+               => S.Set nt -> Production t nt -> Bool
 isProductiveProduction productiveNTs (hd, rhs)
     = hd `S.member` productiveNTs
-	  && isProductiveVs productiveNTs rhs
+      && isProductiveVs productiveNTs rhs
 
 -- | Given a set of known productive nonterminals, is the vocabulary
 -- symbol productive?
 isProductiveVs :: forall t nt
-	       . (Ord nt)
-	       => S.Set nt -> Vs t nt -> Bool
+           . (Ord nt)
+           => S.Set nt -> Vs t nt -> Bool
 isProductiveVs productiveNTs = all isProductiveV
     where
     -- | Given a set of known productive nonterminals, is the vocabulary

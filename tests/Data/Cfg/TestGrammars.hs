@@ -26,9 +26,9 @@ import Test.HUnit(assertBool)
 
 -- | An assertion for testing equality of 'Cfg'.
 assertEqCfg :: (Cfg cfg t nt, CPretty (cfg t nt) ctxt,
-		Cfg cfg' t nt, CPretty (cfg' t nt) ctxt',
-		Eq t, Eq nt)
-		=> ctxt -> ctxt' -> String -> cfg t nt -> cfg' t nt -> IO ()
+        Cfg cfg' t nt, CPretty (cfg' t nt) ctxt',
+        Eq t, Eq nt)
+        => ctxt -> ctxt' -> String -> cfg t nt -> cfg' t nt -> IO ()
 assertEqCfg ctxt ctxt' msg expected actual =
     assertBool msg' (eqCfg expected actual)
     where
@@ -41,12 +41,12 @@ pretty' cfg = cpretty cfg ctxt
     where
     ctxt :: AugV String String -> Doc
     ctxt v = text $ case v of
-		 NT nt -> case nt of
-		     StartSymbol -> "$start"
-		     AugNT s -> s
-		 T t -> case t of
-		     EOF -> "$EOF"
-		     AugT s -> s
+         NT nt -> case nt of
+             StartSymbol -> "$start"
+             AugNT s -> s
+         T t -> case t of
+             EOF -> "$EOF"
+             AugT s -> s
 
 -- | A test grammar.  Found in Crafting a compiler, by Charles
 -- N. Fischer and Richard J. LeBlanc, Jr., (c) 1998, pg. 95.

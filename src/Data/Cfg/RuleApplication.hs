@@ -26,28 +26,28 @@ directlyYields cfg vs = do
 -- | Given a grammar, returns all strings yielded by application of
 -- production rules.
 yields :: forall cfg t nt . (Cfg cfg t nt, Ord nt)
-	=> cfg t nt -> [Vs t nt]
+    => cfg t nt -> [Vs t nt]
 yields cfg = map DL.toList $ runOmega $ yieldNT (startSymbol cfg)
     where
     yieldNT :: nt -> Omega (DL.DList (V t nt))
     yieldNT nt = memoMap M.! nt
-	where
-	memoMap :: M.Map nt (Omega (DL.DList (V t nt)))
-	memoMap = M.fromList
-		      [(nt', yieldNT' nt')
-			  | nt' <- S.toList $ nonterminals cfg]
+    where
+    memoMap :: M.Map nt (Omega (DL.DList (V t nt)))
+    memoMap = M.fromList
+              [(nt', yieldNT' nt')
+              | nt' <- S.toList $ nonterminals cfg]
 
-	yieldNT' :: nt -> Omega (DL.DList (V t nt))
-	yieldNT' nt' = msum (return (DL.singleton (NT nt'))
-			       : map yieldVs rhss)
-	    where
-	    rhss = S.toList $ productionRules cfg nt'
+    yieldNT' :: nt -> Omega (DL.DList (V t nt))
+    yieldNT' nt' = msum (return (DL.singleton (NT nt'))
+                   : map yieldVs rhss)
+        where
+        rhss = S.toList $ productionRules cfg nt'
 
 
     yieldV :: V t nt -> Omega (DL.DList (V t nt))
     yieldV v = case v of
-		   NT nt -> yieldNT nt
-		   t -> return $ DL.singleton t
+           NT nt -> yieldNT nt
+           t -> return $ DL.singleton t
 
     yieldVs :: Vs t nt -> Omega (DL.DList (V t nt))
     yieldVs = liftM DL.concat . mapM yieldV

@@ -14,14 +14,14 @@ import qualified Data.Set as S
 -- collects up implementations of each class method.
 data FreeCfg t nt = FreeCfg {
     nonterminals' :: S.Set nt,
-	-- ^ the nonterminals of the grammar
+    -- ^ the nonterminals of the grammar
     terminals' :: S.Set t,
-	-- ^ the terminals of the grammar
+    -- ^ the terminals of the grammar
     productionRules' :: nt -> S.Set (Vs t nt),
-	-- ^ the productions of the grammar
+    -- ^ the productions of the grammar
     startSymbol' :: nt
-	-- ^ the start symbol of the grammar; must be an element of
-	-- 'nonterminals' 'cfg'
+    -- ^ the start symbol of the grammar; must be an element of
+    -- 'nonterminals' 'cfg'
     }
 
 instance Cfg FreeCfg t nt where

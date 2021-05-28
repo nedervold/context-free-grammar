@@ -22,28 +22,28 @@ tests = testGroup "Data.Cfg.Productive" [
 wikiTest :: Test
 wikiTest = testCase "wiki productivity test" $ do
     assertEqual "productives" (S.fromList $ grammarProductions prods')
-			      (productives wiki)
+                  (productives wiki)
     assertEqual "unproductives" (S.fromList $ grammarProductions unprods')
-				(unproductives wiki)
+                (unproductives wiki)
     assertEqCfg ctxt ctxt "productivity" expected $ removeUnproductives wiki
 
     where
     ctxt :: V String String -> Doc
     ctxt v = text $ case v of
-			NT nt -> nt
-			T t -> t
+            NT nt -> nt
+            T t -> t
 
     expected :: FreeCfg String String
     expected = (toFreeCfg prods') {
-	terminals' = terminals wiki
-	}
+    terminals' = terminals wiki
+    }
 
     prods' :: Grammar String String
     prods' = [bnf|
-	s ::= b B | c C.
-	b ::= b B | B.
-	c ::= c C | C.
-	d ::= b D | c D | D.
+    s ::= b B | c C.
+    b ::= b B | B.
+    c ::= c C | C.
+    d ::= b D | c D | D.
         |]
 
     unprods' :: Grammar String String

@@ -19,10 +19,10 @@ import qualified Data.Set as S
 
 -- | Returns the predict set of a production.
 predictSet :: (Ord t)
-	   => (AugNT nt -> LookaheadSet t)    -- ^ 'firstSet' for the grammar
-	   -> (AugNT nt -> LookaheadSet t)    -- ^ 'followSet' for the grammar
-	   -> AugProduction t nt	      -- ^ the production
-	   -> LookaheadSet t
+       => (AugNT nt -> LookaheadSet t)    -- ^ 'firstSet' for the grammar
+       -> (AugNT nt -> LookaheadSet t)    -- ^ 'followSet' for the grammar
+       -> AugProduction t nt          -- ^ the production
+       -> LookaheadSet t
 predictSet firstSet' followSet' (hd, vs)
     = firstsOfVs firstSet' vs <> followSet' hd
 
@@ -35,28 +35,28 @@ type Predictions t nt = S.Set (Prediction t nt)
 
 -- | Returns the production 'Predictions' for the grammar as a map.
 ll1InfoMap :: forall cfg t nt
-	   . (Cfg cfg (AugT t) (AugNT nt), Ord nt, Ord t)
-	   => cfg (AugT t) (AugNT nt)
-	   -> (AugProduction t nt -> LookaheadSet t)
-	   -> M.Map (AugNT nt) (Predictions t nt)
+       . (Cfg cfg (AugT t) (AugNT nt), Ord nt, Ord t)
+       => cfg (AugT t) (AugNT nt)
+       -> (AugProduction t nt -> LookaheadSet t)
+       -> M.Map (AugNT nt) (Predictions t nt)
 ll1InfoMap cfg predictSet' = mkMap mkPredictions $ S.toList $ nonterminals cfg
     where
     mkPredictions :: AugNT nt -> Predictions t nt
-	-- Mostly reshuffling data
+    -- Mostly reshuffling data
     mkPredictions nt
-	= S.fromList $ f $ collectOnSecond $ collectOnFirst' lookaheadProds
-	where
-	-- Possible lookahead symbols for productions of this nonterminal
-	lookaheadProds :: [(AugT t, AugProduction t nt)]
-	lookaheadProds	= do
-	    rhs <- S.toList $ productionRules cfg nt
-	    let prod = (nt, rhs)
-	    t <- S.toList $ toSet $ predictSet' prod
-	    return (t, prod)
+    = S.fromList $ f $ collectOnSecond $ collectOnFirst' lookaheadProds
+    where
+    -- Possible lookahead symbols for productions of this nonterminal
+    lookaheadProds :: [(AugT t, AugProduction t nt)]
+    lookaheadProds  = do
+        rhs <- S.toList $ productionRules cfg nt
+        let prod = (nt, rhs)
+        t <- S.toList $ toSet $ predictSet' prod
+        return (t, prod)
 
-	f :: [([AugT t], S.Set (AugProduction t nt))]
-	  -> [(LookaheadSet t, S.Set (AugProduction t nt))]
-	f pairs = [(fromList la, ps) | (la, ps) <- pairs]
+    f :: [([AugT t], S.Set (AugProduction t nt))]
+      -> [(LookaheadSet t, S.Set (AugProduction t nt))]
+    f pairs = [(fromList la, ps) | (la, ps) <- pairs]
 
     mkMap :: Ord k => (k -> v) -> [k] -> M.Map k v
     mkMap f ks = M.fromList [(k, f k) | k <- ks]

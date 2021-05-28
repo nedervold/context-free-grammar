@@ -22,22 +22,22 @@ tests = testGroup "Data.Cfg.Reachable" [
 wikiTest :: Test
 wikiTest = testCase "wiki reachability test" $ do
     assertEqual "reachables" (S.fromList $ words "s b c e")
-			     (reachables wiki)
+                 (reachables wiki)
     assertEqual "unreachables" (S.fromList $ words "d")
-			       (unreachables wiki)
+                   (unreachables wiki)
     assertEqCfg ctxt ctxt "reachability" expected $ removeUnreachables wiki
 
     where
     ctxt :: V String String -> Doc
     ctxt v = text $ case v of
-			NT nt -> nt
-			T t -> t
+            NT nt -> nt
+            T t -> t
     reach = [bnf|
-	s ::= b B | c C | e E.
-	b ::= b B | B.
-	c ::= c C | C.
-	e ::= e E.
-	|]
+    s ::= b B | c C | e E.
+    b ::= b B | B.
+    c ::= c C | C.
+    e ::= e E.
+    |]
 
     expected :: FreeCfg String String
     expected = (toFreeCfg reach){
