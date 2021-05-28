@@ -86,6 +86,9 @@ Library
                       , pretty >= 1.1
                       , semigroups
                       , template-haskell
+  Build-Tools:          alex
+                      , happy
+
 
 Test-Suite test
   Type:                 exitcode-stdio-1.0
