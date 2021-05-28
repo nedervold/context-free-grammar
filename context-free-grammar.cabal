@@ -54,7 +54,7 @@ Tested-With:
 Library
   Default-Language:     Haskell2010
   HS-Source-Dirs:       src
-  GHC-Options:          -Wall -Wno-unused-imports
+  GHC-Options:          -Wall
   Exposed-Modules:      Data.Cfg
                       , Data.Cfg.Analysis
                       , Data.Cfg.Augment
