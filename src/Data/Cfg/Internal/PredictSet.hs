@@ -44,19 +44,19 @@ ll1InfoMap cfg predictSet' = mkMap mkPredictions $ S.toList $ nonterminals cfg
     mkPredictions :: AugNT nt -> Predictions t nt
     -- Mostly reshuffling data
     mkPredictions nt
-    = S.fromList $ f $ collectOnSecond $ collectOnFirst' lookaheadProds
-    where
-    -- Possible lookahead symbols for productions of this nonterminal
-    lookaheadProds :: [(AugT t, AugProduction t nt)]
-    lookaheadProds  = do
-        rhs <- S.toList $ productionRules cfg nt
-        let prod = (nt, rhs)
-        t <- S.toList $ toSet $ predictSet' prod
-        return (t, prod)
+      = S.fromList $ f $ collectOnSecond $ collectOnFirst' lookaheadProds
+      where
+      -- Possible lookahead symbols for productions of this nonterminal
+      lookaheadProds :: [(AugT t, AugProduction t nt)]
+      lookaheadProds  = do
+          rhs <- S.toList $ productionRules cfg nt
+          let prod = (nt, rhs)
+          t <- S.toList $ toSet $ predictSet' prod
+          return (t, prod)
 
-    f :: [([AugT t], S.Set (AugProduction t nt))]
-      -> [(LookaheadSet t, S.Set (AugProduction t nt))]
-    f pairs = [(fromList la, ps) | (la, ps) <- pairs]
+      f :: [([AugT t], S.Set (AugProduction t nt))]
+        -> [(LookaheadSet t, S.Set (AugProduction t nt))]
+      f pairs = [(fromList la, ps) | (la, ps) <- pairs]
 
     mkMap :: Ord k => (k -> v) -> [k] -> M.Map k v
     mkMap f ks = M.fromList [(k, f k) | k <- ks]

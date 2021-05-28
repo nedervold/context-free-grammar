@@ -1,5 +1,5 @@
 Name:                   context-free-grammar
-Version:                0.1.0
+Version:                0.1.1
 Author:                 Eric Nedervold<nedervoldsoftware@gmail.com>
 Maintainer:             Eric Nedervold<nedervoldsoftware@gmail.com>
 License:                BSD3
@@ -40,6 +40,17 @@ Cabal-Version:          >= 1.10
 Build-Type:             Simple
 Extra-Source-Files:     Makefile
                       , changelog
+Tested-With:
+  GHC == 7.8.4
+  GHC == 7.10.3
+  GHC == 8.0.2
+  GHC == 8.2.2
+  GHC == 8.4.4
+  GHC == 8.6.5
+  GHC == 8.8.4
+  GHC == 8.10.4
+  GHC == 9.0.1
+
 Library
   Default-Language:     Haskell2010
   HS-Source-Dirs:       src
@@ -73,6 +84,7 @@ Library
                       , dlist >= 0.7
                       , mtl >= 2.1
                       , pretty >= 1.1
+                      , semigroups
                       , template-haskell
 
 Test-Suite test
@@ -104,4 +116,3 @@ Test-Suite test
 Source-Repository head
   Type:                 git
   Location:             git://github.com/nedervold/context-free-grammar.git
-

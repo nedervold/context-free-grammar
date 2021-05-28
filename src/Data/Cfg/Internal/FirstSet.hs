@@ -10,7 +10,6 @@ import Data.Cfg.LookaheadSet hiding(unions)
 import qualified Data.Cfg.LookaheadSet as LA
 import qualified Data.Map.Strict as M
 import Data.Maybe(fromMaybe)
-import Data.Monoid(Monoid(mconcat))
 import qualified Data.Set as S
 
 -- | Returns the first set of the nonterminal for the grammar as a
@@ -23,13 +22,13 @@ firstSetMap cfg = fixedPoint go M.empty
     go :: M.Map (AugNT nt) (LookaheadSet t)
        -> M.Map (AugNT nt) (LookaheadSet t)
     go knownFirsts
-    = M.fromList [(nt, firstAlts rhss)
+      = M.fromList [(nt, firstAlts rhss)
           | nt <- S.toList $ nonterminals cfg,
         let rhss = S.toList $ productionRules cfg nt,
         not $ null rhss ]
-    where
-    firstAlts :: [Vs (AugT t) (AugNT nt)] -> LookaheadSet t
-    firstAlts = LA.unions . map (mconcat . map (firstsV knownFirsts))
+      where
+      firstAlts :: [Vs (AugT t) (AugNT nt)] -> LookaheadSet t
+      firstAlts = LA.unions . map (mconcat . map (firstsV knownFirsts))
 
 firstsV :: Ord nt
     => M.Map (AugNT nt) (LookaheadSet t) -> V (AugT t) (AugNT nt)

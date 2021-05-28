@@ -57,11 +57,11 @@ productiveNonterminals cfg = fixedPoint f S.empty
     where
     f :: S.Set nt -> S.Set nt
     f productiveNTs = S.fromList $ do
-    nt <- S.toList $ nonterminals cfg
-    unless (nt `S.member` productiveNTs) $ do
-        let rhss = productionRules cfg nt
-        guard (any (isProductiveVs productiveNTs) $ S.toList rhss)
-    return nt
+        nt <- S.toList $ nonterminals cfg
+        unless (nt `S.member` productiveNTs) $ do
+            let rhss = productionRules cfg nt
+            guard (any (isProductiveVs productiveNTs) $ S.toList rhss)
+        return nt
 
 isProductiveProduction :: forall t nt
                . (Ord nt)

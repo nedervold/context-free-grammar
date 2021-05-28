@@ -21,8 +21,8 @@ g0FollowSetTest = testCase "g0 follow-set test" $ mapM_ f tab
     where
     f :: (String, LookaheadSet String) -> IO ()
     f (nt, expected) = assertEqual msg expected (fols $ AugNT nt)
-    where
-    msg = "g0: followSet(" ++ nt ++ ")"
+        where
+        msg = "g0: followSet(" ++ nt ++ ")"
 
     tab :: [(String, LookaheadSet String)]
     tab = [("e", mkLookaheadSet True ["RPAREN"]),
@@ -37,8 +37,8 @@ microFollowSetTest = testCase "micro follow-set test" $ mapM_ f tab
     where
     f :: (String, LookaheadSet String) -> IO ()
     f (nt, expected) = assertEqual msg expected (fols $ AugNT nt)
-    where
-    msg = "micro: followSet(" ++ nt ++ ")"
+        where
+        msg = "micro: followSet(" ++ nt ++ ")"
 
     tab :: [(String, LookaheadSet String)]
     tab = [ ("program", mkLookaheadSet True []),

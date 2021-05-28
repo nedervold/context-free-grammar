@@ -15,15 +15,15 @@ nullables cfg = fixedPoint go S.empty
     where
     go :: S.Set nt -> S.Set nt
     go knownNullables = calculatedNullables
-    where
-    isKnownNullable :: V t nt -> Bool
-    isKnownNullable (NT nm) = nm `S.member` knownNullables
-    isKnownNullable _ = False
+        where
+        isKnownNullable :: V t nt -> Bool
+        isKnownNullable (NT nm) = nm `S.member` knownNullables
+        isKnownNullable _ = False
 
-    calculatedNullables :: S.Set nt
-    calculatedNullables = S.fromList $ do
-        nt <- S.toList $ nonterminals cfg
-        let rhss = S.toList $ productionRules cfg nt
-        guard $ any (all isKnownNullable) rhss
+        calculatedNullables :: S.Set nt
+        calculatedNullables = S.fromList $ do
+            nt <- S.toList $ nonterminals cfg
+            let rhss = S.toList $ productionRules cfg nt
+            guard $ any (all isKnownNullable) rhss
             return nt
 

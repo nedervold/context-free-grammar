@@ -21,25 +21,25 @@ import Text.PrettyPrint
 
 instance Arbitrary (FreeCfg Int Int) where
     arbitrary = do
-    tCnt <- choose (1, 25)
-    let ts = [0..tCnt-1]
-    ntCnt <- choose (1, 100)
-    let nts = [0..ntCnt-1]
-    let vs = map T ts ++ map NT nts
-    let genV = elements vs
-    let genVs = listOf genV
-    pairs <- forM nts $ \nt -> do
-        altCnt <- choose (1, 5)
-        rhss <- vectorOf altCnt genVs
-        return (nt, S.fromList rhss)
+        tCnt <- choose (1, 25)
+        let ts = [0..tCnt-1]
+        ntCnt <- choose (1, 100)
+        let nts = [0..ntCnt-1]
+        let vs = map T ts ++ map NT nts
+        let genV = elements vs
+        let genVs = listOf genV
+        pairs <- forM nts $ \nt -> do
+            altCnt <- choose (1, 5)
+            rhss <- vectorOf altCnt genVs
+            return (nt, S.fromList rhss)
 
-    let map' = M.fromList pairs
-    return FreeCfg {
-        nonterminals' = S.fromList nts,
-        terminals' = S.fromList ts,
-        productionRules' = (map' M.!),
-        startSymbol' = 0
-        }
+        let map' = M.fromList pairs
+        return FreeCfg {
+            nonterminals' = S.fromList nts,
+            terminals' = S.fromList ts,
+            productionRules' = (map' M.!),
+            startSymbol' = 0
+            }
 
 ctxt :: V Int Int -> Doc
 ctxt v = text $ map f $ base26 n
@@ -50,12 +50,12 @@ ctxt v = text $ map f $ base26 n
 
     base26 :: Int -> String
     base26 n'
-    | n' < 26   = [digitToChar n']
-    | otherwise = if msds == 0
-              then [digitToChar lsd]
-              else base26 msds ++ [digitToChar lsd]
-    where
-    (msds, lsd) = n' `divMod` 26
+        | n' < 26   = [digitToChar n']
+        | otherwise = if msds == 0
+                  then [digitToChar lsd]
+                  else base26 msds ++ [digitToChar lsd]
+        where
+        (msds, lsd) = n' `divMod` 26
 
     digitToChar :: Int -> Char
     digitToChar digit = toEnum (fromEnum 'a' + digit)

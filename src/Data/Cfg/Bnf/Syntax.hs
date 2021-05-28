@@ -22,7 +22,7 @@ instance (Ord nt, Ord t) => Cfg Grammar t nt where
     terminals = S.fromList . concatMap terminalsProd . grammarProductions
     nonterminals = S.fromList . concatMap nonterminalsProd . grammarProductions
     productionRules g nt
-    = S.fromList [ rhs | (nt', rhs) <- grammarProductions g,
+      = S.fromList [ rhs | (nt', rhs) <- grammarProductions g,
                  nt == nt' ]
     startSymbol = fst . head . grammarProductions
 

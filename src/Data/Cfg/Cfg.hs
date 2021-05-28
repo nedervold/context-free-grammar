@@ -30,6 +30,7 @@ import Data.Cfg.CPretty
 import Data.Data(Data, Typeable)
 import qualified Data.Set as S
 import Text.PrettyPrint
+import qualified Text.PrettyPrint as P
 
 ------------------------------------------------------------
 
@@ -47,7 +48,7 @@ class Cfg cfg t nt where
     -- 'nonterminals' 'cfg'
 
 instance (Cfg cfg t nt) => CPretty (cfg t nt) (V t nt -> Doc) where
-    cpretty cfg = liftM4 vcat' ss ts nts prods
+  cpretty cfg = liftM4 vcat' ss ts nts prods
     where
     vcat' a b c d = vcat [a, b, c, d]
     ss = do
@@ -72,12 +73,12 @@ instance (Cfg cfg t nt) => CPretty (cfg t nt) (V t nt -> Doc) where
              $$ nest 4
                  (vcat (map (prettyProd prettyV)
                         (zip [1..] $ productions cfg))))
-        where
-        prettyProd pv (n, (hd, rhs))
-        = hsep [parens (int n),
-            pv (NT hd), text "::=", rhs' <> text "."]
-        where
-        rhs' = hsep $ map pv rhs
+            where
+              prettyProd pv (n, (hd, rhs))
+                = hsep [parens (int n),
+                    pv (NT hd), text "::=", rhs' P.<> text "."]
+                    where
+                    rhs' = hsep $ map pv rhs
 
 ------------------------------------------------------------
 

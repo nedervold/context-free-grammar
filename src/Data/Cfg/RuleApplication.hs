@@ -31,26 +31,26 @@ yields cfg = map DL.toList $ runOmega $ yieldNT (startSymbol cfg)
     where
     yieldNT :: nt -> Omega (DL.DList (V t nt))
     yieldNT nt = memoMap M.! nt
-    where
-    memoMap :: M.Map nt (Omega (DL.DList (V t nt)))
-    memoMap = M.fromList
-              [(nt', yieldNT' nt')
-              | nt' <- S.toList $ nonterminals cfg]
+      where
+        memoMap :: M.Map nt (Omega (DL.DList (V t nt)))
+        memoMap = M.fromList
+                  [(nt', yieldNT' nt')
+                  | nt' <- S.toList $ nonterminals cfg]
 
-    yieldNT' :: nt -> Omega (DL.DList (V t nt))
-    yieldNT' nt' = msum (return (DL.singleton (NT nt'))
-                   : map yieldVs rhss)
-        where
-        rhss = S.toList $ productionRules cfg nt'
+        yieldNT' :: nt -> Omega (DL.DList (V t nt))
+        yieldNT' nt' = msum (return (DL.singleton (NT nt'))
+                       : map yieldVs rhss)
+            where
+            rhss = S.toList $ productionRules cfg nt'
 
 
-    yieldV :: V t nt -> Omega (DL.DList (V t nt))
-    yieldV v = case v of
-           NT nt -> yieldNT nt
-           t -> return $ DL.singleton t
+        yieldV :: V t nt -> Omega (DL.DList (V t nt))
+        yieldV v = case v of
+               NT nt' -> yieldNT nt'
+               t -> return $ DL.singleton t
 
-    yieldVs :: Vs t nt -> Omega (DL.DList (V t nt))
-    yieldVs = liftM DL.concat . mapM yieldV
+        yieldVs :: Vs t nt -> Omega (DL.DList (V t nt))
+        yieldVs = liftM DL.concat . mapM yieldV
 
 
 -- NOTE: you shouldn't get symbol strings repeating if the grammar is

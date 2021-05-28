@@ -21,8 +21,8 @@ g0FirstSetTest = testCase "g0 first-set test" $ mapM_ f tab
     where
     f :: (String, LookaheadSet String) -> IO ()
     f (nt, expected) = assertEqual msg expected (fs $ AugNT nt)
-    where
-    msg = "g0: firstSet(" ++ nt ++ ")"
+        where
+        msg = "g0: firstSet(" ++ nt ++ ")"
 
     tab :: [(String, LookaheadSet String)]
     tab = [("e", mkLookaheadSet False $ words "F LPAREN V"),
@@ -37,8 +37,8 @@ microFirstSetTest = testCase "micro first-set test" $ mapM_ f tab
     where
     f :: (String, LookaheadSet String) -> IO ()
     f (nt, expected) = assertEqual msg expected (fs $ AugNT nt)
-    where
-    msg = "micro: firstSet(" ++ nt ++ ")"
+        where
+        msg = "micro: firstSet(" ++ nt ++ ")"
 
     tab :: [(String, LookaheadSet String)]
     tab = [

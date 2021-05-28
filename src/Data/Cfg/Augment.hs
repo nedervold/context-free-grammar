@@ -52,13 +52,13 @@ augmentCfg cfg = FreeCfg {
     pr :: AugNT nt -> S.Set (Vs (AugT t) (AugNT nt))
     pr StartSymbol = S.singleton [NT $ AugNT $ startSymbol cfg, T EOF]
     pr (AugNT nt) = S.map augmentVs oldRhss
-    where
-    oldRhss :: S.Set (Vs t nt)
-    oldRhss = productionRules cfg nt
+        where
+        oldRhss :: S.Set (Vs t nt)
+        oldRhss = productionRules cfg nt
 
     augmentVs :: Vs t nt -> Vs (AugT t) (AugNT nt)
     augmentVs = map augmentV
 
     augmentV :: V t nt -> V (AugT t) (AugNT nt)
     augmentV (NT nt') = NT $ AugNT nt'
-        augmentV (T t') = T $ AugT t'
+    augmentV (T t') = T $ AugT t'

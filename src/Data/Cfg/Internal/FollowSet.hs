@@ -64,16 +64,16 @@ followSetMap cfg fs = fixedPoint go initMap
     go :: M.Map (AugNT nt) (LookaheadSet t)
        -> M.Map (AugNT nt) (LookaheadSet t)
     go oldFols = M.mapWithKey (\ k v -> LA.unions $ f k v) oldFols
-    where
-    f :: AugNT nt -> LookaheadSet t -> [LookaheadSet t]
-    f nt oldFollows = oldFollows : map (firstsOfFollowSite fs oldFols) folSites
-        where
-        folSites = M.findWithDefault [] nt followSitesMap'
+      where
+      f :: AugNT nt -> LookaheadSet t -> [LookaheadSet t]
+      f nt oldFollows = oldFollows : map (firstsOfFollowSite fs oldFols) folSites
+          where
+          folSites = M.findWithDefault [] nt followSitesMap'
 
     initMap :: M.Map (AugNT nt) (LookaheadSet t)
     initMap = M.fromList [(nt, case nt of
                    StartSymbol -> singleton EOF
-                                   _ -> empty) | nt <- nts]
+                   _ -> empty) | nt <- nts]
         where
         nts = S.toList $ nonterminals cfg
 

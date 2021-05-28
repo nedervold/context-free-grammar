@@ -19,12 +19,12 @@ reachables cfg = go [startSymbol cfg] S.empty
     go :: [nt] -> S.Set nt -> S.Set nt
     go [] seen = seen
     go (nt : nts) seen
-    = if nt `S.member` seen
+      = if nt `S.member` seen
           then go nts seen
           else do
-          let seen' = S.insert nt seen
-          let vs = concat $ S.toList $ productionRules cfg nt
-          go (nts ++ [nt' | NT nt' <- vs]) seen'
+              let seen' = S.insert nt seen
+              let vs = concat $ S.toList $ productionRules cfg nt
+              go (nts ++ [nt' | NT nt' <- vs]) seen'
 
 -- | Returns the nonterminals of this grammar unreachable from the
 -- start symbol.
