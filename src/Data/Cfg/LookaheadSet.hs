@@ -1,8 +1,3 @@
-{-# OPTIONS_GHC -Wno-unused-imports #-}
-
-{- The Monoid and Semigroup imports are unused in GHC8.4.4 and later
-but needed for earlier versions.  It's easier for now to just suppress
-the unused-imports warning than to use CPP. -}
 -- | Sets of lookahead symbols.
 module Data.Cfg.LookaheadSet
   ( LookaheadSet

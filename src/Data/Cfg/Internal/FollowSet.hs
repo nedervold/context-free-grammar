@@ -16,6 +16,8 @@ import Data.Cfg.LookaheadSet hiding (unions)
 import qualified Data.Cfg.LookaheadSet as LA
 import Data.List (tails)
 import qualified Data.Map.Strict as M
+import Data.Monoid (Monoid(..))
+import Data.Semigroup (Semigroup(..))
 import qualified Data.Set as S
 
 -- | Represents the environment following a nonterminal symbol.  A

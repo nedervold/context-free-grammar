@@ -16,6 +16,8 @@ import Data.Cfg.Collect
 import Data.Cfg.Internal.FirstSet (firstsOfVs)
 import Data.Cfg.LookaheadSet
 import qualified Data.Map.Strict as M
+import Data.Monoid (Monoid(..))
+import Data.Semigroup (Semigroup(..))
 import qualified Data.Set as S
 
 -- | Returns the predict set of a production.
