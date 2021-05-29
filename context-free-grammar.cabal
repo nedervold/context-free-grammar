@@ -4,7 +4,7 @@ Author:                 Eric Nedervold<nedervoldsoftware@gmail.com>
 Maintainer:             Eric Nedervold<nedervoldsoftware@gmail.com>
 License:                BSD3
 License-File:           LICENSE
-Copyright:              (c) 2015 Eric Nedervold
+Copyright:              (c) 2015, 2021 Eric Nedervold, 2021 Andreas Abel.
 Stability:              alpha
 Homepage:               http://github.com/nedervold/context-free-grammar
 Bug-Reports:            http://github.com/nedervold/context-free-grammar/issues
